@@ -195,8 +195,8 @@ function createMonthlyTrendsChart() {
                 {
                     label: 'Total Cases',
                     data: totalCasesData,
-                    borderColor: 'rgb(59, 130, 246)',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderColor: 'rgb(30, 58, 138)', // Ministry blue
+                    backgroundColor: 'rgba(30, 58, 138, 0.1)',
                     tension: 0.4,
                     borderWidth: 2
                 },
@@ -258,8 +258,8 @@ function createAgeDistributionChart() {
                     'rgba(239, 68, 68, 0.8)',    // Darker red 11-15
                     'rgba(192, 132, 252, 0.8)',  // Purple 16-17
                     'rgba(156, 163, 175, 0.8)',  // Gray 18-25
-                    'rgba(74, 222, 128, 0.8)',   // Green 26-35
-                    'rgba(96, 165, 250, 0.8)'    // Blue 36+
+                    'rgba(50, 205, 50, 0.8)',    // Ministry green 26-35
+                    'rgba(30, 58, 138, 0.8)'     // Ministry blue 36+
                 ],
                 borderWidth: 2,
                 borderColor: '#fff'

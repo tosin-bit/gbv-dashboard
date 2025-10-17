@@ -266,36 +266,31 @@ app.get('/', (c) => {
   return c.render(
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white shadow-sm border-b-4" style="border-bottom-color: #1e3a8a;">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              {/* Logo placeholder */}
-              <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
-                <i className="fas fa-shield-alt text-blue-600 text-2xl"></i>
-              </div>
-              <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
-                <i className="fas fa-check text-white text-xl"></i>
-              </div>
+              {/* Official Ministry Logo */}
+              <img src="/static/ministry-logo.png" alt="Ministry of Gender and Children's Affairs" className="w-20 h-20 object-contain" />
               <div>
-                <h1 className="text-xl font-bold text-blue-900">Sierra Leone GBV Dashboard</h1>
-                <p className="text-sm text-gray-600">Ministry of Gender and Children's Affairs</p>
-                <p className="text-xs text-gray-500">Real-time Gender-Based Violence Incident Tracking System</p>
+                <h1 className="text-2xl font-bold" style="color: #1e3a8a;">Sierra Leone GBV Dashboard</h1>
+                <p className="text-sm font-semibold" style="color: #1e3a8a;">Ministry of Gender and Children's Affairs</p>
+                <p className="text-xs" style="color: #1e3a8a;">Real-time Gender-Based Violence Incident Tracking System</p>
                 <div className="flex items-center space-x-2 mt-1">
-                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">Powered by Insyt Solutions</span>
-                  <span className="text-xs bg-blue-600 text-white px-2 py-0.5 rounded">USAID</span>
-                  <span className="text-xs bg-blue-400 text-white px-2 py-0.5 rounded">WHO</span>
-                  <span className="text-xs bg-purple-600 text-white px-2 py-0.5 rounded">UN Women</span>
+                  <span className="text-xs px-2 py-0.5 rounded" style="background-color: #1e90ff; color: white;">Powered by Insyt Solutions</span>
+                  <span className="text-xs px-2 py-0.5 rounded" style="background-color: #1e3a8a; color: white;">USAID</span>
+                  <span className="text-xs px-2 py-0.5 rounded" style="background-color: #1e90ff; color: white;">WHO</span>
+                  <span className="text-xs px-2 py-0.5 rounded" style="background-color: #9333ea; color: white;">UN Women</span>
                 </div>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-sm text-gray-500">Last Updated</div>
-              <div className="text-lg font-semibold text-gray-900" id="last-updated">10/17/2025</div>
+              <div className="text-sm" style="color: #1e3a8a;">Last Updated</div>
+              <div className="text-lg font-semibold" style="color: #1e3a8a;" id="last-updated">10/17/2025</div>
               <div className="text-xs text-gray-400">© 2025 Insyt Solutions</div>
               <div className="mt-2">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  <span className="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium" style="background-color: #32cd32; color: white;">
+                  <span className="w-2 h-2 rounded-full mr-1" style="background-color: #90ee90;"></span>
                   System Active
                 </span>
               </div>
@@ -305,37 +300,37 @@ app.get('/', (c) => {
       </header>
 
       {/* Navigation Tabs */}
-      <nav className="bg-green-700 border-b">
+      <nav className="border-b" style="background-color: #32cd32;">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-1 overflow-x-auto">
-            <button className="dashboard-tab bg-white text-green-700 py-3 px-4 text-sm font-medium whitespace-nowrap rounded-t">
+            <button className="dashboard-tab bg-white py-3 px-4 text-sm font-medium whitespace-nowrap rounded-t" style="color: #1e3a8a;">
               <i className="fas fa-eye mr-2"></i>Overview
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap hover:bg-green-600">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#228b22'" onmouseout="this.style.backgroundColor='transparent'">
               <i className="fas fa-file-alt mr-2"></i>Report Case
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap hover:bg-green-600">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#228b22'" onmouseout="this.style.backgroundColor='transparent'">
               <i className="fas fa-map mr-2"></i>District Map
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap hover:bg-green-600 relative">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap relative" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#228b22'" onmouseout="this.style.backgroundColor='transparent'">
               <i className="fas fa-chart-bar mr-2"></i>Analytics
-              <span className="ml-1 px-1.5 py-0.5 text-xs bg-yellow-400 text-yellow-900 rounded">New</span>
+              <span className="ml-1 px-1.5 py-0.5 text-xs rounded" style="background-color: #ffd700; color: #1e3a8a;">New</span>
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap hover:bg-green-600 relative">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap relative" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#228b22'" onmouseout="this.style.backgroundColor='transparent'">
               <i className="fas fa-hospital mr-2"></i>Rainbo Portal
-              <span className="ml-1 px-1.5 py-0.5 text-xs bg-yellow-400 text-yellow-900 rounded">New</span>
+              <span className="ml-1 px-1.5 py-0.5 text-xs rounded" style="background-color: #ffd700; color: #1e3a8a;">New</span>
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap hover:bg-green-600 relative">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap relative" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#228b22'" onmouseout="this.style.backgroundColor='transparent'">
               <i className="fas fa-shield-alt mr-2"></i>Police FSU
-              <span className="ml-1 px-1.5 py-0.5 text-xs bg-yellow-400 text-yellow-900 rounded">New</span>
+              <span className="ml-1 px-1.5 py-0.5 text-xs rounded" style="background-color: #ffd700; color: #1e3a8a;">New</span>
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap hover:bg-green-600">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#228b22'" onmouseout="this.style.backgroundColor='transparent'">
               <i className="fas fa-book mr-2"></i>Resources
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap hover:bg-green-600">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#228b22'" onmouseout="this.style.backgroundColor='transparent'">
               <i className="fas fa-microphone mr-2"></i>Voice Report
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap hover:bg-green-600">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#228b22'" onmouseout="this.style.backgroundColor='transparent'">
               <i className="fas fa-user-cog mr-2"></i>Admin
             </button>
           </div>
@@ -356,7 +351,7 @@ app.get('/', (c) => {
         {/* Dashboard Content (hidden by default) */}
         <div id="dashboard-content" className="hidden">
           {/* Emergency Banner */}
-          <div className="bg-green-700 text-white p-3 rounded mb-4 text-center">
+          <div className="text-white p-3 rounded mb-4 text-center" style="background-color: #32cd32;">
             <i className="fas fa-phone-alt mr-2"></i>
             <strong>EMERGENCY: Call 116 (Toll-Free) for immediate GBV support</strong>
             <span className="ml-4">| Available 24/7 in Krio, English, Mende & Temne</span>
@@ -382,12 +377,12 @@ app.get('/', (c) => {
             <div className="bg-white border border-gray-200 rounded-lg p-6">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-sm font-medium text-gray-500">Total Cases (2025)</div>
-                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                  <i className="fas fa-folder text-green-600"></i>
+                <div className="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: rgba(50, 205, 50, 0.2);">
+                  <i className="fas fa-folder" style="color: #32cd32;"></i>
                 </div>
               </div>
               <div className="text-3xl font-bold text-gray-900" id="total-cases">0</div>
-              <div className="text-xs text-green-600 mt-1">
+              <div className="text-xs mt-1" style="color: #32cd32;">
                 <i className="fas fa-check-circle mr-1"></i>Based on actual reporting
               </div>
             </div>
@@ -395,12 +390,12 @@ app.get('/', (c) => {
             <div className="bg-white border border-gray-200 rounded-lg p-6">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-sm font-medium text-gray-500">This Month</div>
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  <i className="fas fa-calendar text-blue-600"></i>
+                <div className="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: rgba(30, 58, 138, 0.2);">
+                  <i className="fas fa-calendar" style="color: #1e3a8a;"></i>
                 </div>
               </div>
               <div className="text-3xl font-bold text-gray-900" id="this-month-cases">0</div>
-              <div className="text-xs text-blue-600 mt-1">
+              <div className="text-xs mt-1" style="color: #1e3a8a;">
                 <i className="fas fa-calendar-alt mr-1"></i><span id="current-month">October 2025</span>
               </div>
             </div>
@@ -408,12 +403,12 @@ app.get('/', (c) => {
             <div className="bg-white border border-gray-200 rounded-lg p-6">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-sm font-medium text-gray-500">Sexual Assault Cases</div>
-                <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
-                  <i className="fas fa-exclamation-triangle text-yellow-600"></i>
+                <div className="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: rgba(255, 215, 0, 0.2);">
+                  <i className="fas fa-exclamation-triangle" style="color: #ffd700;"></i>
                 </div>
               </div>
               <div className="text-3xl font-bold text-gray-900" id="sexual-assault-cases">0</div>
-              <div className="text-xs text-yellow-600 mt-1">
+              <div className="text-xs mt-1" style="color: #ffd700;">
                 <i className="fas fa-percentage mr-1"></i><span id="assault-percentage">94%</span> of all cases
               </div>
             </div>
@@ -421,12 +416,12 @@ app.get('/', (c) => {
             <div className="bg-white border border-gray-200 rounded-lg p-6">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-sm font-medium text-gray-500">Service Coverage</div>
-                <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
-                  <i className="fas fa-hand-holding-heart text-teal-600"></i>
+                <div className="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: rgba(50, 205, 50, 0.2);">
+                  <i className="fas fa-hand-holding-heart" style="color: #32cd32;"></i>
                 </div>
               </div>
               <div className="text-3xl font-bold text-gray-900" id="service-coverage">0%</div>
-              <div className="text-xs text-teal-600 mt-1">
+              <div className="text-xs mt-1" style="color: #32cd32;">
                 <i className="fas fa-check mr-1"></i>Survivors receiving care
               </div>
             </div>
@@ -444,7 +439,7 @@ app.get('/', (c) => {
                 </div>
               </div>
               <div className="flex items-center space-x-2 text-xs mb-3">
-                <span className="flex items-center"><span className="w-3 h-3 bg-blue-500 mr-1"></span>Total Cases</span>
+                <span className="flex items-center"><span className="w-3 h-3 mr-1" style="background-color: #1e3a8a;"></span>Total Cases</span>
                 <span className="flex items-center"><span className="w-3 h-3 bg-red-500 mr-1"></span>Sexual Assault</span>
               </div>
               <canvas id="monthlyTrendsChart" width="400" height="250"></canvas>
@@ -549,8 +544,8 @@ app.get('/', (c) => {
               </div>
 
               {/* Interactive Map Placeholder */}
-              <div className="bg-green-50 border border-green-200 rounded-lg p-8 text-center">
-                <i className="fas fa-map text-green-600 text-4xl mb-3"></i>
+              <div className="border rounded-lg p-8 text-center" style="background-color: rgba(50, 205, 50, 0.1); border-color: #32cd32;">
+                <i className="fas fa-map text-4xl mb-3" style="color: #32cd32;"></i>
                 <div className="text-gray-700 font-medium mb-1">Interactive Sierra Leone Map</div>
                 <div className="text-sm text-gray-500">Click districts above to highlight</div>
               </div>
@@ -562,53 +557,53 @@ app.get('/', (c) => {
               
               <div className="space-y-4">
                 {/* Rainbo Initiative */}
-                <div className="border-l-4 border-blue-500 pl-4 py-2">
+                <div className="pl-4 py-2" style="border-left: 4px solid #1e3a8a;">
                   <div className="flex items-start justify-between mb-1">
                     <div className="font-medium text-gray-900">Rainbo Initiative</div>
                     <span className="text-xs text-orange-500">24 hours</span>
                   </div>
                   <div className="text-xs text-gray-600 mb-1">9 Centers</div>
-                  <div className="text-sm font-semibold text-blue-600">1247 cases</div>
+                  <div className="text-sm font-semibold" style="color: #1e3a8a;">1247 cases</div>
                 </div>
 
                 {/* One-Stop Centers */}
-                <div className="border-l-4 border-blue-500 pl-4 py-2">
+                <div className="pl-4 py-2" style="border-left: 4px solid #1e3a8a;">
                   <div className="flex items-start justify-between mb-1">
                     <div className="font-medium text-gray-900">One-Stop Centers</div>
                     <span className="text-xs text-yellow-500">12 hours</span>
                   </div>
                   <div className="text-xs text-gray-600 mb-1">7 Hospitals</div>
-                  <div className="text-sm font-semibold text-blue-600">692 cases</div>
+                  <div className="text-sm font-semibold" style="color: #1e3a8a;">692 cases</div>
                 </div>
 
                 {/* Police FSU */}
-                <div className="border-l-4 border-blue-500 pl-4 py-2">
+                <div className="pl-4 py-2" style="border-left: 4px solid #1e3a8a;">
                   <div className="flex items-start justify-between mb-1">
                     <div className="font-medium text-gray-900">Police FSU</div>
                     <span className="text-xs text-orange-500">48 hours</span>
                   </div>
                   <div className="text-xs text-gray-600 mb-1">16 Districts</div>
-                  <div className="text-sm font-semibold text-blue-600">654 cases</div>
+                  <div className="text-sm font-semibold" style="color: #1e3a8a;">654 cases</div>
                 </div>
 
                 {/* 116 Hotline */}
-                <div className="border-l-4 border-blue-500 pl-4 py-2">
+                <div className="pl-4 py-2" style="border-left: 4px solid #1e3a8a;">
                   <div className="flex items-start justify-between mb-1">
                     <div className="font-medium text-gray-900">116 Hotline</div>
-                    <span className="text-xs text-green-500">2 hours</span>
+                    <span className="text-xs" style="color: #32cd32;">2 hours</span>
                   </div>
                   <div className="text-xs text-gray-600 mb-1">National</div>
-                  <div className="text-sm font-semibold text-blue-600">189 cases</div>
+                  <div className="text-sm font-semibold" style="color: #1e3a8a;">189 cases</div>
                 </div>
 
                 {/* Community Reports */}
-                <div className="border-l-4 border-blue-500 pl-4 py-2">
+                <div className="pl-4 py-2" style="border-left: 4px solid #1e3a8a;">
                   <div className="flex items-start justify-between mb-1">
                     <div className="font-medium text-gray-900">Community Reports</div>
                     <span className="text-xs text-yellow-500">72 hours</span>
                   </div>
                   <div className="text-xs text-gray-600 mb-1">Village Level</div>
-                  <div className="text-sm font-semibold text-blue-600">89 cases</div>
+                  <div className="text-sm font-semibold" style="color: #1e3a8a;">89 cases</div>
                 </div>
               </div>
             </div>
