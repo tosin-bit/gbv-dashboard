@@ -223,41 +223,86 @@ app.post('/api/cases', async (c) => {
   const { env } = c;
   
   try {
-    const caseData = await c.req.json();
+    const formData = await c.req.json();
     
-    // Generate unique case number
-    const timestamp = Date.now();
-    const caseNumber = `GBV-SL-${timestamp}`;
+    // Helper to convert empty/null/undefined to null
+    const n = (v: any) => (v === '' || v === undefined || v === null) ? null : v;
+    
+    // Generate case number
+    const year = new Date().getFullYear();
+    const count = await env.DB.prepare(`SELECT COUNT(*) as c FROM gbv_cases WHERE strftime('%Y', created_at) = ?`).bind(year.toString()).first();
+    const caseNumber = `GBV-${year}-${String((count?.c || 0) + 1).padStart(4, '0')}`;
+    
+    // Get district ID
+    let districtId = formData.district;
+    if (typeof districtId === 'string') {
+      const d = await env.DB.prepare(`SELECT id FROM districts WHERE name = ?`).bind(districtId).first();
+      districtId = d?.id || 1;
+    }
+    
+    // Convert arrays to JSON
+    const violenceTypes = JSON.stringify(formData.violence_types || []);
+    const servicesNeeded = JSON.stringify(formData.services_needed || []);
     
     const result = await env.DB.prepare(`
       INSERT INTO gbv_cases (
-        case_number, incident_date, gbv_type_id, district_id, sub_district_id,
-        survivor_age_group, survivor_gender, perpetrator_relationship,
-        reported_by, reporting_channel, case_status, created_by
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        case_number, incident_date, incident_time, district_id, chiefdom, incident_location,
+        violence_types, violence_type_other,
+        survivor_age, survivor_gender, survivor_marital_status, survivor_children,
+        survivor_phone, survivor_disability, survivor_notes,
+        perpetrator_relationship, perpetrator_age, perpetrator_gender,
+        multiple_perpetrators, perpetrator_description,
+        reported_by, reporting_channel, reported_date, reporter_phone,
+        medical_urgency, medical_received, services_needed, referral_to,
+        witnesses, evidence, priority_level, case_notes,
+        case_status, created_by
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
       caseNumber,
-      caseData.incident_date,
-      caseData.gbv_type_id,
-      caseData.district_id,
-      caseData.sub_district_id || null,
-      caseData.survivor_age_group,
-      caseData.survivor_gender,
-      caseData.perpetrator_relationship,
-      caseData.reported_by,
-      caseData.reporting_channel,
+      n(formData.incident_date) || new Date().toISOString().split('T')[0],
+      n(formData.incident_time),
+      districtId,
+      n(formData.chiefdom),
+      n(formData.location) || n(formData.specific_location),
+      violenceTypes,
+      n(formData.violence_type_other),
+      n(formData.survivor_age),
+      n(formData.survivor_gender),
+      n(formData.survivor_marital_status),
+      n(formData.survivor_children),
+      n(formData.survivor_phone),
+      n(formData.survivor_disability),
+      n(formData.survivor_notes),
+      n(formData.perpetrator_relationship),
+      n(formData.perpetrator_age),
+      n(formData.perpetrator_gender),
+      formData.multiple_perpetrators === 'yes' ? 1 : 0,
+      n(formData.perpetrator_description),
+      n(formData.reported_by) || 'Unknown',
+      n(formData.reporting_channel) || 'Web Form',
+      new Date().toISOString().split('T')[0],
+      n(formData.reporter_phone),
+      n(formData.urgency) || n(formData.urgency_level) || 'routine',
+      n(formData.medical_received) || 'no',
+      servicesNeeded,
+      n(formData.referral_to),
+      n(formData.witnesses) || 'unknown',
+      n(formData.evidence) || 'no',
+      n(formData.priority) || n(formData.priority_level) || 'medium',
+      n(formData.case_notes) || n(formData.additional_info),
       'reported',
-      1 // Default user ID
+      1
     ).run();
 
     return c.json({ 
       success: true, 
       case_id: result.meta.last_row_id,
-      case_number: caseNumber 
+      case_number: caseNumber,
+      message: `Case ${caseNumber} successfully recorded.`
     });
   } catch (error) {
     console.error('Error creating case:', error);
-    return c.json({ error: 'Failed to create case' }, 500);
+    return c.json({ success: false, error: 'Failed to create case', details: error instanceof Error ? error.message : 'Unknown' }, 500);
   }
 });
 
@@ -300,37 +345,37 @@ app.get('/', (c) => {
       </header>
 
       {/* Navigation Tabs */}
-      <nav className="border-b" style="background-color: #32cd32;">
+      <nav className="border-b" style="background-color: #008000;">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-1 overflow-x-auto">
             <button className="dashboard-tab bg-white py-3 px-4 text-sm font-medium whitespace-nowrap rounded-t" style="color: #1e3a8a;">
               <i className="fas fa-eye mr-2"></i>Overview
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#228b22'" onmouseout="this.style.backgroundColor='transparent'">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
               <i className="fas fa-file-alt mr-2"></i>Report Case
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#228b22'" onmouseout="this.style.backgroundColor='transparent'">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
               <i className="fas fa-map mr-2"></i>District Map
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap relative" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#228b22'" onmouseout="this.style.backgroundColor='transparent'">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap relative" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
               <i className="fas fa-chart-bar mr-2"></i>Analytics
               <span className="ml-1 px-1.5 py-0.5 text-xs rounded" style="background-color: #ffd700; color: #1e3a8a;">New</span>
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap relative" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#228b22'" onmouseout="this.style.backgroundColor='transparent'">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap relative" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
               <i className="fas fa-hospital mr-2"></i>Rainbo Portal
               <span className="ml-1 px-1.5 py-0.5 text-xs rounded" style="background-color: #ffd700; color: #1e3a8a;">New</span>
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap relative" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#228b22'" onmouseout="this.style.backgroundColor='transparent'">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap relative" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
               <i className="fas fa-shield-alt mr-2"></i>Police FSU
               <span className="ml-1 px-1.5 py-0.5 text-xs rounded" style="background-color: #ffd700; color: #1e3a8a;">New</span>
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#228b22'" onmouseout="this.style.backgroundColor='transparent'">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
               <i className="fas fa-book mr-2"></i>Resources
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#228b22'" onmouseout="this.style.backgroundColor='transparent'">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
               <i className="fas fa-microphone mr-2"></i>Voice Report
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#228b22'" onmouseout="this.style.backgroundColor='transparent'">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
               <i className="fas fa-user-cog mr-2"></i>Admin
             </button>
           </div>

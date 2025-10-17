@@ -594,7 +594,27 @@ async function handleFormSubmit(e) {
     e.preventDefault();
     
     const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
+    const data = {};
+    
+    // Handle regular fields and arrays
+    for (let [key, value] of formData.entries()) {
+        // Handle checkboxes (violence_types[])
+        if (key.endsWith('[]')) {
+            const cleanKey = key.replace('[]', '');
+            if (!data[cleanKey]) {
+                data[cleanKey] = [];
+            }
+            data[cleanKey].push(value);
+        } else if (formData.getAll(key).length > 1) {
+            // Handle multiple values
+            data[key] = formData.getAll(key);
+        } else {
+            // Single value
+            data[key] = value;
+        }
+    }
+    
+    console.log('Submitting case data:', data);
     
     // Show loading
     const submitBtn = e.target.querySelector('button[type="submit"]');
@@ -611,13 +631,19 @@ async function handleFormSubmit(e) {
         
         const result = await response.json();
         
+        console.log('Server response:', result);
+        
         if (result.success) {
             showSuccessMessage(result.case_number);
             e.target.reset();
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
-            showErrorMessage('Failed to submit report. Please try again.');
+            showErrorMessage(result.error || 'Failed to submit report. Please try again.');
         }
     } catch (error) {
+        console.error('Submission error:', error);
         console.error('Error submitting form:', error);
         showErrorMessage('Network error. Please check your connection and try again.');
     } finally {
