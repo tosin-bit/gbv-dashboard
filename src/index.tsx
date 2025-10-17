@@ -635,6 +635,11 @@ app.get('/', (c) => {
       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
       <script src="/static/app-simplified.js"></script>
+      <script src="/static/tab-system.js"></script>
+      <script src="/static/report-case-form.js"></script>
+      <script src="/static/district-map.js"></script>
+      <script src="/static/analytics-dashboard.js"></script>
+      <script src="/static/portal-systems.js"></script>
     </div>
   );
 });
