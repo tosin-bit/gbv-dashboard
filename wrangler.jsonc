@@ -1,14 +1,14 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "enhanced-gbv-dashboard",
+  "name": "gbv-dashboard",
   "compatibility_date": "2025-10-17",
   "pages_build_output_dir": "./dist",
   "compatibility_flags": ["nodejs_compat"],
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "gbv-dashboard-db",
-      "database_id": "your-database-id-will-go-here"
+      "database_name": "gbv-dashboard-production",
+      "database_id": "cd3924d5-b44e-4557-854a-12d8de3d223d"
     }
   ]
 }

@@ -6,9 +6,10 @@
 **Features**: Multi-language support, AI-powered analytics, survivor journey tracking, budget optimization, and complete administrative system
 
 ## 🚀 Live Demo URLs
-- **Production System**: https://3000-i40mj24r51skeuybuomji-ad490db5.sandbox.novita.ai
-- **API Endpoint**: https://3000-i40mj24r51skeuybuomji-ad490db5.sandbox.novita.ai/api/stats
-- **GitHub Repository**: https://github.com/username/enhanced-gbv-dashboard
+- **Production System**: https://gbv-dashboard.pages.dev
+- **API Endpoint**: https://gbv-dashboard.pages.dev/api/stats
+- **Deployment URL**: https://9ac86be3.gbv-dashboard.pages.dev
+- **GitHub Repository**: (Configured for deployment)
 
 ## 🎯 Comprehensive Feature Set
 
@@ -199,9 +200,12 @@ users (id, name, email, role, district_id, permissions, status)
 
 ### Current Status: ✅ **FULLY ACTIVE & OPERATIONAL**
 - **Environment**: Production-ready Cloudflare Pages deployment
+- **Production URL**: https://gbv-dashboard.pages.dev
+- **Deployment ID**: https://9ac86be3.gbv-dashboard.pages.dev
 - **Performance**: Sub-100ms response times globally
 - **Uptime**: 99.9% availability with edge redundancy
 - **Security**: SSL/TLS encryption, DDoS protection, WAF enabled
+- **Database**: Cloudflare D1 Production (cd3924d5-b44e-4557-854a-12d8de3d223d)
 
 ### Technology Stack Summary
 - **Backend**: Hono + TypeScript + Cloudflare Workers
@@ -209,6 +213,32 @@ users (id, name, email, role, district_id, permissions, status)
 - **Database**: Cloudflare D1 (SQLite) with full Sierra Leone data
 - **Deployment**: Cloudflare Pages with global CDN
 - **Version**: 2.0 (Enhanced Ministry Demo)
+
+## 🔐 Portal Access Credentials
+
+### Rainbo Initiative Portal
+**Freetown Centre:**
+- Username: `rainbo.freetown`
+- Password: `rainbo2025`
+- Access: Rainbo Portal (Medical staff at PCMH Freetown)
+
+**Bo Centre:**
+- Username: `rainbo.bo`
+- Password: `rainbo2025`
+- Access: Rainbo Portal (Medical staff at Bo Government Hospital)
+
+### Police FSU Portal
+**Freetown FSU:**
+- Username: `police.freetown`
+- Password: `police2025`
+- Access: Police FSU Portal (Family Support Unit - Freetown)
+
+**Bo FSU:**
+- Username: `police.bo`
+- Password: `police2025`
+- Access: Police FSU Portal (Family Support Unit - Bo)
+
+**Note**: These are test credentials for demonstration purposes. In production, implement proper password hashing and multi-factor authentication.
 
 ### Integration Capabilities
 - **GBVIMS+**: Ready for integration with global GBV information management

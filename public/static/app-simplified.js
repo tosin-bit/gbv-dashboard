@@ -79,6 +79,46 @@ async function loadDashboardData() {
     }
 }
 
+// Refresh Dashboard - reload all data
+function refreshDashboard() {
+    console.log('🔄 Refreshing dashboard...');
+    
+    // Show visual feedback
+    const refreshBtn = event?.target?.closest('button');
+    if (refreshBtn) {
+        const icon = refreshBtn.querySelector('i');
+        if (icon) {
+            icon.classList.add('fa-spin');
+        }
+        refreshBtn.disabled = true;
+    }
+    
+    // Reload data
+    loadDashboardData().then(() => {
+        // Remove spin animation and re-enable button
+        if (refreshBtn) {
+            const icon = refreshBtn.querySelector('i');
+            if (icon) {
+                icon.classList.remove('fa-spin');
+            }
+            refreshBtn.disabled = false;
+        }
+        console.log('✅ Dashboard refreshed successfully');
+    }).catch(error => {
+        console.error('❌ Error refreshing dashboard:', error);
+        if (refreshBtn) {
+            const icon = refreshBtn.querySelector('i');
+            if (icon) {
+                icon.classList.remove('fa-spin');
+            }
+            refreshBtn.disabled = false;
+        }
+    });
+}
+
+// Make refreshDashboard available globally
+window.refreshDashboard = refreshDashboard;
+
 // Update dashboard UI
 function updateDashboard() {
     console.log('Updating dashboard UI...');
@@ -95,6 +135,9 @@ function updateDashboard() {
     
     // Update KPI cards
     updateKPICards();
+    
+    // Update district cards
+    updateDistrictCards();
     
     // Update charts
     updateCharts();
@@ -151,6 +194,58 @@ function updateKPICards() {
         const coverage = totalCases > 0 ? Math.round((casesWithServices / totalCases) * 100) : 0;
         serviceCoverageElement.textContent = coverage + '%';
     }
+}
+
+// Update District Cards
+function updateDistrictCards() {
+    const districtGrid = document.getElementById('district-cards-grid');
+    if (!districtGrid) return;
+    
+    const { districts } = window.GBVDashboard.data;
+    
+    if (!districts || districts.length === 0) {
+        districtGrid.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">No district data available</div>';
+        return;
+    }
+    
+    // Sort districts by case count (descending) and take top 8
+    const topDistricts = [...districts]
+        .sort((a, b) => (b.case_count || 0) - (a.case_count || 0))
+        .slice(0, 8);
+    
+    // Generate HTML for district cards
+    const cardsHTML = topDistricts.map(district => {
+        const caseCount = district.case_count || 0;
+        
+        // Determine risk level based on case count
+        let riskLevel, riskColor, riskIcon;
+        if (caseCount >= 100) {
+            riskLevel = 'High Risk';
+            riskColor = 'text-red-600';
+            riskIcon = 'fa-exclamation-triangle';
+        } else if (caseCount >= 50) {
+            riskLevel = 'Medium Risk';
+            riskColor = 'text-yellow-600';
+            riskIcon = 'fa-info-circle';
+        } else {
+            riskLevel = 'Low Risk';
+            riskColor = 'text-green-600';
+            riskIcon = 'fa-check-circle';
+        }
+        
+        return `
+            <div class="border border-gray-200 rounded-lg p-4">
+                <div class="text-sm text-gray-600 mb-1">${district.name}</div>
+                <div class="text-2xl font-bold text-gray-900">${caseCount.toLocaleString()}</div>
+                <div class="flex items-center text-xs ${riskColor} mt-1">
+                    <i class="fas ${riskIcon} mr-1"></i>${riskLevel}
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    districtGrid.innerHTML = cardsHTML;
+    console.log('✅ District cards updated');
 }
 
 // Update charts

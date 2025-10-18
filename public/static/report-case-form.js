@@ -640,7 +640,11 @@ async function handleFormSubmit(e) {
             // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
-            showErrorMessage(result.error || 'Failed to submit report. Please try again.');
+            // Show detailed error information
+            const errorMsg = result.error || 'Failed to submit report';
+            const details = result.details ? `\n\nDetails: ${result.details}` : '';
+            showErrorMessage(errorMsg + details);
+            console.error('Server error details:', result);
         }
     } catch (error) {
         console.error('Submission error:', error);
@@ -699,13 +703,38 @@ function showErrorMessage(message) {
 }
 
 function loadChiefdoms(districtId) {
-    // This would load chiefdoms based on selected district
-    // For now, just enable the select
     const chiefdomSelect = document.getElementById('chiefdom-select');
-    if (chiefdomSelect) {
-        chiefdomSelect.disabled = false;
-        chiefdomSelect.innerHTML = '<option value="">Loading chiefdoms...</option>';
-        // Would normally fetch from API here
+    if (!chiefdomSelect) return;
+    
+    // Chiefdoms/Wards by District
+    const chiefdomsByDistrict = {
+        '1': ['Central I', 'Central II', 'East I', 'East II', 'East III', 'West I', 'West II', 'West III'],
+        '2': ['Rural Area', 'Waterloo', 'Leicester', 'Regent', 'York'],
+        '3': ['Baoma', 'Bagbwe', 'Bagbo', 'Badjia', 'Bumpe Ngao', 'Kakua', 'Komboya', 'Lugbu', 'Niawa', 'Selenga', 'Tikonko', 'Valunia'],
+        '4': ['Bendu Cha', 'Dema', 'Imperri', 'Jong', 'Kpanda Kemoh', 'Kwamebai Krim', 'Nongoba Bulliom', 'Sitia', 'Sittia', 'Sogbini', 'Yawbeko'],
+        '5': ['Bagruwa', 'Bumpeh', 'Dasse', 'Fakunya', 'Kaiyamba', 'Kamajei', 'Kongbora', 'Kori', 'Kowa', 'Lower Banta', 'Ribbi', 'Upper Banta'],
+        '6': ['Barri', 'Gallinas Perri', 'Kpaka', 'Makpele', 'Malen', 'Panga Kabonde', 'Panga Krim', 'Peje Bongre', 'Peje West', 'Soro Gbema', 'Sorogbeima', 'Yakemu Kpukumu Krim'],
+        '7': ['Dama', 'Dodo', 'Gaura', 'Gorama Kono', 'Kandu Leppiama', 'Koya', 'Lower Bambara', 'Malegohun', 'Nomo', 'Nongowa', 'Simbaru', 'Small Bo', 'Tunkia', 'Upper Bambara', 'Wandor'],
+        '8': ['Dea', 'Jawei', 'Kissi Kama', 'Kissi Teng', 'Kissi Tongi', 'Luawa', 'Malema', 'Njaluahun', 'Peje', 'Penguia', 'Upper Bambara', 'Yawei'],
+        '9': ['Fiama', 'Gbane', 'Gbane Kandor', 'Gbense', 'Gorama Mende', 'Kamara', 'Lei', 'Mafindor', 'Nimikoro', 'Nimiyama', 'Sandor', 'Soa', 'Tankoro', 'Toli'],
+        '10': ['Bombali Sebora', 'Bombali Shebora', 'Gbanti Kamaranka', 'Gbendembu Ngowahun', 'Libeisaygahun', 'Magbaimba Ndowahun', 'Makari Gbanti', 'Paki Masabong', 'Safroko Limba', 'Sanda Loko', 'Sanda Magbolontor', 'Sella Limba', 'Tambakha'],
+        '11': ['Bramaia', 'Gbinleh-Dixon', 'Magbema', 'Mambolo', 'Masungbala', 'Samu', 'Tonko Limba'],
+        '12': ['Dembelia Sinkunia', 'Follosaba Dembelia', 'Kasunko', 'Mongo', 'Neini', 'Nieni', 'Sengbeh', 'Sulima', 'Wara Wara Bafodia', 'Wara Wara Yagala'],
+        '13': ['Bureh Kasseh Maconteh', 'Buya', 'Dibia', 'Kaffu Bullom', 'Koya', 'Lokomasama', 'Maforki', 'Marampa', 'Masimera', 'Sanda Magbolontor', 'TMS Kakuna'],
+        '14': ['Gbonkolenken', 'Kafe Simiria', 'Kalansogoia', 'Kholifa Mabang', 'Kholifa Rowala', 'Kunike', 'Kunike Barina', 'Malal Mara', 'Sambaia', 'Tane', 'Yoni'],
+        '15': ['Bramaia', 'Diang', 'Gbinleh Dixion', 'Kasirie Kono', 'Samu', 'Semini', 'Tonko Limba', 'Wara Wara Bafodea Baoma'],
+        '16': ['Dembelia', 'Mongo', 'Neini', 'Nieni', 'Sengbe', 'Solima', 'Sulima', 'Upper Bambara', 'Wara Wara Bafodea', 'Wara Wara Yagala']
+    };
+    
+    chiefdomSelect.disabled = false;
+    
+    if (districtId && chiefdomsByDistrict[districtId]) {
+        const chiefdoms = chiefdomsByDistrict[districtId];
+        chiefdomSelect.innerHTML = '<option value="">Select Chiefdom/Ward</option>' +
+            chiefdoms.map(c => `<option value="${c}">${c}</option>`).join('');
+    } else {
+        chiefdomSelect.innerHTML = '<option value="">Select District First</option>';
+        chiefdomSelect.disabled = true;
     }
 }
 

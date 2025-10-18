@@ -3,27 +3,76 @@
  * Interactive map showing GBV case distribution across all 16 districts
  */
 
-// Sierra Leone Districts Data
-const SIERRA_LEONE_DISTRICTS = [
-    { id: 1, name: 'Western Area Urban', cases: 695, population: 1050301, risk: 'High', region: 'Western' },
-    { id: 2, name: 'Western Area Rural', cases: 234, population: 442951, risk: 'Medium', region: 'Western' },
-    { id: 3, name: 'Bo', cases: 412, population: 654142, risk: 'High', region: 'Southern' },
-    { id: 4, name: 'Bonthe', cases: 87, population: 200730, risk: 'Low', region: 'Southern' },
-    { id: 5, name: 'Moyamba', cases: 156, population: 318588, risk: 'Medium', region: 'Southern' },
-    { id: 6, name: 'Pujehun', cases: 98, population: 346461, risk: 'Low', region: 'Southern' },
-    { id: 7, name: 'Kenema', cases: 324, population: 653013, risk: 'High', region: 'Eastern' },
-    { id: 8, name: 'Kailahun', cases: 287, population: 525372, risk: 'Medium', region: 'Eastern' },
-    { id: 9, name: 'Kono', cases: 198, population: 506100, risk: 'Medium', region: 'Eastern' },
-    { id: 10, name: 'Bombali', cases: 298, population: 606544, risk: 'Medium', region: 'Northern' },
-    { id: 11, name: 'Kambia', cases: 134, population: 341690, risk: 'Low', region: 'Northern' },
-    { id: 12, name: 'Koinadugu', cases: 143, population: 408097, risk: 'Low', region: 'Northern' },
-    { id: 13, name: 'Port Loko', cases: 189, population: 614063, risk: 'Low', region: 'Northern' },
-    { id: 14, name: 'Tonkolili', cases: 167, population: 531435, risk: 'Low', region: 'Northern' },
-    { id: 15, name: 'Karene', cases: 176, population: 281285, risk: 'Medium', region: 'North West' },
-    { id: 16, name: 'Falaba', cases: 112, population: 204719, risk: 'Low', region: 'Northern' }
-];
+// Global variable to store districts data
+let SIERRA_LEONE_DISTRICTS = [];
 
-function loadDistrictMap(section) {
+// District region mapping
+const DISTRICT_REGIONS = {
+    'Western Area Urban': 'Western',
+    'Western Area Rural': 'Western',
+    'Bo': 'Southern',
+    'Bonthe': 'Southern',
+    'Moyamba': 'Southern',
+    'Pujehun': 'Southern',
+    'Kenema': 'Eastern',
+    'Kailahun': 'Eastern',
+    'Kono': 'Eastern',
+    'Bombali': 'Northern',
+    'Kambia': 'Northern',
+    'Koinadugu': 'Northern',
+    'Port Loko': 'Northern',
+    'Tonkolili': 'Northern',
+    'Karene': 'North West',
+    'Falaba': 'Northern'
+};
+
+// Load districts data from API
+async function loadDistrictsData() {
+    try {
+        console.log('Loading districts data from API...');
+        const response = await fetch('/api/districts');
+        const data = await response.json();
+        
+        // Transform API data to include region and risk
+        SIERRA_LEONE_DISTRICTS = data.districts.map(district => {
+            const caseCount = district.case_count || 0;
+            
+            // Determine risk level based on case count
+            let risk = 'Low';
+            if (caseCount >= 100) {
+                risk = 'High';
+            } else if (caseCount >= 50) {
+                risk = 'Medium';
+            }
+            
+            return {
+                id: district.id,
+                name: district.name,
+                cases: caseCount,
+                population: district.population || 0,
+                risk: risk,
+                region: DISTRICT_REGIONS[district.name] || 'Unknown',
+                latitude: district.latitude,
+                longitude: district.longitude,
+                code: district.code
+            };
+        });
+        
+        console.log('✅ Districts data loaded:', SIERRA_LEONE_DISTRICTS.length, 'districts');
+        return SIERRA_LEONE_DISTRICTS;
+    } catch (error) {
+        console.error('Error loading districts data:', error);
+        return [];
+    }
+}
+
+async function loadDistrictMap(section) {
+    // Load districts data first
+    await loadDistrictsData();
+    
+    // Calculate totals for display
+    const totalCases = SIERRA_LEONE_DISTRICTS.reduce((sum, d) => sum + d.cases, 0);
+    
     section.innerHTML = `
         <div class="space-y-6">
             <!-- Header -->
@@ -35,9 +84,20 @@ function loadDistrictMap(section) {
                         </h2>
                         <p class="text-sm text-gray-600 mt-1">GBV Case Distribution Across All 16 Districts</p>
                     </div>
-                    <div class="text-right">
-                        <div class="text-sm text-gray-500">Total Cases</div>
-                        <div class="text-3xl font-bold" style="color: #1e3a8a;" id="total-map-cases">3,910</div>
+                    <div class="flex flex-col items-end space-y-2">
+                        <button 
+                            onclick="refreshDistrictMap()"
+                            class="px-3 py-1.5 rounded-lg text-white text-sm font-semibold hover:opacity-90 transition-opacity flex items-center space-x-1"
+                            style="background-color: #32cd32;"
+                            title="Refresh district data"
+                        >
+                            <i class="fas fa-sync text-sm"></i>
+                            <span>Refresh</span>
+                        </button>
+                        <div class="text-right">
+                            <div class="text-sm text-gray-500">Total Cases</div>
+                            <div class="text-3xl font-bold" style="color: #1e3a8a;" id="total-map-cases">${totalCases.toLocaleString()}</div>
+                        </div>
                     </div>
                 </div>
                 
@@ -131,68 +191,18 @@ function loadDistrictMap(section) {
                 <!-- Statistics Panel -->
                 <div class="space-y-4">
                     <!-- Region Statistics -->
-                    <div class="bg-white rounded-lg shadow-lg p-4">
+                    <div class="bg-white rounded-lg shadow-lg p-4" id="region-stats">
                         <h4 class="text-sm font-semibold mb-3" style="color: #1e3a8a;">Cases by Region</h4>
-                        <div class="space-y-3">
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-700">Western Area</span>
-                                <span class="text-sm font-bold" style="color: #ef4444;">929</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="h-2 rounded-full" style="width: 48%; background-color: #ef4444;"></div>
-                            </div>
-                            
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-700">Southern Province</span>
-                                <span class="text-sm font-bold" style="color: #32cd32;">753</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="h-2 rounded-full" style="width: 39%; background-color: #32cd32;"></div>
-                            </div>
-                            
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-700">Eastern Province</span>
-                                <span class="text-sm font-bold" style="color: #ffd700;">809</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="h-2 rounded-full" style="width: 42%; background-color: #ffd700;"></div>
-                            </div>
-                            
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-700">Northern Province</span>
-                                <span class="text-sm font-bold" style="color: #1e3a8a;">931</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="h-2 rounded-full" style="width: 48%; background-color: #1e3a8a;"></div>
-                            </div>
+                        <div class="space-y-3" id="region-stats-content">
+                            <!-- Will be populated by JavaScript -->
                         </div>
                     </div>
 
                     <!-- Risk Distribution -->
-                    <div class="bg-white rounded-lg shadow-lg p-4">
+                    <div class="bg-white rounded-lg shadow-lg p-4" id="risk-stats">
                         <h4 class="text-sm font-semibold mb-3" style="color: #1e3a8a;">Risk Distribution</h4>
-                        <div class="space-y-2">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <span class="w-3 h-3 rounded-full bg-red-500 mr-2"></span>
-                                    <span class="text-sm">High Risk</span>
-                                </div>
-                                <span class="text-sm font-bold">3 districts</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <span class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></span>
-                                    <span class="text-sm">Medium Risk</span>
-                                </div>
-                                <span class="text-sm font-bold">5 districts</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span>
-                                    <span class="text-sm">Low Risk</span>
-                                </div>
-                                <span class="text-sm font-bold">8 districts</span>
-                            </div>
+                        <div class="space-y-2" id="risk-stats-content">
+                            <!-- Will be populated by JavaScript -->
                         </div>
                     </div>
 
@@ -259,8 +269,94 @@ function loadDistrictMap(section) {
         </div>
     `;
     
-    // Populate the districts table
+    // Populate the districts table and statistics
     populateDistrictsTable();
+    populateRegionalStats();
+    populateRiskStats();
+}
+
+// Populate regional statistics
+function populateRegionalStats() {
+    const container = document.getElementById('region-stats-content');
+    if (!container) return;
+    
+    // Calculate cases by region
+    const regionCases = {};
+    SIERRA_LEONE_DISTRICTS.forEach(district => {
+        if (!regionCases[district.region]) {
+            regionCases[district.region] = 0;
+        }
+        regionCases[district.region] += district.cases;
+    });
+    
+    const totalCases = Object.values(regionCases).reduce((sum, count) => sum + count, 0);
+    
+    // Sort regions by case count
+    const regions = Object.entries(regionCases).sort((a, b) => b[1] - a[1]);
+    
+    const colors = {
+        'Western': '#ef4444',
+        'Southern': '#32cd32',
+        'Eastern': '#ffd700',
+        'Northern': '#1e3a8a',
+        'North West': '#9333ea'
+    };
+    
+    container.innerHTML = regions.map(([region, cases]) => {
+        const percentage = totalCases > 0 ? Math.round((cases / totalCases) * 100) : 0;
+        const color = colors[region] || '#6b7280';
+        
+        return `
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-700">${region}</span>
+                <span class="text-sm font-bold" style="color: ${color};">${cases}</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="h-2 rounded-full" style="width: ${percentage}%; background-color: ${color};"></div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Populate risk statistics
+function populateRiskStats() {
+    const container = document.getElementById('risk-stats-content');
+    if (!container) return;
+    
+    // Count districts by risk level
+    const riskCounts = {
+        'High': 0,
+        'Medium': 0,
+        'Low': 0
+    };
+    
+    SIERRA_LEONE_DISTRICTS.forEach(district => {
+        riskCounts[district.risk] = (riskCounts[district.risk] || 0) + 1;
+    });
+    
+    container.innerHTML = `
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <span class="w-3 h-3 rounded-full bg-red-500 mr-2"></span>
+                <span class="text-sm">High Risk</span>
+            </div>
+            <span class="text-sm font-bold">${riskCounts.High} districts</span>
+        </div>
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <span class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></span>
+                <span class="text-sm">Medium Risk</span>
+            </div>
+            <span class="text-sm font-bold">${riskCounts.Medium} districts</span>
+        </div>
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span>
+                <span class="text-sm">Low Risk</span>
+            </div>
+            <span class="text-sm font-bold">${riskCounts.Low} districts</span>
+        </div>
+    `;
 }
 
 // Populate districts table
@@ -331,14 +427,36 @@ function populateDistrictsTable(filterRegion = 'All', filterRisk = 'All') {
 
 // Filter functions
 function filterByRegion(region) {
-    const riskFilter = document.getElementById('risk-filter').value;
+    const riskFilter = document.getElementById('risk-filter')?.value || 'All';
     populateDistrictsTable(region, riskFilter);
 }
 
 function filterByRisk(risk) {
-    const regionFilter = document.getElementById('region-filter').value;
+    const regionFilter = document.getElementById('region-filter')?.value || 'All';
     populateDistrictsTable(regionFilter, risk);
 }
+
+// Add refresh function for district map
+window.refreshDistrictMap = async function() {
+    console.log('🔄 Refreshing district map...');
+    await loadDistrictsData();
+    
+    const regionFilter = document.getElementById('region-filter')?.value || 'All';
+    const riskFilter = document.getElementById('risk-filter')?.value || 'All';
+    
+    populateDistrictsTable(regionFilter, riskFilter);
+    populateRegionalStats();
+    populateRiskStats();
+    
+    // Update total
+    const totalCases = SIERRA_LEONE_DISTRICTS.reduce((sum, d) => sum + d.cases, 0);
+    const totalElement = document.getElementById('total-map-cases');
+    if (totalElement) {
+        totalElement.textContent = totalCases.toLocaleString();
+    }
+    
+    console.log('✅ District map refreshed');
+};
 
 // District interaction functions
 function showDistrictDetails(districtId) {

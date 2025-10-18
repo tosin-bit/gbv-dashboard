@@ -247,20 +247,100 @@ function loadPoliceFSU(section) {
 }
 
 // Login handlers
-function handleRainboLogin(event) {
+async function handleRainboLogin(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
-    const data = Object.fromEntries(formData.entries());
+    const username = formData.get('username');
+    const password = formData.get('password');
     
-    alert(`🏥 Logging into Rainbo Portal...\n\nCenter: ${data.center}\nUsername: ${data.username}\n\nIn production, this would:\n✓ Authenticate credentials\n✓ Load center-specific dashboard\n✓ Display active cases\n✓ Show pending referrals\n✓ Access medical records system`);
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Logging in...';
+    
+    try {
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Check if user has correct role
+            if (data.user.role !== 'rainbo_staff') {
+                alert('❌ Access Denied\n\nThis portal is for Rainbo Centre staff only.\n\nYour role: ' + data.user.role);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                return;
+            }
+            
+            // Store session
+            localStorage.setItem('gbv_session_id', data.session_id);
+            localStorage.setItem('gbv_user_data', JSON.stringify(data.user));
+            
+            // Redirect to Rainbo dashboard
+            window.location.href = '/rainbo-dashboard';
+        } else {
+            alert('❌ Login Failed\n\n' + (data.error || 'Invalid credentials'));
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        alert('❌ Network Error\n\nPlease check your connection and try again.');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+    }
 }
 
-function handleFSULogin(event) {
+async function handleFSULogin(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
-    const data = Object.fromEntries(formData.entries());
+    const username = formData.get('officer_id'); // Using officer_id as username
+    const password = formData.get('password');
     
-    alert(`🛡️ Logging into Police FSU Portal...\n\nStation: ${data.station}\nOfficer ID: ${data.officer_id}\n\nIn production, this would:\n✓ Verify officer credentials\n✓ Load station dashboard\n✓ Display active investigations\n✓ Show pending warrants\n✓ Access evidence management`);
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Logging in...';
+    
+    try {
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Check if user has correct role
+            if (data.user.role !== 'police_fsu') {
+                alert('❌ Access Denied\n\nThis portal is for Police FSU officers only.\n\nYour role: ' + data.user.role);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                return;
+            }
+            
+            // Store session
+            localStorage.setItem('gbv_session_id', data.session_id);
+            localStorage.setItem('gbv_user_data', JSON.stringify(data.user));
+            
+            // Redirect to Police dashboard
+            window.location.href = '/police-dashboard';
+        } else {
+            alert('❌ Login Failed\n\n' + (data.error || 'Invalid credentials'));
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        alert('❌ Network Error\n\nPlease check your connection and try again.');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+    }
 }
 
 // Resources Tab
@@ -310,54 +390,8 @@ function generateResourceCards() {
     `).join('');
 }
 
-// Voice Report Tab
-function loadVoiceReport(section) {
-    section.innerHTML = `
-        <div class="max-w-4xl mx-auto">
-            <div class="bg-white rounded-lg shadow-lg p-8">
-                <div class="text-center mb-8">
-                    <div class="w-32 h-32 mx-auto mb-4 rounded-full flex items-center justify-center"
-                         style="background: linear-gradient(135deg, #32cd32 0%, #1e3a8a 100%);">
-                        <i class="fas fa-microphone text-6xl text-white"></i>
-                    </div>
-                    <h2 class="text-3xl font-bold mb-2" style="color: #1e3a8a;">Voice/IVR Reporting System</h2>
-                    <p class="text-gray-600">Report GBV cases via phone call or voice recording</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="border-2 rounded-lg p-6 text-center" style="border-color: #32cd32;">
-                        <i class="fas fa-phone text-5xl mb-4" style="color: #32cd32;"></i>
-                        <h3 class="text-xl font-semibold mb-2">Call 116 Hotline</h3>
-                        <p class="text-sm text-gray-600 mb-4">Free 24/7 toll-free number</p>
-                        <div class="text-4xl font-bold mb-4" style="color: #32cd32;">116</div>
-                        <p class="text-xs text-gray-500">Available in Krio, English, Mende & Temne</p>
-                    </div>
-
-                    <div class="border-2 rounded-lg p-6 text-center" style="border-color: #1e3a8a;">
-                        <i class="fas fa-recording-vinyl text-5xl mb-4" style="color: #1e3a8a;"></i>
-                        <h3 class="text-xl font-semibold mb-2">Voice Recording</h3>
-                        <p class="text-sm text-gray-600 mb-4">Record and submit anonymously</p>
-                        <button class="px-6 py-3 rounded-lg text-white font-semibold" 
-                                style="background-color: #1e3a8a;">
-                            <i class="fas fa-microphone mr-2"></i>Start Recording
-                        </button>
-                    </div>
-                </div>
-
-                <div class="mt-8 bg-blue-50 rounded-lg p-6">
-                    <h4 class="font-semibold mb-3" style="color: #1e3a8a;">How It Works:</h4>
-                    <ol class="space-y-2 text-sm text-gray-700">
-                        <li><strong>1.</strong> Call 116 or click "Start Recording"</li>
-                        <li><strong>2.</strong> Follow voice prompts or speak freely</li>
-                        <li><strong>3.</strong> System transcribes and creates case automatically</li>
-                        <li><strong>4.</strong> Receive confirmation SMS with case number</li>
-                        <li><strong>5.</strong> Appropriate services notified immediately</li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-    `;
-}
+// Voice Report Tab - Implementation is in voice-recording.js
+// The loadVoiceReport() function is provided by voice-recording.js
 
 // Admin Tab
 function loadAdminPanel(section) {

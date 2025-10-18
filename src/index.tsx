@@ -152,17 +152,15 @@ app.get('/api/cases', async (c) => {
         gc.case_number,
         gc.incident_date,
         gc.reported_date,
-        gt.name as gbv_type,
+        gt.name as violence_types,
         d.name as district_name,
         gc.survivor_age_group,
         gc.survivor_gender,
         gc.case_status,
-        gc.priority_level,
-        u.name as assigned_to
+        gc.priority_level
       FROM gbv_cases gc
-      LEFT JOIN gbv_types gt ON gc.gbv_type_id = gt.id
       LEFT JOIN districts d ON gc.district_id = d.id
-      LEFT JOIN users u ON gc.assigned_to = u.id
+      LEFT JOIN gbv_types gt ON gc.gbv_type_id = gt.id
       WHERE ${whereClause}
       ORDER BY gc.created_at DESC
       LIMIT ? OFFSET ?
@@ -218,12 +216,187 @@ app.get('/api/service-providers', async (c) => {
   }
 });
 
-// Create New Case
-app.post('/api/cases', async (c) => {
+// Authentication Endpoints
+
+// Login
+app.post('/api/auth/login', async (c) => {
   const { env } = c;
   
   try {
-    const formData = await c.req.json();
+    const { username, password } = await c.req.json();
+    
+    // Fetch user with service provider info
+    const user = await env.DB.prepare(`
+      SELECT u.*, sp.name as service_provider_name, sp.type as service_provider_type
+      FROM users u
+      LEFT JOIN service_providers sp ON u.service_provider_id = sp.id
+      WHERE u.username = ? AND u.active = 1
+    `).bind(username).first();
+    
+    if (!user) {
+      return c.json({ success: false, error: 'Invalid credentials' }, 401);
+    }
+    
+    // Verify password (in production, use proper password hashing like bcrypt)
+    // For demo purposes, we're using plain text comparison
+    if (!user.password_hash || password !== user.password_hash) {
+      return c.json({ success: false, error: 'Invalid credentials' }, 401);
+    }
+    
+    // Create session
+    const sessionId = crypto.randomUUID();
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    
+    await env.DB.prepare(`
+      INSERT INTO sessions (id, user_id, expires_at, created_at)
+      VALUES (?, ?, ?, datetime('now'))
+    `).bind(sessionId, user.id, expiresAt.toISOString()).run();
+    
+    return c.json({
+      success: true,
+      session_id: sessionId,
+      user: {
+        id: user.id,
+        username: user.username,
+        role: user.role,
+        full_name: user.name, // Map 'name' from DB to 'full_name' for frontend
+        name: user.name,
+        email: user.email,
+        organization: user.organization,
+        service_provider_name: user.service_provider_name,
+        service_provider_type: user.service_provider_type
+      }
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    return c.json({ success: false, error: 'Login failed' }, 500);
+  }
+});
+
+// Logout
+app.post('/api/auth/logout', async (c) => {
+  const { env } = c;
+  
+  try {
+    const { session_id } = await c.req.json();
+    await env.DB.prepare(`DELETE FROM sessions WHERE id = ?`).bind(session_id).run();
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Logout error:', error);
+    return c.json({ success: false, error: 'Logout failed' }, 500);
+  }
+});
+
+// Session validation
+app.get('/api/auth/session/:sessionId', async (c) => {
+  const { env } = c;
+  const sessionId = c.req.param('sessionId');
+  
+  try {
+    const session = await env.DB.prepare(`
+      SELECT s.*, u.id as user_id, u.username, u.role, u.full_name, u.email,
+             sp.name as service_provider_name, sp.type as service_provider_type
+      FROM sessions s
+      JOIN users u ON s.user_id = u.id
+      LEFT JOIN service_providers sp ON u.service_provider_id = sp.id
+      WHERE s.id = ? AND s.expires_at > datetime('now')
+    `).bind(sessionId).first();
+    
+    if (!session) {
+      return c.json({ valid: false, user: null });
+    }
+    
+    return c.json({
+      valid: true,
+      user: {
+        id: session.user_id,
+        username: session.username,
+        role: session.role,
+        full_name: session.full_name,
+        email: session.email,
+        service_provider_name: session.service_provider_name,
+        service_provider_type: session.service_provider_type
+      }
+    });
+  } catch (error) {
+    console.error('Session validation error:', error);
+    return c.json({ valid: false, user: null }, 500);
+  }
+});
+
+// Get cases assigned to current user (for Rainbo/Police portals)
+app.get('/api/my-cases', async (c) => {
+  const { env } = c;
+  const sessionId = c.req.header('X-Session-ID');
+  
+  if (!sessionId) {
+    return c.json({ error: 'Unauthorized' }, 401);
+  }
+  
+  try {
+    // Validate session
+    const session = await env.DB.prepare(`
+      SELECT u.id, u.role, u.service_provider_id
+      FROM sessions s
+      JOIN users u ON s.user_id = u.id
+      WHERE s.id = ? AND s.expires_at > datetime('now')
+    `).bind(sessionId).first();
+    
+    if (!session) {
+      return c.json({ error: 'Invalid session' }, 401);
+    }
+    
+    // Fetch cases based on role
+    let cases;
+    if (session.role === 'rainbo_staff') {
+      // Get cases referred to this Rainbo center - for now show all cases
+      cases = await env.DB.prepare(`
+        SELECT gc.*, d.name as district_name, gt.name as violence_types
+        FROM gbv_cases gc
+        LEFT JOIN districts d ON gc.district_id = d.id
+        LEFT JOIN gbv_types gt ON gc.gbv_type_id = gt.id
+        ORDER BY gc.created_at DESC
+        LIMIT 50
+      `).all();
+    } else if (session.role === 'police_fsu') {
+      // Get cases for police investigation
+      cases = await env.DB.prepare(`
+        SELECT gc.*, d.name as district_name, gt.name as violence_types
+        FROM gbv_cases gc
+        LEFT JOIN districts d ON gc.district_id = d.id
+        LEFT JOIN gbv_types gt ON gc.gbv_type_id = gt.id
+        WHERE gc.case_status IN ('reported', 'under_investigation')
+        ORDER BY gc.created_at DESC
+        LIMIT 50
+      `).all();
+    } else {
+      // Admin sees all cases
+      cases = await env.DB.prepare(`
+        SELECT gc.*, d.name as district_name, gt.name as violence_types
+        FROM gbv_cases gc
+        LEFT JOIN districts d ON gc.district_id = d.id
+        LEFT JOIN gbv_types gt ON gc.gbv_type_id = gt.id
+        ORDER BY gc.created_at DESC
+        LIMIT 50
+      `).all();
+    }
+    
+    return c.json({ cases: cases.results || [] });
+  } catch (error) {
+    console.error('Error fetching my cases:', error);
+    return c.json({ error: 'Failed to fetch cases' }, 500);
+  }
+});
+
+// Create New Case
+app.post('/api/cases', async (c) => {
+  const { env } = c;
+  let formData: any = null;
+  
+  try {
+    formData = await c.req.json();
+    
+    console.log('📋 Received form data:', JSON.stringify(formData, null, 2));
     
     // Helper to convert empty/null/undefined to null
     const n = (v: any) => (v === '' || v === undefined || v === null) ? null : v;
@@ -234,63 +407,109 @@ app.post('/api/cases', async (c) => {
     const caseNumber = `GBV-${year}-${String((count?.c || 0) + 1).padStart(4, '0')}`;
     
     // Get district ID
-    let districtId = formData.district;
-    if (typeof districtId === 'string') {
-      const d = await env.DB.prepare(`SELECT id FROM districts WHERE name = ?`).bind(districtId).first();
-      districtId = d?.id || 1;
+    let districtId: number = 1; // Default to first district
+    
+    // Handle both district_id (number) and district (name) fields
+    if (formData.district_id) {
+      districtId = parseInt(formData.district_id);
+      console.log('✅ Using district_id:', districtId);
+    } else if (formData.district) {
+      if (typeof formData.district === 'string' && isNaN(parseInt(formData.district))) {
+        // District name provided
+        const d = await env.DB.prepare(`SELECT id FROM districts WHERE name = ?`).bind(formData.district).first();
+        districtId = (d?.id as number) || 1;
+        console.log('✅ Looked up district name:', formData.district, '→ ID:', districtId);
+      } else {
+        // District ID as string
+        districtId = parseInt(formData.district);
+        console.log('✅ Using district:', districtId);
+      }
     }
     
-    // Convert arrays to JSON
-    const violenceTypes = JSON.stringify(formData.violence_types || []);
-    const servicesNeeded = JSON.stringify(formData.services_needed || []);
+    // Get GBV type ID
+    let gbvTypeId = 1; // Default to Rape
     
+    // Handle both old format (gbv_type_id as number) and new format (violence_types as array)
+    if (formData.gbv_type_id) {
+      // Old format: direct ID number
+      gbvTypeId = parseInt(formData.gbv_type_id);
+      console.log('✅ Using gbv_type_id:', gbvTypeId);
+    } else if (formData.violence_types && Array.isArray(formData.violence_types) && formData.violence_types.length > 0) {
+      // New format: array of violence type names
+      const firstType = formData.violence_types[0];
+      console.log('🔍 Looking up violence type:', firstType);
+      const typeResult = await env.DB.prepare(`SELECT id FROM gbv_types WHERE name = ?`).bind(firstType).first();
+      console.log('🔍 Database lookup result:', typeResult);
+      if (typeResult) {
+        gbvTypeId = typeResult.id as number;
+        console.log('✅ Found GBV type ID:', gbvTypeId);
+      } else {
+        console.log('⚠️ Violence type not found in database, defaulting to Rape (ID 1)');
+      }
+    } else {
+      console.log('⚠️ No violence type provided, defaulting to Rape (ID 1)');
+    }
+    
+    // Map survivor age to age group
+    let ageGroup = formData.survivor_age_group || '18-25'; // Use provided age group or default
+    
+    // If age_group not provided but age is, calculate it
+    if (!formData.survivor_age_group && formData.survivor_age) {
+      const age = parseInt(formData.survivor_age);
+      if (age < 11) ageGroup = '0-10';
+      else if (age < 16) ageGroup = '11-15';
+      else if (age < 18) ageGroup = '16-17';
+      else if (age < 26) ageGroup = '18-25';
+      else if (age < 36) ageGroup = '26-35';
+      else ageGroup = '36+';
+    }
+    
+    // Create incident description from form data
+    let incidentDesc = formData.incident_description || formData.case_notes || formData.additional_info || '';
+    
+    // If no description provided, create one from available data
+    if (!incidentDesc) {
+      const violenceTypesList = (formData.violence_types || []).join(', ');
+      incidentDesc = `Violence Types: ${violenceTypesList}. Location: ${formData.location || formData.location_details || 'Not specified'}.`;
+    }
+    
+    // Map location details  
+    const locationDetails = formData.location_details || 
+      `Chiefdom: ${formData.chiefdom || 'N/A'}, Location: ${formData.location || formData.specific_location || 'N/A'}`;
+    
+    // Insert using existing schema columns
     const result = await env.DB.prepare(`
       INSERT INTO gbv_cases (
-        case_number, incident_date, incident_time, district_id, chiefdom, incident_location,
-        violence_types, violence_type_other,
-        survivor_age, survivor_gender, survivor_marital_status, survivor_children,
-        survivor_phone, survivor_disability, survivor_notes,
-        perpetrator_relationship, perpetrator_age, perpetrator_gender,
-        multiple_perpetrators, perpetrator_description,
-        reported_by, reporting_channel, reported_date, reporter_phone,
-        medical_urgency, medical_received, services_needed, referral_to,
-        witnesses, evidence, priority_level, case_notes,
-        case_status, created_by
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        case_number, incident_date, reported_date, gbv_type_id, incident_description,
+        district_id, location_details,
+        survivor_age_group, survivor_gender, survivor_marital_status, survivor_disability,
+        perpetrator_relationship, perpetrator_age_group, perpetrator_gender, number_of_perpetrators,
+        reported_by, reporting_channel, case_status, priority_level,
+        immediate_needs, services_required,
+        created_by
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
       caseNumber,
       n(formData.incident_date) || new Date().toISOString().split('T')[0],
-      n(formData.incident_time),
-      districtId,
-      n(formData.chiefdom),
-      n(formData.location) || n(formData.specific_location),
-      violenceTypes,
-      n(formData.violence_type_other),
-      n(formData.survivor_age),
-      n(formData.survivor_gender),
-      n(formData.survivor_marital_status),
-      n(formData.survivor_children),
-      n(formData.survivor_phone),
-      n(formData.survivor_disability),
-      n(formData.survivor_notes),
-      n(formData.perpetrator_relationship),
-      n(formData.perpetrator_age),
-      n(formData.perpetrator_gender),
-      formData.multiple_perpetrators === 'yes' ? 1 : 0,
-      n(formData.perpetrator_description),
-      n(formData.reported_by) || 'Unknown',
-      n(formData.reporting_channel) || 'Web Form',
       new Date().toISOString().split('T')[0],
-      n(formData.reporter_phone),
-      n(formData.urgency) || n(formData.urgency_level) || 'routine',
-      n(formData.medical_received) || 'no',
-      servicesNeeded,
-      n(formData.referral_to),
-      n(formData.witnesses) || 'unknown',
-      n(formData.evidence) || 'no',
-      n(formData.priority) || n(formData.priority_level) || 'medium',
-      n(formData.case_notes) || n(formData.additional_info),
+      gbvTypeId,
+      incidentDesc || 'No description provided',
+      districtId,
+      locationDetails || 'No location details',
+      ageGroup || '18-25',
+      n(formData.survivor_gender) || 'Not Specified',
+      n(formData.survivor_marital_status) || null,
+      n(formData.survivor_disability) || null,
+      n(formData.perpetrator_relationship) || null,
+      n(formData.perpetrator_age_group) || null,
+      n(formData.perpetrator_gender) || null,
+      (formData.multiple_perpetrators === 'yes' || formData.multiple_perpetrators === 'Yes') ? 2 : 1,
+      n(formData.reported_by) || 'Anonymous',
+      n(formData.reporting_channel) || 'Web Form',
       'reported',
+      n(formData.priority) || n(formData.priority_level) || 'medium',
+      n(formData.urgency) || n(formData.immediate_needs) || 'routine',
+      JSON.stringify(formData.services_needed || formData.services_required || []),
       1
     ).run();
 
@@ -302,8 +521,54 @@ app.post('/api/cases', async (c) => {
     });
   } catch (error) {
     console.error('Error creating case:', error);
-    return c.json({ success: false, error: 'Failed to create case', details: error instanceof Error ? error.message : 'Unknown' }, 500);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    console.error('Form data received:', JSON.stringify(formData, null, 2));
+    return c.json({ 
+      success: false, 
+      error: 'Failed to create case', 
+      details: error instanceof Error ? error.message : String(error)
+    }, 500);
   }
+});
+
+// Rainbo Centre Dashboard
+app.get('/rainbo-dashboard', (c) => {
+  return c.html(
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Rainbo Centre Dashboard - GBV System</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+      </head>
+      <body className="bg-gray-50">
+        <div id="rainbo-dashboard-root"></div>
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="/static/rainbo-dashboard.js"></script>
+      </body>
+    </html>
+  );
+});
+
+// Police FSU Dashboard
+app.get('/police-dashboard', (c) => {
+  return c.html(
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Police FSU Dashboard - GBV System</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+      </head>
+      <body className="bg-gray-50">
+        <div id="police-dashboard-root"></div>
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="/static/police-dashboard.js"></script>
+      </body>
+    </html>
+  );
 });
 
 // Main Dashboard Page
@@ -355,6 +620,9 @@ app.get('/', (c) => {
               <i className="fas fa-file-alt mr-2"></i>Report Case
             </button>
             <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
+              <i className="fas fa-list-alt mr-2"></i>View Cases
+            </button>
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
               <i className="fas fa-map mr-2"></i>District Map
             </button>
             <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap relative" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
@@ -400,6 +668,19 @@ app.get('/', (c) => {
             <i className="fas fa-phone-alt mr-2"></i>
             <strong>EMERGENCY: Call 116 (Toll-Free) for immediate GBV support</strong>
             <span className="ml-4">| Available 24/7 in Krio, English, Mende & Temne</span>
+          </div>
+
+          {/* Refresh Button */}
+          <div className="flex justify-end mb-4">
+            <button 
+              onclick="refreshDashboard()"
+              className="px-4 py-2 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity flex items-center space-x-2"
+              style="background-color: #32cd32;"
+              title="Refresh dashboard data"
+            >
+              <i className="fas fa-sync"></i>
+              <span>Refresh Data</span>
+            </button>
           </div>
 
           {/* Current Alerts */}
@@ -513,78 +794,12 @@ app.get('/', (c) => {
             <div className="lg:col-span-2 bg-white border border-gray-200 rounded-lg p-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">District Case Distribution</h3>
               
-              {/* District Cards Grid */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                {/* Western Area */}
-                <div className="border border-gray-200 rounded-lg p-4">
-                  <div className="text-sm text-gray-600 mb-1">Western Area</div>
-                  <div className="text-2xl font-bold text-gray-900">695</div>
-                  <div className="flex items-center text-xs text-red-600 mt-1">
-                    <i className="fas fa-exclamation-triangle mr-1"></i>High Risk
-                  </div>
-                </div>
-
-                {/* Bo */}
-                <div className="border border-gray-200 rounded-lg p-4">
-                  <div className="text-sm text-gray-600 mb-1">Bo</div>
-                  <div className="text-2xl font-bold text-gray-900">412</div>
-                  <div className="flex items-center text-xs text-red-600 mt-1">
-                    <i className="fas fa-exclamation-triangle mr-1"></i>High Risk
-                  </div>
-                </div>
-
-                {/* Kenema */}
-                <div className="border border-gray-200 rounded-lg p-4">
-                  <div className="text-sm text-gray-600 mb-1">Kenema</div>
-                  <div className="text-2xl font-bold text-gray-900">324</div>
-                  <div className="flex items-center text-xs text-orange-600 mt-1">
-                    <i className="fas fa-exclamation-circle mr-1"></i>High Risk
-                  </div>
-                </div>
-
-                {/* Kailahun */}
-                <div className="border border-gray-200 rounded-lg p-4">
-                  <div className="text-sm text-gray-600 mb-1">Kailahun</div>
-                  <div className="text-2xl font-bold text-gray-900">287</div>
-                  <div className="flex items-center text-xs text-yellow-600 mt-1">
-                    <i className="fas fa-info-circle mr-1"></i>Medium Risk
-                  </div>
-                </div>
-
-                {/* Bombali */}
-                <div className="border border-gray-200 rounded-lg p-4">
-                  <div className="text-sm text-gray-600 mb-1">Bombali</div>
-                  <div className="text-2xl font-bold text-gray-900">298</div>
-                  <div className="flex items-center text-xs text-yellow-600 mt-1">
-                    <i className="fas fa-info-circle mr-1"></i>Medium Risk
-                  </div>
-                </div>
-
-                {/* Port Loko */}
-                <div className="border border-gray-200 rounded-lg p-4">
-                  <div className="text-sm text-gray-600 mb-1">Port Loko</div>
-                  <div className="text-2xl font-bold text-gray-900">189</div>
-                  <div className="flex items-center text-xs text-green-600 mt-1">
-                    <i className="fas fa-check-circle mr-1"></i>Low Risk
-                  </div>
-                </div>
-
-                {/* Tonkolili */}
-                <div className="border border-gray-200 rounded-lg p-4">
-                  <div className="text-sm text-gray-600 mb-1">Tonkolili</div>
-                  <div className="text-2xl font-bold text-gray-900">167</div>
-                  <div className="flex items-center text-xs text-green-600 mt-1">
-                    <i className="fas fa-check-circle mr-1"></i>Low Risk
-                  </div>
-                </div>
-
-                {/* Koinadugu */}
-                <div className="border border-gray-200 rounded-lg p-4">
-                  <div className="text-sm text-gray-600 mb-1">Koinadugu</div>
-                  <div className="text-2xl font-bold text-gray-900">143</div>
-                  <div className="flex items-center text-xs text-green-600 mt-1">
-                    <i className="fas fa-check-circle mr-1"></i>Low Risk
-                  </div>
+              {/* District Cards Grid - Dynamically populated */}
+              <div id="district-cards-grid" className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                {/* Districts will be populated dynamically by JavaScript */}
+                <div className="col-span-full text-center py-8 text-gray-500">
+                  <i className="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                  <div>Loading district data...</div>
                 </div>
               </div>
 
@@ -685,6 +900,8 @@ app.get('/', (c) => {
       <script src="/static/district-map.js"></script>
       <script src="/static/analytics-dashboard.js"></script>
       <script src="/static/portal-systems.js"></script>
+      <script src="/static/voice-recording.js"></script>
+      <script src="/static/view-cases.js"></script>
     </div>
   );
 });
