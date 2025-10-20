@@ -9,7 +9,7 @@
 - **Production System**: https://gbv-dashboard.pages.dev
 - **API Endpoint**: https://gbv-dashboard.pages.dev/api/stats
 - **Deployment URL**: https://9ac86be3.gbv-dashboard.pages.dev
-- **GitHub Repository**: (Configured for deployment)
+- **GitHub Repository**: https://github.com/tosin-bit/gbv-dashboard
 
 ## 🎯 Comprehensive Feature Set
 
