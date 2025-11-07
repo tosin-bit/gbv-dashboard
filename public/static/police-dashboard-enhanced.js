@@ -271,12 +271,15 @@ function loadDashboard() {
                 <div class="space-y-6">
                     <!-- Statistics Cards -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Investigation Status Breakdown -->\n                        <div class="bg-white rounded-xl shadow-lg p-6">
+                        <!-- Investigation Status Breakdown -->
+                        <div class="bg-white rounded-xl shadow-lg p-6">
                             <h3 class="text-lg font-semibold text-gray-900 mb-4">
                                 <i class="fas fa-chart-pie text-blue-600 mr-2"></i>
                                 Investigation Status Distribution
                             </h3>
-                            <canvas id="investigation-chart" height="200"></canvas>
+                            <div style="height: 300px; position: relative;">
+                                <canvas id="investigation-chart"></canvas>
+                            </div>
                         </div>
                         
                         <!-- Monthly Case Trends -->
@@ -285,7 +288,9 @@ function loadDashboard() {
                                 <i class="fas fa-chart-line text-blue-600 mr-2"></i>
                                 Monthly Investigation Trends (Last 6 Months)
                             </h3>
-                            <canvas id="trends-chart" height="200"></canvas>
+                            <div style="height: 300px; position: relative;">
+                                <canvas id="trends-chart"></canvas>
+                            </div>
                         </div>
                     </div>
                     
@@ -295,7 +300,9 @@ function loadDashboard() {
                             <i class="fas fa-user-secret text-blue-600 mr-2"></i>
                             Suspect Status Overview
                         </h3>
-                        <canvas id="suspect-chart" height="100"></canvas>
+                        <div style="height: 250px; position: relative;">
+                            <canvas id="suspect-chart"></canvas>
+                        </div>
                     </div>
                     
                     <!-- Detailed Statistics Table -->
@@ -1180,10 +1187,18 @@ function renderInvestigationChart(statusData) {
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
+            aspectRatio: 1.5,
             plugins: {
                 legend: {
-                    position: 'bottom'
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 12,
+                        padding: 10,
+                        font: {
+                            size: 11
+                        }
+                    }
                 }
             }
         }
@@ -1216,7 +1231,8 @@ function renderSuspectChart(statusData) {
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
+            aspectRatio: 2.5,
             plugins: {
                 legend: {
                     display: false
@@ -1263,7 +1279,8 @@ function renderMonthlyTrendsChart(trends) {
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
+            aspectRatio: 2,
             plugins: {
                 legend: {
                     display: false

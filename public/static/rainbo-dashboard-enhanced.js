@@ -263,7 +263,9 @@ function loadDashboard() {
                                 <i class="fas fa-chart-pie text-purple-600 mr-2"></i>
                                 Services Provided Breakdown
                             </h3>
-                            <canvas id="services-chart" height="200"></canvas>
+                            <div style="height: 300px; position: relative;">
+                                <canvas id="services-chart"></canvas>
+                            </div>
                         </div>
                         
                         <!-- Monthly Trends Chart -->
@@ -272,7 +274,9 @@ function loadDashboard() {
                                 <i class="fas fa-chart-line text-purple-600 mr-2"></i>
                                 Monthly Service Trends (Last 6 Months)
                             </h3>
-                            <canvas id="trends-chart" height="200"></canvas>
+                            <div style="height: 300px; position: relative;">
+                                <canvas id="trends-chart"></canvas>
+                            </div>
                         </div>
                     </div>
                     
@@ -1353,10 +1357,18 @@ function renderServicesChart(services) {
         data: data,
         options: {
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
+            aspectRatio: 1.5,
             plugins: {
                 legend: {
-                    position: 'bottom'
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 12,
+                        padding: 10,
+                        font: {
+                            size: 11
+                        }
+                    }
                 }
             }
         }
@@ -1392,7 +1404,8 @@ function renderMonthlyTrendsChart(trends) {
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
+            aspectRatio: 2,
             plugins: {
                 legend: {
                     display: false
