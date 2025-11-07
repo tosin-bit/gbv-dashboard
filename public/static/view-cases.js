@@ -434,8 +434,304 @@ function refreshCases() {
 }
 
 // View case details
-function viewCaseDetails(caseNumber) {
-    alert(`📋 Case Details: ${caseNumber}\n\nIn full implementation, this would show:\n\n✓ Complete case information\n✓ Incident details\n✓ Survivor information (protected)\n✓ Perpetrator details\n✓ Services provided\n✓ Investigation status\n✓ Timeline of events\n✓ Referral history\n\nFor privacy and security, detailed case information requires authenticated access through Rainbo or Police portals.`);
+async function viewCaseDetails(caseNumber) {
+    // Show loading modal
+    showCaseModal(caseNumber, null, true);
+    
+    try {
+        // Fetch case details from API
+        const response = await fetch(`/api/cases/${caseNumber}/full-details`);
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch case details');
+        }
+        
+        const data = await response.json();
+        
+        // Show case details modal
+        showCaseModal(caseNumber, data, false);
+        
+    } catch (error) {
+        console.error('Error fetching case details:', error);
+        showCaseModal(caseNumber, null, false, error.message);
+    }
+}
+
+function showCaseModal(caseNumber, data, loading = false, error = null) {
+    // Create modal backdrop
+    const existingModal = document.getElementById('case-details-modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    const modalHTML = `
+        <div id="case-details-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                ${loading ? `
+                    <div class="p-8 text-center">
+                        <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
+                        <p class="text-gray-600">Loading case details...</p>
+                    </div>
+                ` : error ? `
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-2xl font-bold text-gray-900">
+                                <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>
+                                Error Loading Case
+                            </h2>
+                            <button onclick="closeCaseModal()" class="text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-times text-2xl"></i>
+                            </button>
+                        </div>
+                        <div class="text-center text-red-600">
+                            <p>${error}</p>
+                        </div>
+                    </div>
+                ` : `
+                    <!-- Header -->
+                    <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h2 class="text-2xl font-bold mb-1">
+                                    <i class="fas fa-folder-open mr-2"></i>
+                                    Case Details: ${caseNumber}
+                                </h2>
+                                <p class="text-sm text-blue-100">Complete case information</p>
+                            </div>
+                            <button onclick="closeCaseModal()" class="text-white hover:text-gray-200 transition-colors">
+                                <i class="fas fa-times text-2xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="p-6 space-y-6">
+                        <!-- Info Checklist -->
+                        <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded">
+                            <h3 class="font-semibold text-green-900 mb-2">
+                                <i class="fas fa-check-circle mr-2"></i>Complete Case Information
+                            </h3>
+                            <div class="grid grid-cols-2 gap-2 text-sm text-green-800">
+                                <div><i class="fas fa-check mr-2"></i>Incident details</div>
+                                <div><i class="fas fa-check mr-2"></i>Survivor information (protected)</div>
+                                <div><i class="fas fa-check mr-2"></i>Perpetrator details</div>
+                                <div><i class="fas fa-check mr-2"></i>Services provided</div>
+                                <div><i class="fas fa-check mr-2"></i>Investigation status</div>
+                                <div><i class="fas fa-check mr-2"></i>Timeline of events</div>
+                                <div><i class="fas fa-check mr-2"></i>Referral history</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Case Information Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Incident Details -->
+                            <div class="border rounded-lg p-4 bg-gray-50">
+                                <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                    <i class="fas fa-exclamation-circle text-blue-600 mr-2"></i>
+                                    Incident Details
+                                </h3>
+                                <dl class="space-y-2 text-sm">
+                                    <div>
+                                        <dt class="text-gray-600">Incident Date:</dt>
+                                        <dd class="font-medium">${formatDate(data?.case?.incident_date)}</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="text-gray-600">Reported Date:</dt>
+                                        <dd class="font-medium">${formatDate(data?.case?.reported_date)}</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="text-gray-600">Violence Type:</dt>
+                                        <dd class="font-medium">${data?.case?.violence_type || 'N/A'}</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="text-gray-600">District:</dt>
+                                        <dd class="font-medium">${data?.case?.district_name || 'N/A'}</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="text-gray-600">Status:</dt>
+                                        <dd class="mt-1">${getStatusBadge(data?.case?.status)}</dd>
+                                    </div>
+                                </dl>
+                            </div>
+                            
+                            <!-- Survivor Information -->
+                            <div class="border rounded-lg p-4 bg-purple-50">
+                                <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                    <i class="fas fa-user-shield text-purple-600 mr-2"></i>
+                                    Survivor Information (Protected)
+                                </h3>
+                                <dl class="space-y-2 text-sm">
+                                    <div>
+                                        <dt class="text-gray-600">Age Group:</dt>
+                                        <dd class="font-medium">${data?.case?.survivor_age_group || 'Protected'}</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="text-gray-600">Gender:</dt>
+                                        <dd class="font-medium">${data?.case?.survivor_gender || 'Protected'}</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="text-gray-600">Identity:</dt>
+                                        <dd class="font-medium text-purple-600">
+                                            <i class="fas fa-lock mr-1"></i>Protected for Privacy
+                                        </dd>
+                                    </div>
+                                    <div>
+                                        <dt class="text-gray-600">Contact:</dt>
+                                        <dd class="font-medium text-purple-600">
+                                            <i class="fas fa-lock mr-1"></i>Confidential
+                                        </dd>
+                                    </div>
+                                </dl>
+                            </div>
+                            
+                            <!-- Perpetrator Details -->
+                            <div class="border rounded-lg p-4 bg-orange-50">
+                                <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                    <i class="fas fa-user-secret text-orange-600 mr-2"></i>
+                                    Perpetrator Details
+                                </h3>
+                                <dl class="space-y-2 text-sm">
+                                    <div>
+                                        <dt class="text-gray-600">Relationship:</dt>
+                                        <dd class="font-medium">${data?.case?.perpetrator_relationship || 'Under Investigation'}</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="text-gray-600">Age Group:</dt>
+                                        <dd class="font-medium">${data?.case?.perpetrator_age_group || 'Unknown'}</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="text-gray-600">Status:</dt>
+                                        <dd class="font-medium">${data?.investigation?.suspect_status || 'Under Investigation'}</dd>
+                                    </div>
+                                </dl>
+                            </div>
+                            
+                            <!-- Services Provided -->
+                            <div class="border rounded-lg p-4 bg-green-50">
+                                <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                    <i class="fas fa-hand-holding-medical text-green-600 mr-2"></i>
+                                    Services Provided
+                                </h3>
+                                <div class="space-y-2 text-sm">
+                                    ${data?.services && data.services.length > 0 ? 
+                                        data.services.map(s => `
+                                            <div class="flex items-center">
+                                                <i class="fas fa-check text-green-600 mr-2"></i>
+                                                <span>${s.service_type || 'Service provided'}</span>
+                                            </div>
+                                        `).join('') :
+                                        '<p class="text-gray-600">No services recorded yet</p>'
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Investigation Status -->
+                        ${data?.investigation ? `
+                            <div class="border rounded-lg p-4 bg-blue-50">
+                                <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                    <i class="fas fa-search text-blue-600 mr-2"></i>
+                                    Investigation Status
+                                </h3>
+                                <dl class="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <dt class="text-gray-600">Status:</dt>
+                                        <dd class="font-medium">${data.investigation.investigation_status || 'Pending'}</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="text-gray-600">Suspect Status:</dt>
+                                        <dd class="font-medium">${data.investigation.suspect_status || 'Unknown'}</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="text-gray-600">Evidence Collected:</dt>
+                                        <dd class="font-medium">${data.investigation.evidence_collected ? 'Yes' : 'No'}</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="text-gray-600">Witnesses:</dt>
+                                        <dd class="font-medium">${data.investigation.witness_count || 0}</dd>
+                                    </div>
+                                </dl>
+                            </div>
+                        ` : ''}
+                        
+                        <!-- Timeline -->
+                        <div class="border rounded-lg p-4">
+                            <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                <i class="fas fa-history text-gray-600 mr-2"></i>
+                                Timeline of Events
+                            </h3>
+                            <div class="space-y-3">
+                                ${data?.timeline && data.timeline.length > 0 ?
+                                    data.timeline.map(event => `
+                                        <div class="flex items-start space-x-3 text-sm">
+                                            <div class="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
+                                            <div class="flex-1">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="font-medium">${event.update_type || 'Update'}</span>
+                                                    <span class="text-gray-500 text-xs">${formatDate(event.created_at)}</span>
+                                                </div>
+                                                <p class="text-gray-600 mt-1">${event.notes || 'No details'}</p>
+                                                <p class="text-gray-500 text-xs mt-1">By: ${event.created_by_name || 'System'}</p>
+                                            </div>
+                                        </div>
+                                    `).join('') :
+                                    '<p class="text-gray-600 text-sm">No timeline events recorded yet</p>'
+                                }
+                            </div>
+                        </div>
+                        
+                        <!-- Referral History -->
+                        <div class="border rounded-lg p-4">
+                            <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                <i class="fas fa-share-alt text-gray-600 mr-2"></i>
+                                Referral History
+                            </h3>
+                            <div class="space-y-2">
+                                ${data?.assignments && data.assignments.length > 0 ?
+                                    data.assignments.map(a => `
+                                        <div class="flex items-center justify-between text-sm bg-gray-50 p-3 rounded">
+                                            <div>
+                                                <span class="font-medium">${getOrganizationName(a.organization_type)}</span>
+                                                <span class="text-gray-500 ml-2">${getStatusBadge(a.status)}</span>
+                                            </div>
+                                            <span class="text-gray-500 text-xs">${formatDate(a.assigned_at)}</span>
+                                        </div>
+                                    `).join('') :
+                                    '<p class="text-gray-600 text-sm">No referrals made yet</p>'
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
+                        <button onclick="closeCaseModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                            Close
+                        </button>
+                    </div>
+                `}
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+function closeCaseModal() {
+    const modal = document.getElementById('case-details-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function getOrganizationName(orgType) {
+    const names = {
+        'rainbo': 'Rainbo Initiative',
+        'police_fsu': 'Police FSU',
+        'ministry': 'Ministry of Gender',
+        'one_stop': 'One-Stop Center'
+    };
+    return names[orgType] || orgType;
 }
 
 // Helper functions
@@ -485,5 +781,6 @@ window.handleSearch = handleSearch;
 window.refreshCases = refreshCases;
 window.viewCaseDetails = viewCaseDetails;
 window.clearSearch = clearSearch;
+window.closeCaseModal = closeCaseModal;
 
 console.log('View Cases system ready');

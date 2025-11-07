@@ -123,6 +123,57 @@ app.get('/api/districts', async (c) => {
   }
 });
 
+// Get district report
+app.get('/api/districts/:districtId/report', async (c) => {
+  const { env } = c;
+  const districtId = c.req.param('districtId');
+  
+  try {
+    // Get district summary
+    const summary = await env.DB.prepare(`
+      SELECT COUNT(*) as total_cases
+      FROM gbv_cases
+      WHERE district_id = ?
+    `).bind(districtId).first();
+    
+    // Get monthly trends (last 6 months)
+    const monthlyTrends = await env.DB.prepare(`
+      SELECT 
+        strftime('%Y-%m', incident_date) as month,
+        COUNT(*) as case_count
+      FROM gbv_cases
+      WHERE district_id = ?
+        AND incident_date >= date('now', '-6 months')
+      GROUP BY strftime('%Y-%m', incident_date)
+      ORDER BY month
+    `).bind(districtId).all();
+    
+    // Get case outcomes
+    const outcomes = await env.DB.prepare(`
+      SELECT 
+        SUM(CASE WHEN case_status = 'reported' THEN 1 ELSE 0 END) as reported,
+        SUM(CASE WHEN case_status = 'under_investigation' THEN 1 ELSE 0 END) as investigating,
+        SUM(CASE WHEN case_status = 'resolved' THEN 1 ELSE 0 END) as resolved,
+        SUM(CASE WHEN case_status = 'pending' THEN 1 ELSE 0 END) as pending
+      FROM gbv_cases
+      WHERE district_id = ?
+    `).bind(districtId).first();
+    
+    // Service providers placeholder (would need service providers table)
+    const serviceProviders = [];
+    
+    return c.json({
+      summary: summary,
+      monthly_trends: monthlyTrends.results || [],
+      outcomes: outcomes,
+      service_providers: serviceProviders
+    });
+  } catch (error) {
+    console.error('Error fetching district report:', error);
+    return c.json({ error: 'Failed to fetch district report' }, 500);
+  }
+});
+
 // Get Cases (with pagination and filters)
 app.get('/api/cases', async (c) => {
   const { env } = c;
@@ -838,6 +889,73 @@ app.get('/api/cases/:caseNumber/details', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching case details:', error);
+    return c.json({ error: 'Failed to fetch case details' }, 500);
+  }
+});
+
+// Get full case details (for modal display)
+app.get('/api/cases/:caseNumber/full-details', async (c) => {
+  const { env } = c;
+  const caseNumber = c.req.param('caseNumber');
+  
+  try {
+    // Get case info
+    const caseInfo = await env.DB.prepare(`
+      SELECT c.*, gt.name as violence_type, gt.category as violence_category, d.name as district_name
+      FROM gbv_cases c
+      LEFT JOIN gbv_types gt ON c.gbv_type_id = gt.id
+      LEFT JOIN districts d ON c.district_id = d.id
+      WHERE c.case_number = ?
+    `).bind(caseNumber).first();
+    
+    if (!caseInfo) {
+      return c.json({ error: 'Case not found' }, 404);
+    }
+    
+    // Get assignments
+    const assignments = await env.DB.prepare(`
+      SELECT ca.*, u.name as assigned_user_name
+      FROM case_assignments ca
+      LEFT JOIN users u ON ca.assigned_user_id = u.id
+      WHERE ca.case_id = ?
+      ORDER BY ca.priority DESC
+    `).bind(caseInfo.id).all();
+    
+    // Get timeline
+    const timeline = await env.DB.prepare(`
+      SELECT cu.*, u.name as created_by_name
+      FROM case_updates cu
+      LEFT JOIN users u ON cu.created_by = u.id
+      WHERE cu.case_id = ?
+      ORDER BY cu.created_at DESC
+    `).bind(caseInfo.id).all();
+    
+    // Get services provided (Rainbo)
+    const services = await env.DB.prepare(`
+      SELECT ms.*
+      FROM medical_services ms
+      WHERE ms.case_id = ?
+      ORDER BY ms.service_date DESC
+    `).bind(caseInfo.id).all();
+    
+    // Get latest investigation update (Police FSU)
+    const investigation = await env.DB.prepare(`
+      SELECT iu.*
+      FROM investigation_updates iu
+      WHERE iu.case_id = ?
+      ORDER BY iu.updated_at DESC
+      LIMIT 1
+    `).bind(caseInfo.id).first();
+    
+    return c.json({
+      case: caseInfo,
+      assignments: assignments.results || [],
+      timeline: timeline.results || [],
+      services: services.results || [],
+      investigation: investigation
+    });
+  } catch (error) {
+    console.error('Error fetching full case details:', error);
     return c.json({ error: 'Failed to fetch case details' }, 500);
   }
 });

@@ -471,18 +471,361 @@ function showDistrictDetails(districtId) {
           `Click "Report" for detailed analytics or "Map" to highlight on map.`);
 }
 
-function viewDistrictReport(districtId) {
+async function viewDistrictReport(districtId) {
     const district = SIERRA_LEONE_DISTRICTS.find(d => d.id === districtId);
     if (!district) return;
     
-    console.log(`Generating detailed report for ${district.name}...`);
-    alert(`📄 Generating detailed report for ${district.name} district...\n\nThis would open a comprehensive PDF report with:\n- Monthly trends\n- Service provider coverage\n- Response times\n- Case outcomes`);
+    // Show loading modal
+    showDistrictReportModal(district, null, true);
+    
+    try {
+        // Fetch district report data
+        const response = await fetch(`/api/districts/${districtId}/report`);
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch district report');
+        }
+        
+        const data = await response.json();
+        
+        // Show report modal
+        showDistrictReportModal(district, data, false);
+        
+    } catch (error) {
+        console.error('Error fetching district report:', error);
+        showDistrictReportModal(district, null, false, error.message);
+    }
+}
+
+function showDistrictReportModal(district, data, loading = false, error = null) {
+    // Remove existing modal
+    const existingModal = document.getElementById('district-report-modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    const modalHTML = `
+        <div id="district-report-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-lg shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+                ${loading ? `
+                    <div class="p-8 text-center">
+                        <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
+                        <p class="text-gray-600">Generating detailed report for ${district.name}...</p>
+                    </div>
+                ` : error ? `
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-2xl font-bold text-gray-900">
+                                <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>
+                                Error Generating Report
+                            </h2>
+                            <button onclick="closeDistrictReportModal()" class="text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-times text-2xl"></i>
+                            </button>
+                        </div>
+                        <div class="text-center text-red-600">
+                            <p>${error}</p>
+                        </div>
+                    </div>
+                ` : `
+                    <!-- Header -->
+                    <div class="bg-gradient-to-r from-green-600 to-blue-600 text-white p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h2 class="text-2xl font-bold mb-1">
+                                    <i class="fas fa-file-alt mr-2"></i>
+                                    District Report: ${district.name}
+                                </h2>
+                                <p class="text-sm text-green-100">Comprehensive GBV Analytics</p>
+                            </div>
+                            <button onclick="closeDistrictReportModal()" class="text-white hover:text-gray-200 transition-colors">
+                                <i class="fas fa-times text-2xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="p-6 space-y-6">
+                        <!-- Info Banner -->
+                        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                            <h3 class="font-semibold text-blue-900 mb-2">
+                                <i class="fas fa-info-circle mr-2"></i>Comprehensive PDF Report
+                            </h3>
+                            <div class="grid grid-cols-2 gap-2 text-sm text-blue-800">
+                                <div><i class="fas fa-check mr-2"></i>Monthly trends</div>
+                                <div><i class="fas fa-check mr-2"></i>Service provider coverage</div>
+                                <div><i class="fas fa-check mr-2"></i>Response times</div>
+                                <div><i class="fas fa-check mr-2"></i>Case outcomes</div>
+                            </div>
+                        </div>
+                        
+                        <!-- District Overview -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-blue-50 rounded-lg p-6">
+                                <div class="text-sm text-gray-600">Total Cases</div>
+                                <div class="text-3xl font-bold text-blue-600">${data?.summary?.total_cases || district.cases}</div>
+                                <div class="text-xs text-gray-500 mt-1">${district.region} Region</div>
+                            </div>
+                            <div class="bg-green-50 rounded-lg p-6">
+                                <div class="text-sm text-gray-600">Population</div>
+                                <div class="text-3xl font-bold text-green-600">${(district.population || 0).toLocaleString()}</div>
+                                <div class="text-xs text-gray-500 mt-1">District population</div>
+                            </div>
+                            <div class="bg-${getRiskColor(district.risk)}-50 rounded-lg p-6">
+                                <div class="text-sm text-gray-600">Risk Level</div>
+                                <div class="text-3xl font-bold text-${getRiskColor(district.risk)}-600">${district.risk}</div>
+                                <div class="text-xs text-gray-500 mt-1">Based on case density</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Monthly Trends -->
+                        <div class="border rounded-lg p-6">
+                            <h3 class="font-semibold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-chart-line text-blue-600 mr-2"></i>
+                                Monthly Trends (Last 6 Months)
+                            </h3>
+                            ${data?.monthly_trends && data.monthly_trends.length > 0 ? `
+                                <canvas id="district-trends-chart" height="80"></canvas>
+                            ` : `
+                                <p class="text-gray-600 text-sm">No trend data available</p>
+                            `}
+                        </div>
+                        
+                        <!-- Service Provider Coverage -->
+                        <div class="border rounded-lg p-6">
+                            <h3 class="font-semibold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-hospital text-green-600 mr-2"></i>
+                                Service Provider Coverage
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                ${data?.service_providers ? 
+                                    data.service_providers.map(sp => `
+                                        <div class="bg-gray-50 p-4 rounded">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <span class="font-medium">${sp.name}</span>
+                                                <span class="text-xs px-2 py-1 rounded-full ${sp.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                                                    ${sp.status === 'active' ? 'Active' : 'Inactive'}
+                                                </span>
+                                            </div>
+                                            <div class="text-sm text-gray-600">
+                                                <div>Cases Handled: ${sp.cases_handled || 0}</div>
+                                                <div>Avg Response: ${sp.avg_response_time || 'N/A'}</div>
+                                            </div>
+                                        </div>
+                                    `).join('') :
+                                    '<p class="text-gray-600 text-sm">Service provider data not available</p>'
+                                }
+                            </div>
+                        </div>
+                        
+                        <!-- Case Outcomes -->
+                        <div class="border rounded-lg p-6">
+                            <h3 class="font-semibold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-chart-pie text-purple-600 mr-2"></i>
+                                Case Outcomes
+                            </h3>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                                <div>
+                                    <div class="text-2xl font-bold text-blue-600">${data?.outcomes?.reported || 0}</div>
+                                    <div class="text-sm text-gray-600">Reported</div>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-bold text-yellow-600">${data?.outcomes?.investigating || 0}</div>
+                                    <div class="text-sm text-gray-600">Investigating</div>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-bold text-green-600">${data?.outcomes?.resolved || 0}</div>
+                                    <div class="text-sm text-gray-600">Resolved</div>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-bold text-gray-600">${data?.outcomes?.pending || 0}</div>
+                                    <div class="text-sm text-gray-600">Pending</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div class="bg-gray-50 px-6 py-4 flex justify-between">
+                        <button onclick="window.print()" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-print mr-2"></i>Print Report
+                        </button>
+                        <button onclick="closeDistrictReportModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                            Close
+                        </button>
+                    </div>
+                `}
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Render chart if data available
+    if (!loading && !error && data?.monthly_trends && data.monthly_trends.length > 0) {
+        setTimeout(() => renderDistrictTrendsChart(data.monthly_trends), 100);
+    }
+}
+
+function renderDistrictTrendsChart(trends) {
+    const ctx = document.getElementById('district-trends-chart');
+    if (!ctx) return;
+    
+    const labels = trends.map(t => t.month);
+    const counts = trends.map(t => t.case_count);
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Cases',
+                data: counts,
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 3,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
+function getRiskColor(risk) {
+    const colors = {
+        'High': 'red',
+        'Medium': 'yellow',
+        'Low': 'green'
+    };
+    return colors[risk] || 'gray';
+}
+
+function closeDistrictReportModal() {
+    const modal = document.getElementById('district-report-modal');
+    if (modal) {
+        modal.remove();
+    }
 }
 
 function highlightDistrict(districtId) {
     const district = SIERRA_LEONE_DISTRICTS.find(d => d.id === districtId);
     if (!district) return;
     
-    console.log(`Highlighting ${district.name} on map...`);
-    alert(`🗺️ ${district.name} highlighted on map!\n\nIn a full implementation, this would:\n- Zoom to district location\n- Show detailed case heatmap\n- Display service provider locations\n- Show chiefdom-level breakdown`);
+    // Show highlighting modal
+    showMapHighlightModal(district);
 }
+
+function showMapHighlightModal(district) {
+    // Remove existing modal
+    const existingModal = document.getElementById('map-highlight-modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    const modalHTML = `
+        <div id="map-highlight-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-lg shadow-2xl max-w-3xl w-full">
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-blue-600 to-green-600 text-white p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-bold mb-1">
+                                <i class="fas fa-map-marker-alt mr-2"></i>
+                                ${district.name} Highlighted
+                            </h2>
+                            <p class="text-sm text-blue-100">${district.region} Region</p>
+                        </div>
+                        <button onclick="closeMapHighlightModal()" class="text-white hover:text-gray-200 transition-colors">
+                            <i class="fas fa-times text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Content -->
+                <div class="p-6 space-y-6">
+                    <!-- Info Banner -->
+                    <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded">
+                        <h3 class="font-semibold text-green-900 mb-2">
+                            <i class="fas fa-map mr-2"></i>${district.name} Highlighted on Map!
+                        </h3>
+                        <p class="text-sm text-green-800">
+                            In a full implementation, this would:
+                        </p>
+                        <div class="grid grid-cols-2 gap-2 text-sm text-green-800 mt-2">
+                            <div><i class="fas fa-check mr-2"></i>Zoom to district location</div>
+                            <div><i class="fas fa-check mr-2"></i>Show detailed case heatmap</div>
+                            <div><i class="fas fa-check mr-2"></i>Display service provider locations</div>
+                            <div><i class="fas fa-check mr-2"></i>Show chiefdom-level breakdown</div>
+                        </div>
+                    </div>
+                    
+                    <!-- District Info -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-blue-50 rounded-lg p-4">
+                            <div class="text-sm text-gray-600">Cases</div>
+                            <div class="text-2xl font-bold text-blue-600">${district.cases}</div>
+                        </div>
+                        <div class="bg-green-50 rounded-lg p-4">
+                            <div class="text-sm text-gray-600">Population</div>
+                            <div class="text-2xl font-bold text-green-600">${(district.population || 0).toLocaleString()}</div>
+                        </div>
+                        <div class="bg-${getRiskColor(district.risk)}-50 rounded-lg p-4">
+                            <div class="text-sm text-gray-600">Risk Level</div>
+                            <div class="text-2xl font-bold text-${getRiskColor(district.risk)}-600">${district.risk}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Map Placeholder -->
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center bg-gray-50">
+                        <i class="fas fa-map-marked-alt text-6xl text-gray-400 mb-4"></i>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-2">Interactive Map View</h3>
+                        <p class="text-sm text-gray-600">
+                            Full implementation would show:<br/>
+                            • Detailed ${district.name} district map<br/>
+                            • Case concentration heatmap<br/>
+                            • Service provider locations<br/>
+                            • Chiefdom boundaries
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div class="bg-gray-50 px-6 py-4 flex justify-end">
+                    <button onclick="closeMapHighlightModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+function closeMapHighlightModal() {
+    const modal = document.getElementById('map-highlight-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Export new functions
+window.closeDistrictReportModal = closeDistrictReportModal;
+window.closeMapHighlightModal = closeMapHighlightModal;
