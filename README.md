@@ -79,12 +79,25 @@ The GBV Dashboard is a comprehensive system for managing gender-based violence c
 - **Case Management**: Track medical examinations and treatment
 - **Documentation**: Record forensic evidence, PEP, STI testing
 - **Follow-ups**: Schedule and track survivor follow-up care
+- **Statistics & Reports**: Comprehensive service analytics with charts
+  - Services breakdown (PEP, STI testing, pregnancy tests, forensic exams)
+  - Monthly trends visualization (last 6 months)
+  - Follow-up appointments calendar
+  - Case filtering by status
+  - Export functionality (PDF, CSV, Print)
 - **Secure Portal**: Role-based access with authentication
 
 ### For Law Enforcement (Police FSU)
 - **Investigation Tracking**: Manage criminal investigations
 - **Evidence Management**: Chain of custody documentation
 - **Court Preparation**: Case file management for prosecution
+- **Statistics & Reports**: Comprehensive investigation analytics
+  - Investigation status distribution charts
+  - Suspect status tracking and visualization
+  - Evidence collection metrics
+  - Monthly case trends (last 6 months)
+  - Detailed investigation summary reports
+  - Priority breakdown and urgent case tracking
 - **Secure Portal**: Separate authenticated access
 
 ### For Ministry Officials
@@ -177,8 +190,13 @@ gbv-dashboard/
 3. **View Cases** - Browse, filter, and search all cases
 4. **District Map** - Interactive map with risk levels
 5. **Analytics** - Advanced reporting and data export
-6. **Rainbo Portal** - Medical staff case management
-7. **Police FSU Portal** - Law enforcement tracking
+6. **Rainbo Portal** - Medical staff case management with reports & statistics
+   - Cases tab with status filtering
+   - Statistics tab with service breakdown charts & trends
+   - Follow-ups tab with appointment tracking
+7. **Police FSU Portal** - Law enforcement tracking with investigation reports
+   - Cases tab with investigation filtering
+   - Statistics & Reports tab with detailed analytics
 8. **Resources** - Help materials and contacts
 9. **Voice Report** - Audio recording (experimental)
 10. **Admin** - User and system management
