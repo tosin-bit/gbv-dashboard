@@ -461,6 +461,363 @@ function viewAllProfiles() {
     alert('📋 Loading all 16 district risk profiles...\n\nThis would open a comprehensive view with detailed risk assessments for every district in Sierra Leone.');
 }
 
-function viewDetailedProfile(districtName) {
-    alert(`🔍 Loading detailed profile for ${districtName}...\n\nDetailed analysis includes:\n- Historical trends\n- Risk factors breakdown\n- Service gaps\n- Recommended interventions`);
+async function viewDetailedProfile(districtName) {
+    // Show loading modal
+    showDistrictProfileModal(districtName, null, true);
+    
+    try {
+        // Find district ID from the profiles
+        const profiles = {
+            'Western Area Urban': { id: 1, risk: 'High', score: 7.9, cases: 412, trend: 'Stable' },
+            'Bo': { id: 3, risk: 'High', score: 7.2, cases: 324, trend: 'Falling' },
+            'Kenema': { id: 7, risk: 'High', score: 7.2, cases: 324, trend: 'Falling' },
+            'Bombali': { id: 10, risk: 'Medium', score: 5.8, cases: 298, trend: 'Rising' },
+            'Kailahun': { id: 8, risk: 'Medium', score: 5.4, cases: 287, trend: 'Stable' },
+            'Port Loko': { id: 13, risk: 'Low', score: 3.2, cases: 189, trend: 'Rising' }
+        };
+        
+        const profile = profiles[districtName];
+        
+        if (!profile) {
+            throw new Error('District profile not found');
+        }
+        
+        // Fetch additional data from API
+        const response = await fetch(`/api/districts/${profile.id}/report`);
+        const data = await response.json();
+        
+        // Combine profile data with API data
+        const fullProfile = {
+            ...profile,
+            name: districtName,
+            ...data
+        };
+        
+        // Show detailed profile modal
+        showDistrictProfileModal(districtName, fullProfile, false);
+        
+    } catch (error) {
+        console.error('Error loading district profile:', error);
+        showDistrictProfileModal(districtName, null, false, error.message);
+    }
 }
+
+function showDistrictProfileModal(districtName, data, loading = false, error = null) {
+    // Remove existing modal
+    const existingModal = document.getElementById('district-profile-modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    const modalHTML = `
+        <div id="district-profile-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                ${loading ? `
+                    <div class="p-8 text-center">
+                        <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
+                        <p class="text-gray-600">Loading detailed profile for ${districtName}...</p>
+                    </div>
+                ` : error ? `
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-2xl font-bold text-gray-900">
+                                <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>
+                                Error Loading Profile
+                            </h2>
+                            <button onclick="closeDistrictProfileModal()" class="text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-times text-2xl"></i>
+                            </button>
+                        </div>
+                        <div class="text-center text-red-600">
+                            <p>${error}</p>
+                        </div>
+                    </div>
+                ` : `
+                    <!-- Header -->
+                    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h2 class="text-2xl font-bold mb-1">
+                                    <i class="fas fa-shield-alt mr-2"></i>
+                                    District Risk Profile: ${districtName}
+                                </h2>
+                                <p class="text-sm text-blue-100">Comprehensive risk analysis and intervention recommendations</p>
+                            </div>
+                            <button onclick="closeDistrictProfileModal()" class="text-white hover:text-gray-200 transition-colors">
+                                <i class="fas fa-times text-2xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="p-6 space-y-6">
+                        <!-- Analysis Includes Banner -->
+                        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                            <h3 class="font-semibold text-blue-900 mb-2">
+                                <i class="fas fa-info-circle mr-2"></i>Detailed Analysis Includes:
+                            </h3>
+                            <div class="grid grid-cols-2 gap-2 text-sm text-blue-800">
+                                <div><i class="fas fa-check mr-2"></i>Historical trends</div>
+                                <div><i class="fas fa-check mr-2"></i>Risk factors breakdown</div>
+                                <div><i class="fas fa-check mr-2"></i>Service gaps</div>
+                                <div><i class="fas fa-check mr-2"></i>Recommended interventions</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Key Metrics -->
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="bg-${getRiskColorClass(data?.risk)}-50 rounded-lg p-4 border-l-4 border-${getRiskColorClass(data?.risk)}-500">
+                                <div class="text-sm text-gray-600">Risk Score</div>
+                                <div class="text-3xl font-bold text-${getRiskColorClass(data?.risk)}-600">${data?.score || 0}/10</div>
+                                <div class="text-xs text-gray-500 mt-1">${data?.risk || 'N/A'} Risk</div>
+                            </div>
+                            <div class="bg-blue-50 rounded-lg p-4 border-l-4 border-blue-500">
+                                <div class="text-sm text-gray-600">Total Cases</div>
+                                <div class="text-3xl font-bold text-blue-600">${data?.cases || data?.summary?.total_cases || 0}</div>
+                                <div class="text-xs text-gray-500 mt-1">All-time total</div>
+                            </div>
+                            <div class="bg-${getTrendColorClass(data?.trend)}-50 rounded-lg p-4 border-l-4 border-${getTrendColorClass(data?.trend)}-500">
+                                <div class="text-sm text-gray-600">Trend</div>
+                                <div class="text-2xl font-bold text-${getTrendColorClass(data?.trend)}-600">
+                                    <i class="fas fa-arrow-${getTrendIcon(data?.trend)} mr-1"></i>${data?.trend || 'N/A'}
+                                </div>
+                                <div class="text-xs text-gray-500 mt-1">30-day trend</div>
+                            </div>
+                            <div class="bg-purple-50 rounded-lg p-4 border-l-4 border-purple-500">
+                                <div class="text-sm text-gray-600">This Month</div>
+                                <div class="text-3xl font-bold text-purple-600">${getThisMonthCases(data?.monthly_trends)}</div>
+                                <div class="text-xs text-gray-500 mt-1">Current month</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Historical Trends -->
+                        <div class="border rounded-lg p-6">
+                            <h3 class="font-semibold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-chart-line text-blue-600 mr-2"></i>
+                                Historical Trends (Last 6 Months)
+                            </h3>
+                            ${data?.monthly_trends && data.monthly_trends.length > 0 ? `
+                                <canvas id="profile-trends-chart" height="80"></canvas>
+                            ` : `
+                                <p class="text-gray-600 text-sm">No trend data available</p>
+                            `}
+                        </div>
+                        
+                        <!-- Risk Factors Breakdown -->
+                        <div class="border rounded-lg p-6">
+                            <h3 class="font-semibold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-exclamation-triangle text-orange-600 mr-2"></i>
+                                Risk Factors Breakdown
+                            </h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-sm text-gray-700">Population Density</span>
+                                        <span class="text-sm font-semibold">High - 8.5/10</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="h-2 rounded-full bg-red-500" style="width: 85%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-sm text-gray-700">Poverty Rate</span>
+                                        <span class="text-sm font-semibold">Medium - 6.2/10</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="h-2 rounded-full bg-yellow-500" style="width: 62%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-sm text-gray-700">Education Access</span>
+                                        <span class="text-sm font-semibold">Low - 4.8/10</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="h-2 rounded-full bg-green-500" style="width: 48%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-sm text-gray-700">Unemployment Rate</span>
+                                        <span class="text-sm font-semibold">High - 7.9/10</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="h-2 rounded-full bg-orange-500" style="width: 79%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Service Gaps -->
+                        <div class="border rounded-lg p-6">
+                            <h3 class="font-semibold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-hospital text-red-600 mr-2"></i>
+                                Service Gaps
+                            </h3>
+                            <div class="space-y-3">
+                                <div class="flex items-start space-x-3 bg-red-50 p-3 rounded">
+                                    <i class="fas fa-exclamation-circle text-red-600 mt-1"></i>
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-gray-900">Medical Services</div>
+                                        <div class="text-sm text-gray-700">Only 1 Rainbo center serving population of 500K+. Average response time: 4.2 hours.</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 bg-yellow-50 p-3 rounded">
+                                    <i class="fas fa-exclamation-triangle text-yellow-600 mt-1"></i>
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-gray-900">Police FSU Coverage</div>
+                                        <div class="text-sm text-gray-700">Limited FSU presence in rural chiefdoms. 18% of cases delayed by location barriers.</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 bg-orange-50 p-3 rounded">
+                                    <i class="fas fa-info-circle text-orange-600 mt-1"></i>
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-gray-900">Psychosocial Support</div>
+                                        <div class="text-sm text-gray-700">Counselors understaffed. 45% of survivors report unmet mental health needs.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Recommended Interventions -->
+                        <div class="border rounded-lg p-6 bg-green-50">
+                            <h3 class="font-semibold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-lightbulb text-green-600 mr-2"></i>
+                                Recommended Interventions
+                            </h3>
+                            <div class="space-y-3">
+                                <div class="flex items-start space-x-3">
+                                    <span class="flex-shrink-0 w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold">1</span>
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-gray-900">Expand Medical Infrastructure</div>
+                                        <div class="text-sm text-gray-700">Establish 2 additional Rainbo satellite centers in high-density areas. Estimated impact: 60% reduction in response time.</div>
+                                        <div class="mt-1 text-xs text-green-700"><strong>Priority:</strong> High | <strong>Cost:</strong> $450K | <strong>Timeline:</strong> 12 months</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <span class="flex-shrink-0 w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold">2</span>
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-gray-900">Community Awareness Campaign</div>
+                                        <div class="text-sm text-gray-700">Radio programs in local languages. Mobile education units for rural chiefdoms.</div>
+                                        <div class="mt-1 text-xs text-green-700"><strong>Priority:</strong> High | <strong>Cost:</strong> $85K | <strong>Timeline:</strong> 6 months</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <span class="flex-shrink-0 w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold">3</span>
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-gray-900">Strengthen Police FSU Capacity</div>
+                                        <div class="text-sm text-gray-700">Train 20 additional FSU officers. Provide motorcycles for rural patrols.</div>
+                                        <div class="mt-1 text-xs text-green-700"><strong>Priority:</strong> Medium | <strong>Cost:</strong> $120K | <strong>Timeline:</strong> 9 months</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div class="bg-gray-50 px-6 py-4 flex justify-between">
+                        <button onclick="window.print()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-print mr-2"></i>Print Profile
+                        </button>
+                        <button onclick="closeDistrictProfileModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                            Close
+                        </button>
+                    </div>
+                `}
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Render chart if data available
+    if (!loading && !error && data?.monthly_trends && data.monthly_trends.length > 0) {
+        setTimeout(() => renderProfileTrendsChart(data.monthly_trends), 100);
+    }
+}
+
+function renderProfileTrendsChart(trends) {
+    const ctx = document.getElementById('profile-trends-chart');
+    if (!ctx) return;
+    
+    const labels = trends.map(t => t.month);
+    const counts = trends.map(t => t.case_count);
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Cases',
+                data: counts,
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.4,
+                fill: true,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 3,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
+function getRiskColorClass(risk) {
+    const colors = {
+        'High': 'red',
+        'Medium': 'yellow',
+        'Low': 'green'
+    };
+    return colors[risk] || 'gray';
+}
+
+function getTrendColorClass(trend) {
+    const colors = {
+        'Rising': 'red',
+        'Falling': 'green',
+        'Stable': 'gray'
+    };
+    return colors[trend] || 'gray';
+}
+
+function getTrendIcon(trend) {
+    const icons = {
+        'Rising': 'up',
+        'Falling': 'down',
+        'Stable': 'right'
+    };
+    return icons[trend] || 'right';
+}
+
+function getThisMonthCases(trends) {
+    if (!trends || trends.length === 0) return 0;
+    return trends[trends.length - 1]?.case_count || 0;
+}
+
+function closeDistrictProfileModal() {
+    const modal = document.getElementById('district-profile-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Export functions
+window.closeDistrictProfileModal = closeDistrictProfileModal;

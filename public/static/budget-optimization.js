@@ -1,7 +1,7 @@
 /**
- * Enhanced GBV Dashboard - Budget Optimization & Resource Management Module
+ * GBV Dashboard - Budget Optimization & Resource Management Module
  * Advanced financial planning and resource allocation for Ministry of Gender and Children's Affairs
- * Built by Insyt FamilyCare Healthcare Technology
+ * Built by Insyt Solutions
  */
 
 class BudgetOptimization {

@@ -1,7 +1,7 @@
 /**
- * Enhanced GBV Dashboard - Geographic Intelligence Module
+ * GBV Dashboard - Geographic Intelligence Module
  * Interactive geographic mapping and hotspot analysis for Sierra Leone
- * Built by Insyt FamilyCare Healthcare Technology
+ * Built by Insyt Solutions
  */
 
 class GeographicIntelligence {

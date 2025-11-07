@@ -1,5 +1,5 @@
 // Advanced Features Module for Ministry Demo
-// This demonstrates the full potential of the Enhanced GBV Dashboard System
+// This demonstrates the full potential of the GBV Dashboard System
 
 console.log('Loading Advanced Features Module for Ministry Demo...');
 

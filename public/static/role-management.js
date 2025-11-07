@@ -1,7 +1,7 @@
 /**
- * Enhanced GBV Dashboard - Advanced Role Management System
+ * GBV Dashboard - Advanced Role Management System
  * 7-tier access control system for Ministry of Gender and Children's Affairs
- * Built by Insyt FamilyCare Healthcare Technology
+ * Built by Insyt Solutions
  */
 
 class RoleManagement {

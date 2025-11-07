@@ -1,4 +1,4 @@
-# Enhanced GBV Dashboard - Deployment Guide
+# GBV Dashboard - Deployment Guide
 
 ## 🎉 Project Completion Summary
 
@@ -152,7 +152,7 @@ Service Providers → Referral System → Follow-up Tracking
 ## 📞 Support & Maintenance
 
 ### Development Team Contact
-- **Developer**: Insyt FamilyCare Healthcare Technology
+- **Developer**: Insyt Solutions
 - **Expertise**: Healthcare technology, GBV systems, privacy compliance
 - **Support**: Available for deployment assistance and feature enhancements
 
@@ -176,4 +176,4 @@ This enhanced GBV Dashboard successfully:
 
 The system is **ready for production deployment** and will provide a significant upgrade to GBV monitoring and response capabilities across Sierra Leone and beyond.
 
-**Development completed successfully by Insyt FamilyCare Healthcare Technology - Your compassionate partner in technology solutions for healthcare and social services.**
+**Development completed successfully by Insyt Solutions - Your compassionate partner in technology solutions for healthcare and social services.**

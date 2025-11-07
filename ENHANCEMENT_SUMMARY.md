@@ -465,6 +465,6 @@ The system is ready for presentation to World Bank, EU, Ministry of Gender, UN, 
 
 ---
 
-**Developed by**: Insyt FamilyCare Healthcare Technology  
+**Developed by**: Insyt Solutions  
 **Date**: October 17, 2025  
 **Status**: ✅ Production Ready

@@ -404,7 +404,7 @@ Proprietary - Ministry of Gender and Children's Affairs, Sierra Leone
 
 ## 🚀 Built With Care
 
-**Developed by**: Insyt FamilyCare Healthcare Technology  
+**Developed by**: Insyt Solutions  
 **For**: Ministry of Gender and Children's Affairs  
 **Country**: Sierra Leone  
 **Year**: 2025  

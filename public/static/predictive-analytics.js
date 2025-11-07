@@ -1,7 +1,7 @@
 /**
- * Enhanced GBV Dashboard - Predictive Analytics Module
+ * GBV Dashboard - Predictive Analytics Module
  * Advanced AI-powered analytics for Ministry of Gender and Children's Affairs
- * Built by Insyt FamilyCare Healthcare Technology
+ * Built by Insyt Solutions
  */
 
 class PredictiveAnalytics {

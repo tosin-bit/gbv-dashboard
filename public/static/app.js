@@ -1,5 +1,5 @@
-// Enhanced GBV Dashboard - Frontend JavaScript
-console.log('Enhanced GBV Dashboard initializing...');
+// GBV Dashboard - Frontend JavaScript
+console.log('GBV Dashboard initializing...');
 
 // Global state
 window.GBVDashboard = {
@@ -25,7 +25,7 @@ window.GBVDashboard = {
 
 // Initialize Dashboard
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Initializing Enhanced GBV Dashboard...');
+    console.log('Initializing GBV Dashboard...');
     console.log('DOM loaded, starting dashboard initialization...');
     
     // Start basic initialization immediately
@@ -1393,13 +1393,13 @@ window.GBVDashboard.updateUI = updateDashboard;
 window.GBVDashboard.switchTab = switchToTab;
 window.GBVDashboard.notify = showMinistryNotification;
 
-console.log('🎯 Enhanced GBV Dashboard - Ministry Demo Version - Fully Loaded!');
+console.log('🎯 GBV Dashboard - Ministry Demo Version - Fully Loaded!');
 console.log('🔥 All advanced features initialized for comprehensive demonstration');
 
 // Show welcome notification for Ministry demonstration
 setTimeout(() => {
     showMinistryNotification(
-        'Welcome to the Enhanced GBV Dashboard - Complete Ministry Demonstration System',
+        'Welcome to the GBV Dashboard - Complete Ministry Demonstration System',
         'success',
         8000
     );

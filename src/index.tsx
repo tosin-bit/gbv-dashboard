@@ -1558,7 +1558,7 @@ app.get('/', (c) => {
         <div id="loading-state" className="text-center py-12">
           <div className="inline-flex items-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mr-3"></div>
-            <span className="text-lg text-gray-600">Loading Enhanced GBV Dashboard...</span>
+            <span className="text-lg text-gray-600">Loading GBV Dashboard...</span>
           </div>
           <p className="mt-2 text-sm text-gray-500">Connecting to database and loading statistics...</p>
         </div>
@@ -1780,12 +1780,12 @@ app.get('/', (c) => {
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-500">Enhanced GBV Dashboard</span>
+              <span className="text-sm text-gray-500">GBV Dashboard</span>
               <span className="text-sm text-gray-300">|</span>
-              <span className="text-sm text-gray-500">Insyt FamilyCare Healthcare Technology</span>
+              <span className="text-sm text-gray-500">Insyt Solutions</span>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-500">Version 2.0</span>
+              <span className="text-sm text-gray-500">Version 2.0 - 2025</span>
               <span className="text-sm text-gray-300">|</span>
               <span className="text-sm text-gray-500">© 2024</span>
             </div>

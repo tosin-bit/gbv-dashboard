@@ -1,7 +1,7 @@
 /**
- * Enhanced GBV Dashboard - Comprehensive Case Management System
+ * GBV Dashboard - Comprehensive Case Management System
  * Complete case lifecycle management with privacy-first design
- * Built by Insyt FamilyCare Healthcare Technology
+ * Built by Insyt Solutions
  */
 
 class EnhancedCaseManagement {

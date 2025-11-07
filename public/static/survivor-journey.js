@@ -1,7 +1,7 @@
 /**
- * Enhanced GBV Dashboard - Survivor Journey Tracking Module
+ * GBV Dashboard - Survivor Journey Tracking Module
  * Comprehensive survivor support pathway monitoring and outcome measurement
- * Built by Insyt FamilyCare Healthcare Technology for Ministry of Gender and Children's Affairs
+ * Built by Insyt Solutions for Ministry of Gender and Children's Affairs
  */
 
 class SurvivorJourney {
