@@ -14,7 +14,8 @@ const TAB_SECTIONS = {
     'police-fsu': 'police-fsu-section',
     'resources': 'resources-section',
     'voice-report': 'voice-report-section',
-    'admin': 'admin-section'
+    'admin': 'admin-section',
+    'demo-flow': 'demo-flow-redirect'
 };
 
 // Initialize tab system
@@ -79,6 +80,11 @@ function setupTabClickHandlers() {
             else if (tabText.includes('resources')) tabKey = 'resources';
             else if (tabText.includes('voice')) tabKey = 'voice-report';
             else if (tabText.includes('admin')) tabKey = 'admin';
+            else if (tabText.includes('demo')) {
+                // Redirect to demo page
+                window.location.href = '/demo';
+                return;
+            }
             
             showTab(tabKey);
         });
@@ -135,7 +141,8 @@ function updateTabButtonStates(activeTabKey) {
         'police-fsu': 6,
         'resources': 7,
         'voice-report': 8,
-        'admin': 9
+        'admin': 9,
+        'demo-flow': 10
     };
     
     tabs.forEach((tab, index) => {

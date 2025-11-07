@@ -294,7 +294,7 @@ app.get('/api/auth/session/:sessionId', async (c) => {
   
   try {
     const session = await env.DB.prepare(`
-      SELECT s.*, u.id as user_id, u.username, u.role, u.full_name, u.email,
+      SELECT s.*, u.id as user_id, u.username, u.role, u.name, u.email, u.organization,
              sp.name as service_provider_name, sp.type as service_provider_type
       FROM sessions s
       JOIN users u ON s.user_id = u.id
@@ -312,8 +312,10 @@ app.get('/api/auth/session/:sessionId', async (c) => {
         id: session.user_id,
         username: session.username,
         role: session.role,
-        full_name: session.full_name,
+        full_name: session.name,
+        name: session.name,
         email: session.email,
+        organization: session.organization,
         service_provider_name: session.service_provider_name,
         service_provider_type: session.service_provider_type
       }
@@ -513,11 +515,80 @@ app.post('/api/cases', async (c) => {
       1
     ).run();
 
+    const caseId = result.meta.last_row_id;
+    
+    // AUTO-ASSIGN CASE TO RELEVANT ORGANIZATIONS
+    try {
+      // Get referral rules for this GBV type
+      const rules = await env.DB.prepare(`
+        SELECT * FROM case_referral_rules 
+        WHERE (gbv_type_id = ? OR gbv_type_id IS NULL) 
+        AND is_active = TRUE
+      `).bind(gbvTypeId).all();
+      
+      console.log(`🔄 Auto-assigning case ${caseNumber} based on ${rules.results?.length || 0} rules`);
+      
+      for (const rule of (rules.results || [])) {
+        // Create assignment
+        await env.DB.prepare(`
+          INSERT INTO case_assignments (
+            case_id, organization_type, assignment_reason, priority, status
+          ) VALUES (?, ?, ?, ?, 'pending')
+        `).bind(
+          caseId,
+          rule.organization_type,
+          rule.assignment_reason,
+          rule.priority
+        ).run();
+        
+        console.log(`✅ Assigned to ${rule.organization_type} with priority ${rule.priority}`);
+        
+        // Create notification for the organization
+        const notificationTitle = `🚨 New Case Assignment: ${caseNumber}`;
+        const violenceType = formData.violence_types?.[0] || 'GBV';
+        const notificationMessage = `A new ${violenceType} case has been assigned to your organization. ` +
+          `Priority: ${(rule.priority as string).toUpperCase()}. Immediate action required.`;
+        
+        await env.DB.prepare(`
+          INSERT INTO case_notifications (
+            case_id, notification_type, target_organization, title, message, priority, action_url
+          ) VALUES (?, 'new_case', ?, ?, ?, ?, ?)
+        `).bind(
+          caseId,
+          rule.organization_type,
+          notificationTitle,
+          notificationMessage,
+          rule.priority,
+          `/cases/${caseNumber}`
+        ).run();
+        
+        console.log(`📢 Created notification for ${rule.organization_type}`);
+      }
+      
+      // Create initial case update
+      await env.DB.prepare(`
+        INSERT INTO case_updates (
+          case_id, update_type, update_category, title, description,
+          created_by, created_by_organization, is_milestone
+        ) VALUES (?, 'status_change', 'general', ?, ?, ?, 'ministry', TRUE)
+      `).bind(
+        caseId,
+        'Case Created',
+        `Case ${caseNumber} has been created and assigned to relevant organizations for action.`,
+        1
+      ).run();
+      
+      console.log(`✅ Case ${caseNumber} created with auto-assignments`);
+    } catch (assignError) {
+      console.error('Error during auto-assignment:', assignError);
+      // Don't fail the whole request if assignment fails
+    }
+
     return c.json({ 
       success: true, 
-      case_id: result.meta.last_row_id,
+      case_id: caseId,
       case_number: caseNumber,
-      message: `Case ${caseNumber} successfully recorded.`
+      message: `Case ${caseNumber} successfully recorded and assigned to relevant organizations.`
     });
   } catch (error) {
     console.error('Error creating case:', error);
@@ -531,44 +602,753 @@ app.post('/api/cases', async (c) => {
   }
 });
 
-// Rainbo Centre Dashboard
+// ==========================================
+// ORGANIZATION-SPECIFIC API ENDPOINTS
+// ==========================================
+
+// Get cases assigned to an organization (Rainbo/Police FSU/etc.)
+app.get('/api/organization/:orgType/cases', async (c) => {
+  const { env } = c;
+  const orgType = c.req.param('orgType'); // 'rainbo', 'police_fsu', etc.
+  
+  try {
+    const query = `
+      SELECT 
+        c.id,
+        c.case_number,
+        c.incident_date,
+        c.reported_date,
+        gt.name as violence_type,
+        gt.category as violence_category,
+        d.name as district_name,
+        c.survivor_age_group,
+        c.survivor_gender,
+        c.case_status,
+        c.priority_level,
+        ca.status as assignment_status,
+        ca.assigned_at,
+        ca.priority as assignment_priority,
+        ca.id as assignment_id,
+        ca.assignment_reason,
+        -- Latest update
+        (SELECT title FROM case_updates 
+         WHERE case_id = c.id 
+         ORDER BY created_at DESC LIMIT 1) as last_update_title,
+        (SELECT created_at FROM case_updates 
+         WHERE case_id = c.id 
+         ORDER BY created_at DESC LIMIT 1) as last_update_at,
+        -- Unread notifications
+        (SELECT COUNT(*) FROM case_notifications 
+         WHERE case_id = c.id 
+         AND target_organization = ?
+         AND is_read = FALSE) as unread_count
+      FROM gbv_cases c
+      INNER JOIN case_assignments ca ON c.id = ca.case_id
+      LEFT JOIN gbv_types gt ON c.gbv_type_id = gt.id
+      LEFT JOIN districts d ON c.district_id = d.id
+      WHERE ca.organization_type = ?
+      ORDER BY 
+        CASE WHEN ca.status = 'pending' THEN 1 
+             WHEN ca.status = 'in_progress' THEN 2 
+             ELSE 3 END,
+        ca.priority = 'urgent' DESC,
+        ca.priority = 'high' DESC,
+        c.incident_date DESC
+    `;
+    
+    const result = await env.DB.prepare(query).bind(orgType, orgType).all();
+    
+    const cases = result.results || [];
+    const summary = {
+      total: cases.length,
+      pending: cases.filter((c: any) => c.assignment_status === 'pending').length,
+      in_progress: cases.filter((c: any) => c.assignment_status === 'in_progress').length,
+      completed: cases.filter((c: any) => c.assignment_status === 'completed').length,
+      urgent: cases.filter((c: any) => c.assignment_priority === 'urgent').length
+    };
+    
+    return c.json({ cases, summary });
+  } catch (error) {
+    console.error(`Error fetching ${orgType} cases:`, error);
+    return c.json({ error: 'Failed to fetch cases' }, 500);
+  }
+});
+
+// Get notifications for an organization
+app.get('/api/organization/:orgType/notifications', async (c) => {
+  const { env } = c;
+  const orgType = c.req.param('orgType');
+  const unreadOnly = c.req.query('unread_only') === 'true';
+  
+  try {
+    const query = `
+      SELECT 
+        cn.*,
+        c.case_number
+      FROM case_notifications cn
+      LEFT JOIN gbv_cases c ON cn.case_id = c.id
+      WHERE cn.target_organization = ?
+      ${unreadOnly ? 'AND cn.is_read = FALSE' : ''}
+      AND (cn.expires_at IS NULL OR cn.expires_at > datetime('now'))
+      ORDER BY 
+        cn.priority = 'urgent' DESC,
+        cn.priority = 'high' DESC,
+        cn.created_at DESC
+      LIMIT 100
+    `;
+    
+    const result = await env.DB.prepare(query).bind(orgType).all();
+    
+    return c.json({
+      notifications: result.results || [],
+      unread_count: (result.results || []).filter((n: any) => !n.is_read).length
+    });
+  } catch (error) {
+    console.error(`Error fetching ${orgType} notifications:`, error);
+    return c.json({ error: 'Failed to fetch notifications' }, 500);
+  }
+});
+
+// Mark notification as read
+app.post('/api/notifications/:id/read', async (c) => {
+  const { env } = c;
+  const notificationId = c.req.param('id');
+  
+  try {
+    await env.DB.prepare(`
+      UPDATE case_notifications 
+      SET is_read = TRUE, read_at = datetime('now')
+      WHERE id = ?
+    `).bind(notificationId).run();
+    
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Error marking notification as read:', error);
+    return c.json({ error: 'Failed to update notification' }, 500);
+  }
+});
+
+// Update assignment status
+app.post('/api/assignments/:id/status', async (c) => {
+  const { env } = c;
+  const assignmentId = c.req.param('id');
+  const { status, user_id, notes } = await c.req.json();
+  
+  try {
+    const timeField = status === 'accepted' ? ', accepted_at = datetime(\'now\')' : 
+                     status === 'completed' ? ', completed_at = datetime(\'now\')' : '';
+    
+    await env.DB.prepare(`
+      UPDATE case_assignments 
+      SET status = ?, assigned_user_id = ?, notes = ? ${timeField}
+      WHERE id = ?
+    `).bind(status, user_id, notes || null, assignmentId).run();
+    
+    // Get case info for notification
+    const assignment = await env.DB.prepare(`
+      SELECT ca.*, c.case_number
+      FROM case_assignments ca
+      LEFT JOIN gbv_cases c ON ca.case_id = c.id
+      WHERE ca.id = ?
+    `).bind(assignmentId).first();
+    
+    // Notify ministry of status change
+    if (assignment && status !== 'pending') {
+      await env.DB.prepare(`
+        INSERT INTO case_notifications (
+          case_id, notification_type, target_organization, 
+          title, message, priority
+        ) VALUES (?, 'case_update', 'ministry', ?, ?, 'normal')
+      `).bind(
+        assignment.case_id,
+        `${assignment.organization_type} updated Case ${assignment.case_number}`,
+        `Status changed to: ${status.replace('_', ' ').toUpperCase()}`,
+      ).run();
+    }
+    
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Error updating assignment status:', error);
+    return c.json({ error: 'Failed to update assignment' }, 500);
+  }
+});
+
+// Get case details with timeline
+app.get('/api/cases/:caseNumber/details', async (c) => {
+  const { env } = c;
+  const caseNumber = c.req.param('caseNumber');
+  const orgType = c.req.query('organization') || c.req.query('org_type'); // Optional: filter by organization
+  
+  try {
+    // Get case info
+    const caseInfo = await env.DB.prepare(`
+      SELECT 
+        c.*,
+        gt.name as violence_type,
+        gt.category as violence_category,
+        d.name as district_name
+      FROM gbv_cases c
+      LEFT JOIN gbv_types gt ON c.gbv_type_id = gt.id
+      LEFT JOIN districts d ON c.district_id = d.id
+      WHERE c.case_number = ?
+    `).bind(caseNumber).first();
+    
+    if (!caseInfo) {
+      return c.json({ error: 'Case not found' }, 404);
+    }
+    
+    // Get assignments
+    const assignmentsQuery = orgType 
+      ? env.DB.prepare(`
+          SELECT 
+            ca.*,
+            u.name as assigned_user_name
+          FROM case_assignments ca
+          LEFT JOIN users u ON ca.assigned_user_id = u.id
+          WHERE ca.case_id = ? AND ca.organization_type = ?
+          ORDER BY ca.priority DESC
+        `).bind(caseInfo.id, orgType)
+      : env.DB.prepare(`
+          SELECT 
+            ca.*,
+            u.name as assigned_user_name
+          FROM case_assignments ca
+          LEFT JOIN users u ON ca.assigned_user_id = u.id
+          WHERE ca.case_id = ?
+          ORDER BY ca.priority DESC
+        `).bind(caseInfo.id);
+    
+    const assignments = await assignmentsQuery.all();
+    
+    // Get timeline
+    const timeline = await env.DB.prepare(`
+      SELECT 
+        cu.*,
+        u.name as created_by_name
+      FROM case_updates cu
+      LEFT JOIN users u ON cu.created_by = u.id
+      WHERE cu.case_id = ?
+      ORDER BY cu.created_at DESC
+    `).bind(caseInfo.id).all();
+    
+    return c.json({
+      case: caseInfo,
+      assignments: assignments.results || [],
+      timeline: timeline.results || []
+    });
+  } catch (error) {
+    console.error('Error fetching case details:', error);
+    return c.json({ error: 'Failed to fetch case details' }, 500);
+  }
+});
+
+// Add investigation update (Police FSU)
+app.post('/api/cases/:caseId/investigation', async (c) => {
+  const { env } = c;
+  const caseId = c.req.param('caseId');
+  const data = await c.req.json();
+  
+  try {
+    const result = await env.DB.prepare(`
+      INSERT INTO investigation_updates (
+        case_id, assignment_id, investigation_status, suspect_status,
+        evidence_collected, witness_count, next_action, next_action_date,
+        notes, updated_by
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      caseId,
+      data.assignment_id,
+      data.investigation_status,
+      data.suspect_status || null,
+      data.evidence_collected || null,
+      data.witness_count || 0,
+      data.next_action || null,
+      data.next_action_date || null,
+      data.notes || null,
+      data.user_id
+    ).run();
+    
+    // Create timeline update
+    await env.DB.prepare(`
+      INSERT INTO case_updates (
+        case_id, assignment_id, update_type, update_category,
+        title, description, created_by, created_by_organization
+      ) VALUES (?, ?, 'investigation_update', 'investigation', ?, ?, ?, 'police_fsu')
+    `).bind(
+      caseId,
+      data.assignment_id,
+      `Investigation Update: ${data.investigation_status}`,
+      data.notes || 'Investigation progress updated',
+      data.user_id
+    ).run();
+    
+    return c.json({ success: true, update_id: result.meta.last_row_id });
+  } catch (error) {
+    console.error('Error adding investigation update:', error);
+    return c.json({ error: 'Failed to add investigation update' }, 500);
+  }
+});
+
+// Add medical service record (Rainbo) - ENHANCED with comprehensive services
+app.post('/api/cases/:caseId/medical', async (c) => {
+  const { env } = c;
+  const caseId = c.req.param('caseId');
+  const data = await c.req.json();
+  
+  try {
+    // Build comprehensive services description
+    const servicesProvided = [];
+    if (data.pep_given) servicesProvided.push('PEP Administration');
+    if (data.sti_test) servicesProvided.push('STI Testing');
+    if (data.forensic_exam) servicesProvided.push('Forensic Examination');
+    if (data.emergency_contraception) servicesProvided.push('Emergency Contraception');
+    if (data.wound_care) servicesProvided.push('Wound Care');
+    if (data.pregnancy_test) servicesProvided.push('Pregnancy Testing');
+    if (data.crisis_counseling) servicesProvided.push('Crisis Counseling');
+    if (data.trauma_therapy) servicesProvided.push('Trauma Therapy');
+    if (data.family_counseling) servicesProvided.push('Family Counseling');
+    if (data.support_group) servicesProvided.push('Support Group Referral');
+    if (data.dignity_kit) servicesProvided.push('Dignity Kit');
+    if (data.legal_referral) servicesProvided.push('Legal Referral');
+    if (data.safe_house) servicesProvided.push('Safe House Referral');
+    if (data.economic_support) servicesProvided.push('Economic Support');
+    
+    const result = await env.DB.prepare(`
+      INSERT INTO medical_services (
+        case_id, assignment_id, examination_type, medical_status,
+        services_provided, pep_administered, sti_testing_done,
+        pregnancy_test_done, forensic_evidence_collected,
+        injuries_documented, treatment_provided,
+        follow_up_required, follow_up_date, notes, updated_by
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      caseId,
+      data.assignment_id,
+      'comprehensive_services',
+      'completed',
+      JSON.stringify(servicesProvided),
+      data.pep_given ? 1 : 0,
+      data.sti_test ? 1 : 0,
+      data.pregnancy_test ? 1 : 0,
+      data.forensic_exam ? 1 : 0,
+      data.wound_description || null,
+      JSON.stringify({
+        medical: {
+          pep: data.pep_given ? {
+            start_date: data.pep_start_date,
+            medication: data.pep_medication,
+            dosage_days: data.pep_dosage_days
+          } : null,
+          sti: data.sti_test ? {
+            results: data.sti_results,
+            notes: data.sti_notes
+          } : null,
+          forensic: data.forensic_exam ? {
+            findings: data.forensic_findings,
+            evidence: data.evidence_collected
+          } : null,
+          contraception: data.emergency_contraception ? {
+            type: data.contraception_type
+          } : null,
+          wound: data.wound_care ? {
+            description: data.wound_description,
+            treatment: data.wound_treatment
+          } : null,
+          pregnancy: data.pregnancy_test ? {
+            result: data.pregnancy_result,
+            notes: data.pregnancy_notes
+          } : null
+        },
+        psychosocial: {
+          crisis: data.crisis_counseling ? {
+            sessions: data.counseling_sessions,
+            counselor: data.counselor_name
+          } : null,
+          trauma: data.trauma_therapy ? {
+            type: data.therapy_type
+          } : null,
+          family: data.family_counseling ? {
+            members_count: data.family_members_count
+          } : null,
+          support_group: data.support_group ? {
+            name: data.support_group_name
+          } : null
+        },
+        additional: {
+          dignity_kit: data.dignity_kit ? {
+            contents: data.dignity_kit_contents
+          } : null,
+          legal: data.legal_referral ? {
+            organization: data.legal_organization,
+            lawyer: data.lawyer_name
+          } : null,
+          safe_house: data.safe_house ? {
+            name: data.safe_house_name
+          } : null,
+          economic: data.economic_support ? {
+            type: data.economic_support_type
+          } : null
+        },
+        provider: data.provider_name
+      }),
+      data.follow_up_date ? 1 : 0,
+      data.follow_up_date || null,
+      data.service_notes || null,
+      data.user_id
+    ).run();
+    
+    // Create timeline update with comprehensive description
+    await env.DB.prepare(`
+      INSERT INTO case_updates (
+        case_id, assignment_id, update_type, update_category,
+        title, description, created_by, created_by_organization, is_milestone
+      ) VALUES (?, ?, 'medical_update', 'medical', ?, ?, ?, 'rainbo', TRUE)
+    `).bind(
+      caseId,
+      data.assignment_id,
+      'Rainbo Services Provided',
+      `Comprehensive services by ${data.provider_name}: ${servicesProvided.join(', ')}. ${data.service_notes || ''}`,
+      data.user_id
+    ).run();
+    
+    return c.json({ success: true, service_id: result.meta.last_row_id });
+  } catch (error) {
+    console.error('Error adding medical service:', error);
+    return c.json({ error: 'Failed to record medical services. Please try again.' }, 500);
+  }
+});
+
+// ==================== RAINBO STATISTICS & REPORTS API ====================
+
+// Get Rainbo-specific statistics
+app.get('/api/organization/rainbo/statistics', async (c) => {
+  const { env } = c;
+  
+  try {
+    // Get total cases assigned to Rainbo
+    const totalCases = await env.DB.prepare(`
+      SELECT COUNT(DISTINCT ca.case_id) as count
+      FROM case_assignments ca
+      WHERE ca.organization_type = 'rainbo'
+    `).first();
+    
+    // Get cases by status
+    const casesByStatus = await env.DB.prepare(`
+      SELECT 
+        ca.status,
+        COUNT(*) as count
+      FROM case_assignments ca
+      WHERE ca.organization_type = 'rainbo'
+      GROUP BY ca.status
+    `).all();
+    
+    // Get PEP administration stats
+    const pepStats = await env.DB.prepare(`
+      SELECT 
+        COUNT(*) as total_pep,
+        COUNT(CASE WHEN pep_administered = 1 THEN 1 END) as pep_given
+      FROM medical_services ms
+      JOIN case_assignments ca ON ms.assignment_id = ca.id
+      WHERE ca.organization_type = 'rainbo'
+    `).first();
+    
+    // Get services provided breakdown
+    const servicesBreakdown = await env.DB.prepare(`
+      SELECT 
+        SUM(CASE WHEN pep_administered = 1 THEN 1 ELSE 0 END) as pep_count,
+        SUM(CASE WHEN sti_testing_done = 1 THEN 1 ELSE 0 END) as sti_count,
+        SUM(CASE WHEN pregnancy_test_done = 1 THEN 1 ELSE 0 END) as pregnancy_test_count,
+        SUM(CASE WHEN forensic_evidence_collected = 1 THEN 1 ELSE 0 END) as forensic_exam_count,
+        SUM(CASE WHEN follow_up_required = 1 THEN 1 ELSE 0 END) as follow_up_required_count
+      FROM medical_services ms
+      JOIN case_assignments ca ON ms.assignment_id = ca.id
+      WHERE ca.organization_type = 'rainbo'
+    `).first();
+    
+    // Get follow-ups needed
+    const followUps = await env.DB.prepare(`
+      SELECT 
+        COUNT(*) as count
+      FROM medical_services ms
+      JOIN case_assignments ca ON ms.assignment_id = ca.id
+      WHERE ca.organization_type = 'rainbo' 
+        AND ms.follow_up_required = 1
+        AND ms.follow_up_date >= date('now')
+    `).first();
+    
+    // Get monthly service trends (last 6 months)
+    const monthlyTrends = await env.DB.prepare(`
+      SELECT 
+        strftime('%Y-%m', ms.service_date) as month,
+        COUNT(*) as service_count
+      FROM medical_services ms
+      JOIN case_assignments ca ON ms.assignment_id = ca.id
+      WHERE ca.organization_type = 'rainbo'
+        AND ms.service_date >= date('now', '-6 months')
+      GROUP BY strftime('%Y-%m', ms.service_date)
+      ORDER BY month
+    `).all();
+    
+    return c.json({
+      summary: {
+        total_cases: totalCases?.count || 0,
+        pending: casesByStatus.results?.find((s: any) => s.status === 'pending')?.count || 0,
+        in_progress: casesByStatus.results?.find((s: any) => s.status === 'accepted')?.count || 0,
+        completed: casesByStatus.results?.find((s: any) => s.status === 'completed')?.count || 0,
+        pep_administered: pepStats?.pep_given || 0,
+        follow_ups_needed: followUps?.count || 0
+      },
+      services: servicesBreakdown || {},
+      monthly_trends: monthlyTrends.results || [],
+      cases_by_status: casesByStatus.results || []
+    });
+  } catch (error) {
+    console.error('Error fetching Rainbo statistics:', error);
+    return c.json({ error: 'Failed to fetch statistics' }, 500);
+  }
+});
+
+// Get Rainbo follow-up appointments
+app.get('/api/organization/rainbo/followups', async (c) => {
+  const { env } = c;
+  
+  try {
+    const followUps = await env.DB.prepare(`
+      SELECT 
+        gc.case_number,
+        gc.incident_date,
+        gt.name as violence_type,
+        ms.follow_up_date,
+        ms.service_date,
+        ms.notes,
+        d.name as district_name
+      FROM medical_services ms
+      JOIN case_assignments ca ON ms.assignment_id = ca.id
+      JOIN gbv_cases gc ON ms.case_id = gc.id
+      LEFT JOIN gbv_types gt ON gc.gbv_type_id = gt.id
+      LEFT JOIN districts d ON gc.district_id = d.id
+      WHERE ca.organization_type = 'rainbo'
+        AND ms.follow_up_required = 1
+        AND ms.follow_up_date >= date('now')
+      ORDER BY ms.follow_up_date ASC
+    `).all();
+    
+    return c.json({ followups: followUps.results || [] });
+  } catch (error) {
+    console.error('Error fetching follow-ups:', error);
+    return c.json({ error: 'Failed to fetch follow-ups' }, 500);
+  }
+});
+
+// ==================== POLICE FSU STATISTICS & REPORTS API ====================
+
+// Get Police FSU-specific statistics
+app.get('/api/organization/police_fsu/statistics', async (c) => {
+  const { env } = c;
+  
+  try {
+    // Total cases assigned to Police FSU
+    const totalCases = await env.DB.prepare(`
+      SELECT COUNT(DISTINCT ca.case_id) as count
+      FROM case_assignments ca
+      WHERE ca.organization_type = 'police_fsu'
+    `).first();
+    
+    // Cases by assignment status
+    const casesByStatus = await env.DB.prepare(`
+      SELECT 
+        ca.status,
+        COUNT(*) as count
+      FROM case_assignments ca
+      WHERE ca.organization_type = 'police_fsu'
+      GROUP BY ca.status
+    `).all();
+    
+    // Investigation status breakdown
+    const investigationStats = await env.DB.prepare(`
+      SELECT 
+        iu.investigation_status,
+        COUNT(*) as count
+      FROM (
+        SELECT case_id, investigation_status,
+               ROW_NUMBER() OVER (PARTITION BY case_id ORDER BY updated_at DESC) as rn
+        FROM investigation_updates
+      ) iu
+      WHERE iu.rn = 1
+      GROUP BY iu.investigation_status
+    `).all();
+    
+    // Suspect status breakdown
+    const suspectStats = await env.DB.prepare(`
+      SELECT 
+        iu.suspect_status,
+        COUNT(*) as count
+      FROM (
+        SELECT case_id, suspect_status,
+               ROW_NUMBER() OVER (PARTITION BY case_id ORDER BY updated_at DESC) as rn
+        FROM investigation_updates
+        WHERE suspect_status IS NOT NULL
+      ) iu
+      WHERE iu.rn = 1
+      GROUP BY iu.suspect_status
+    `).all();
+    
+    // Evidence collection stats
+    const evidenceStats = await env.DB.prepare(`
+      SELECT 
+        COUNT(DISTINCT case_id) as cases_with_evidence,
+        SUM(witness_count) as total_witnesses
+      FROM investigation_updates
+      WHERE evidence_collected IS NOT NULL AND evidence_collected != ''
+    `).first();
+    
+    // Cases by priority
+    const priorityStats = await env.DB.prepare(`
+      SELECT 
+        ca.priority,
+        COUNT(*) as count
+      FROM case_assignments ca
+      WHERE ca.organization_type = 'police_fsu'
+      GROUP BY ca.priority
+    `).all();
+    
+    // Monthly investigation trends
+    const monthlyTrends = await env.DB.prepare(`
+      SELECT 
+        strftime('%Y-%m', ca.assigned_at) as month,
+        COUNT(*) as case_count
+      FROM case_assignments ca
+      WHERE ca.organization_type = 'police_fsu'
+        AND ca.assigned_at >= date('now', '-6 months')
+      GROUP BY strftime('%Y-%m', ca.assigned_at)
+      ORDER BY month
+    `).all();
+    
+    return c.json({
+      summary: {
+        total_cases: totalCases?.count || 0,
+        pending: casesByStatus.results?.find((s: any) => s.status === 'pending')?.count || 0,
+        investigating: casesByStatus.results?.find((s: any) => s.status === 'accepted')?.count || 0,
+        completed: casesByStatus.results?.find((s: any) => s.status === 'completed')?.count || 0,
+        cases_with_evidence: evidenceStats?.cases_with_evidence || 0,
+        total_witnesses: evidenceStats?.total_witnesses || 0,
+        urgent_cases: priorityStats.results?.find((p: any) => p.priority === 'urgent')?.count || 0
+      },
+      investigation_status: investigationStats.results || [],
+      suspect_status: suspectStats.results || [],
+      priority_breakdown: priorityStats.results || [],
+      monthly_trends: monthlyTrends.results || []
+    });
+  } catch (error) {
+    console.error('Error fetching Police FSU statistics:', error);
+    return c.json({ error: 'Failed to fetch statistics' }, 500);
+  }
+});
+
+// Get Police FSU investigation reports
+app.get('/api/organization/police_fsu/reports', async (c) => {
+  const { env } = c;
+  const reportType = c.req.query('type') || 'investigation_summary';
+  
+  try {
+    if (reportType === 'investigation_summary') {
+      // Detailed investigation summary
+      const report = await env.DB.prepare(`
+        SELECT 
+          gc.case_number,
+          gc.incident_date,
+          gt.name as violence_type,
+          d.name as district,
+          iu.investigation_status,
+          iu.suspect_status,
+          iu.witness_count,
+          iu.updated_at as last_update,
+          ca.priority,
+          ca.status as assignment_status
+        FROM case_assignments ca
+        JOIN gbv_cases gc ON ca.case_id = gc.id
+        LEFT JOIN gbv_types gt ON gc.gbv_type_id = gt.id
+        LEFT JOIN districts d ON gc.district_id = d.id
+        LEFT JOIN (
+          SELECT case_id, investigation_status, suspect_status, witness_count, updated_at,
+                 ROW_NUMBER() OVER (PARTITION BY case_id ORDER BY updated_at DESC) as rn
+          FROM investigation_updates
+        ) iu ON gc.id = iu.case_id AND iu.rn = 1
+        WHERE ca.organization_type = 'police_fsu'
+        ORDER BY gc.incident_date DESC
+      `).all();
+      
+      return c.json({ report: report.results || [], type: 'investigation_summary' });
+    }
+    
+    return c.json({ error: 'Unknown report type' }, 400);
+  } catch (error) {
+    console.error('Error generating Police FSU report:', error);
+    return c.json({ error: 'Failed to generate report' }, 500);
+  }
+});
+
+// Rainbo Centre Dashboard - ENHANCED VERSION
 app.get('/rainbo-dashboard', (c) => {
   return c.html(
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Rainbo Centre Dashboard - GBV System</title>
+        <title>Rainbo Initiative - GBV One-Stop Center</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
       </head>
-      <body className="bg-gray-50">
+      <body className="bg-gradient-to-br from-purple-50 via-blue-50 to-purple-50 min-h-screen">
         <div id="rainbo-dashboard-root"></div>
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
-        <script src="/static/rainbo-dashboard.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="/static/rainbo-dashboard-enhanced.js"></script>
       </body>
     </html>
   );
 });
 
-// Police FSU Dashboard
+// Police FSU Dashboard - ENHANCED VERSION with Evidence Chain of Custody
 app.get('/police-dashboard', (c) => {
   return c.html(
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Police FSU Dashboard - GBV System</title>
+        <title>Sierra Leone Police FSU - Evidence & Investigation System</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+      </head>
+      <body className="bg-gradient-to-br from-blue-50 via-gray-50 to-blue-50 min-h-screen">
+        <div id="police-dashboard-root"></div>
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="/static/police-dashboard-enhanced.js"></script>
+      </body>
+    </html>
+  );
+});
+
+// Demo Flow Page
+app.get('/demo', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Interactive Demo - GBV Response System</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
       </head>
       <body className="bg-gray-50">
-        <div id="police-dashboard-root"></div>
+        <div id="demo-flow-root"></div>
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
-        <script src="/static/police-dashboard.js"></script>
+        <script src="/static/demo-flow.js"></script>
       </body>
     </html>
-  );
+  `);
 });
 
 // Main Dashboard Page
@@ -645,6 +1425,10 @@ app.get('/', (c) => {
             </button>
             <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
               <i className="fas fa-user-cog mr-2"></i>Admin
+            </button>
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap relative" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
+              <i className="fas fa-play-circle mr-2"></i>Interactive Demo
+              <span className="ml-1 px-1.5 py-0.5 text-xs rounded animate-pulse" style="background-color: #00ff00; color: #1e3a8a;">Live</span>
             </button>
           </div>
         </div>
