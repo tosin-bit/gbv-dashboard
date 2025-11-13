@@ -1469,6 +1469,222 @@ app.get('/demo', (c) => {
   `);
 });
 
+// Educational Modules Hub Page
+app.get('/education', (c) => {
+  return c.render(
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-gradient-to-r from-purple-600 to-indigo-700 text-white shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold">Educational Modules Hub</h1>
+              <p className="text-purple-100 mt-1">Interactive Training for GBV Prevention & Response</p>
+            </div>
+            <a href="/" className="px-4 py-2 bg-white text-purple-600 rounded hover:bg-gray-100 transition-colors flex items-center gap-2">
+              <i className="fas fa-arrow-left"></i>
+              Back to Dashboard
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Welcome Section */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <i className="fas fa-graduation-cap text-purple-600 text-2xl"></i>
+            </div>
+            <div className="flex-1">
+              <h2 className="text-xl font-bold text-gray-800 mb-2">Welcome to the Learning Hub</h2>
+              <p className="text-gray-600 mb-4">
+                Enhance your knowledge and skills in GBV prevention, response, and survivor support through our interactive modules.
+                Each module includes lessons, quizzes, and practical scenarios.
+              </p>
+              <div className="flex flex-wrap gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <i className="fas fa-check-circle text-green-600"></i>
+                  <span>Self-paced learning</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <i className="fas fa-check-circle text-green-600"></i>
+                  <span>Interactive quizzes</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <i className="fas fa-check-circle text-green-600"></i>
+                  <span>Progress tracking</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <i className="fas fa-check-circle text-green-600"></i>
+                  <span>Completion certificates</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Filter Tabs */}
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+          <button className="px-4 py-2 bg-purple-600 text-white rounded-lg font-medium">
+            All Modules
+          </button>
+          <button className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+            Prevention
+          </button>
+          <button className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+            Service Provider Training
+          </button>
+          <button className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+            Community Education
+          </button>
+        </div>
+
+        {/* Modules Grid */}
+        <div id="modules-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Modules loaded by JavaScript */}
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-white border-t mt-12">
+        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-500">GBV Dashboard</span>
+              <span className="text-sm text-gray-300">|</span>
+              <span className="text-sm text-gray-500">Insyt Solutions</span>
+            </div>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-500">Version 2.0 - 2025</span>
+              <span className="text-sm text-gray-300">|</span>
+              <span className="text-sm text-gray-500">© 2024</span>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      {/* Load Education Hub JavaScript */}
+      <script src="/static/education-hub.js"></script>
+    </div>
+  );
+});
+
+// Resource Library Page
+app.get('/resources', (c) => {
+  return c.render(
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold">Resource Library</h1>
+              <p className="text-blue-100 mt-1">Sierra Leone Spotlight Initiative - GBV Resources</p>
+            </div>
+            <a href="/" className="px-4 py-2 bg-white text-blue-600 rounded hover:bg-gray-100 transition-colors flex items-center gap-2">
+              <i className="fas fa-arrow-left"></i>
+              Back to Dashboard
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Search Bar */}
+        <div className="mb-8">
+          <div className="relative max-w-2xl mx-auto">
+            <input
+              type="text"
+              id="resource-search"
+              placeholder="Search resources by title, keywords, or tags..."
+              className="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <i className="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+          </div>
+        </div>
+
+        {/* Breadcrumb */}
+        <div id="resource-breadcrumb" className="text-sm text-gray-600 mb-6">
+          <span>All Resources</span>
+        </div>
+
+        {/* Categories Grid */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Browse by Category</h2>
+          <div id="category-cards" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Categories loaded by JavaScript */}
+          </div>
+        </div>
+
+        {/* Resources List */}
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Featured Resources</h2>
+          <div id="resources-list" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Resources loaded by JavaScript */}
+          </div>
+        </div>
+
+        {/* Quick Links */}
+        <div className="mt-12 bg-blue-50 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Access</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <a href="tel:116" className="flex items-center gap-3 p-4 bg-white rounded-lg hover:shadow-md transition-shadow">
+              <i className="fas fa-phone text-2xl text-blue-600"></i>
+              <div>
+                <div className="font-semibold text-gray-800">GBV Hotline</div>
+                <div className="text-sm text-gray-600">Call 116 (24/7)</div>
+              </div>
+            </a>
+            <div className="flex items-center gap-3 p-4 bg-white rounded-lg">
+              <i className="fas fa-hospital text-2xl text-green-600"></i>
+              <div>
+                <div className="font-semibold text-gray-800">Rainbo Centers</div>
+                <div className="text-sm text-gray-600">Medical Care & Support</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-4 bg-white rounded-lg">
+              <i className="fas fa-shield-alt text-2xl text-red-600"></i>
+              <div>
+                <div className="font-semibold text-gray-800">Police FSU</div>
+                <div className="text-sm text-gray-600">Report & Investigation</div>
+              </div>
+            </div>
+            <a href="/education" className="flex items-center gap-3 p-4 bg-white rounded-lg hover:shadow-md transition-shadow">
+              <i className="fas fa-graduation-cap text-2xl text-purple-600"></i>
+              <div>
+                <div className="font-semibold text-gray-800">Training Hub</div>
+                <div className="text-sm text-gray-600">Interactive Modules</div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-white border-t mt-12">
+        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-500">GBV Dashboard</span>
+              <span className="text-sm text-gray-300">|</span>
+              <span className="text-sm text-gray-500">Insyt Solutions</span>
+            </div>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-500">Version 2.0 - 2025</span>
+              <span className="text-sm text-gray-300">|</span>
+              <span className="text-sm text-gray-500">© 2024</span>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      {/* Load Resource Library JavaScript */}
+      <script src="/static/resource-library.js"></script>
+    </div>
+  );
+});
+
 // Main Dashboard Page
 app.get('/', (c) => {
   return c.render(
@@ -1804,6 +2020,7 @@ app.get('/', (c) => {
       <script src="/static/portal-systems.js"></script>
       <script src="/static/voice-recording.js"></script>
       <script src="/static/view-cases.js"></script>
+      <script src="/static/case-notes.js"></script>
     </div>
   );
 });

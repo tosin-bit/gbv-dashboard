@@ -343,21 +343,10 @@ async function handleFSULogin(event) {
     }
 }
 
-// Resources Tab
+// Resources Tab - Redirect to comprehensive resource library
 function loadResources(section) {
-    section.innerHTML = `
-        <div class="space-y-6">
-            <div class="bg-white rounded-lg shadow-lg p-6">
-                <h2 class="text-2xl font-bold mb-4" style="color: #1e3a8a;">
-                    <i class="fas fa-book mr-2"></i>GBV Resources & Documentation
-                </h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    ${generateResourceCards()}
-                </div>
-            </div>
-        </div>
-    `;
+    // Redirect to the new comprehensive resource library page
+    window.location.href = '/resources';
 }
 
 function generateResourceCards() {
