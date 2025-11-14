@@ -1806,6 +1806,26 @@ app.get('/', (c) => {
                 <i className="fas fa-user-shield"></i>
                 <span>Survivor Portal</span>
               </button>
+              <button onclick="showVideoResources()" 
+                      className="px-4 py-2 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-lg hover:from-red-700 hover:to-orange-700 transition-all font-semibold shadow-md flex items-center gap-2">
+                <i className="fas fa-video"></i>
+                <span>Videos</span>
+              </button>
+              <button onclick="showCustomReportBuilder()" 
+                      className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all font-semibold shadow-md flex items-center gap-2">
+                <i className="fas fa-file-invoice"></i>
+                <span>Reports</span>
+              </button>
+              <button onclick="showWhatsAppSMS()" 
+                      className="px-4 py-2 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg hover:from-green-600 hover:to-teal-600 transition-all font-semibold shadow-md flex items-center gap-2">
+                <i className="fas fa-mobile-alt"></i>
+                <span>WhatsApp/SMS</span>
+              </button>
+              <button onclick="showExportSystem()" 
+                      className="px-4 py-2 bg-gradient-to-r from-gray-700 to-gray-900 text-white rounded-lg hover:from-gray-800 hover:to-black transition-all font-semibold shadow-md flex items-center gap-2">
+                <i className="fas fa-file-download"></i>
+                <span>Export</span>
+              </button>
             </div>
             <button 
               onclick="refreshDashboard()"
@@ -2047,6 +2067,12 @@ app.get('/', (c) => {
       <script src="/static/internal-messaging.js"></script>
       <script src="/static/interactive-training.js"></script>
       <script src="/static/survivor-portal.js"></script>
+      <script src="/static/whatsapp-sms.js"></script>
+      <script src="/static/custom-report-builder.js"></script>
+      <script src="/static/video-resources.js"></script>
+      <script src="/static/keyboard-shortcuts.js"></script>
+      <script src="/static/quick-stats-widget.js"></script>
+      <script src="/static/export-system.js"></script>
     </div>
   );
 });
