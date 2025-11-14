@@ -1826,6 +1826,11 @@ app.get('/', (c) => {
                 <i className="fas fa-file-download"></i>
                 <span>Export</span>
               </button>
+              <button onclick="showPictureBasedReport()" 
+                      className="px-4 py-2 bg-gradient-to-r from-pink-600 to-red-600 text-white rounded-lg hover:from-pink-700 hover:to-red-700 transition-all font-semibold shadow-md flex items-center gap-2 animate-pulse">
+                <i className="fas fa-image"></i>
+                <span>📸 Picture Report</span>
+              </button>
             </div>
             <button 
               onclick="refreshDashboard()"
@@ -2073,6 +2078,9 @@ app.get('/', (c) => {
       <script src="/static/keyboard-shortcuts.js"></script>
       <script src="/static/quick-stats-widget.js"></script>
       <script src="/static/export-system.js"></script>
+      <script src="/static/accessibility-voice-navigation.js"></script>
+      <script src="/static/accessibility-picture-reporting.js"></script>
+      <script src="/static/accessibility-simple-mode.js"></script>
     </div>
   );
 });
