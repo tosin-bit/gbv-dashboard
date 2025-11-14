@@ -1788,8 +1788,25 @@ app.get('/', (c) => {
             <span className="ml-4">| Available 24/7 in Krio, English, Mende & Temne</span>
           </div>
 
-          {/* Refresh Button */}
-          <div className="flex justify-end mb-4">
+          {/* Quick Actions Bar */}
+          <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
+            <div className="flex gap-3 flex-wrap">
+              <button onclick="showMessagingSystem()" 
+                      className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all font-semibold shadow-md flex items-center gap-2">
+                <i className="fas fa-comments"></i>
+                <span>Team Chat</span>
+              </button>
+              <button onclick="showInteractiveTraining()" 
+                      className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all font-semibold shadow-md flex items-center gap-2">
+                <i className="fas fa-gamepad"></i>
+                <span>Training</span>
+              </button>
+              <button onclick="showSurvivorPortal()" 
+                      className="px-4 py-2 bg-gradient-to-r from-green-600 to-teal-600 text-white rounded-lg hover:from-green-700 hover:to-teal-700 transition-all font-semibold shadow-md flex items-center gap-2">
+                <i className="fas fa-user-shield"></i>
+                <span>Survivor Portal</span>
+              </button>
+            </div>
             <button 
               onclick="refreshDashboard()"
               className="px-4 py-2 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity flex items-center space-x-2"
@@ -2027,6 +2044,9 @@ app.get('/', (c) => {
       <script src="/static/risk-assessment.js"></script>
       <script src="/static/advanced-analytics.js"></script>
       <script src="/static/panic-button.js"></script>
+      <script src="/static/internal-messaging.js"></script>
+      <script src="/static/interactive-training.js"></script>
+      <script src="/static/survivor-portal.js"></script>
     </div>
   );
 });
