@@ -27,8 +27,15 @@ function loadAnalyticsDashboard(section) {
                         <option value="all">All Time</option>
                     </select>
                     
+                    <button onclick="showAdvancedAnalytics()" 
+                            class="ml-auto px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg transition-all font-semibold shadow-lg flex items-center gap-2">
+                        <i class="fas fa-chart-line"></i>
+                        Advanced Analytics
+                        <span class="px-2 py-0.5 bg-white bg-opacity-20 rounded text-xs">AI</span>
+                    </button>
+                    
                     <button onclick="exportAnalytics()" 
-                            class="ml-auto px-4 py-2 rounded-md text-white" style="background-color: #32cd32;">
+                            class="px-4 py-2 rounded-md text-white" style="background-color: #32cd32;">
                         <i class="fas fa-download mr-2"></i>Export Report
                     </button>
                 </div>

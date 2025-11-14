@@ -2024,6 +2024,9 @@ app.get('/', (c) => {
       <script src="/static/dark-mode.js"></script>
       <script src="/static/notifications.js"></script>
       <script src="/static/ai-chatbot.js"></script>
+      <script src="/static/risk-assessment.js"></script>
+      <script src="/static/advanced-analytics.js"></script>
+      <script src="/static/panic-button.js"></script>
     </div>
   );
 });

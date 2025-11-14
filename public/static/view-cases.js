@@ -234,15 +234,21 @@ function displayCases(cases) {
                                 ${getPriorityBadge(c.priority_level)}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <div class="flex items-center gap-3">
+                                <div class="flex items-center gap-2">
                                     <button onclick="viewCaseDetails('${c.case_number}')" 
-                                            class="text-blue-600 hover:text-blue-900">
-                                        <i class="fas fa-eye mr-1"></i>View
+                                            class="text-blue-600 hover:text-blue-900"
+                                            title="View Case Details">
+                                        <i class="fas fa-eye"></i>
                                     </button>
                                     <button onclick="showCaseNotesModal(${c.id}, '${c.case_number}')" 
                                             class="text-green-600 hover:text-green-900"
                                             title="Add/View Case Notes">
-                                        <i class="fas fa-clipboard-list mr-1"></i>Notes
+                                        <i class="fas fa-clipboard-list"></i>
+                                    </button>
+                                    <button onclick="showRiskAssessmentModal(${c.id}, '${c.case_number}')" 
+                                            class="text-red-600 hover:text-red-900"
+                                            title="Risk Assessment">
+                                        <i class="fas fa-exclamation-triangle"></i>
                                     </button>
                                 </div>
                             </td>
@@ -711,15 +717,24 @@ function showCaseModal(caseNumber, data, loading = false, error = null) {
                     </div>
                     
                     <!-- Footer -->
-                    <div class="bg-gray-50 px-6 py-4 flex justify-between items-center">
-                        <button onclick="showCaseNotesModal(${data.case.id}, '${caseNumber}')" 
-                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
-                            <i class="fas fa-clipboard-list"></i>
-                            Add/View Notes
-                        </button>
-                        <button onclick="closeCaseModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
-                            Close
-                        </button>
+                    <div class="bg-gray-50 px-6 py-4">
+                        <div class="flex flex-wrap justify-between items-center gap-3">
+                            <div class="flex flex-wrap gap-3">
+                                <button onclick="showCaseNotesModal(${data.case.id}, '${caseNumber}')" 
+                                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                                    <i class="fas fa-clipboard-list"></i>
+                                    Add/View Notes
+                                </button>
+                                <button onclick="showRiskAssessmentModal(${data.case.id}, '${caseNumber}')" 
+                                        class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    Risk Assessment
+                                </button>
+                            </div>
+                            <button onclick="closeCaseModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                                Close
+                            </button>
+                        </div>
                     </div>
                 `}
             </div>
