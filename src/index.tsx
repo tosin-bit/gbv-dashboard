@@ -2021,6 +2021,9 @@ app.get('/', (c) => {
       <script src="/static/voice-recording.js"></script>
       <script src="/static/view-cases.js"></script>
       <script src="/static/case-notes.js"></script>
+      <script src="/static/dark-mode.js"></script>
+      <script src="/static/notifications.js"></script>
+      <script src="/static/ai-chatbot.js"></script>
     </div>
   );
 });
