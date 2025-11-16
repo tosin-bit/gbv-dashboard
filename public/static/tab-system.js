@@ -11,6 +11,7 @@ const TAB_SECTIONS = {
     'district-map': 'district-map-section',
     'analytics': 'analytics-section',
     'spotlight-initiative': 'spotlight-initiative-section',
+    'survivor-portal': 'survivor-portal-section',
     'rainbo-portal': 'rainbo-portal-section',
     'police-fsu': 'police-fsu-section',
     'resources': 'resources-section',
@@ -77,6 +78,7 @@ function setupTabClickHandlers() {
             else if (tabText.includes('district map')) tabKey = 'district-map';
             else if (tabText.includes('analytics') && !tabText.includes('sdg')) tabKey = 'analytics';
             else if (tabText.includes('spotlight initiative')) tabKey = 'spotlight-initiative';
+            else if (tabText.includes('survivor portal')) tabKey = 'survivor-portal';
             else if (tabText.includes('rainbo')) tabKey = 'rainbo-portal';
             else if (tabText.includes('police')) tabKey = 'police-fsu';
             else if (tabText.includes('resources')) tabKey = 'resources';
@@ -140,12 +142,13 @@ function updateTabButtonStates(activeTabKey) {
         'district-map': 3,
         'analytics': 4,
         'spotlight-initiative': 5,
-        'rainbo-portal': 6,
-        'police-fsu': 7,
-        'resources': 8,
-        'voice-report': 9,
-        'admin': 10,
-        'demo-flow': 11
+        'survivor-portal': 6,
+        'rainbo-portal': 7,
+        'police-fsu': 8,
+        'resources': 9,
+        'voice-report': 10,
+        'admin': 11,
+        'demo-flow': 12
     };
     
     tabs.forEach((tab, index) => {
@@ -189,6 +192,9 @@ function loadTabContent(tabKey, section) {
             break;
         case 'spotlight-initiative':
             loadSpotlightInitiative(section);
+            break;
+        case 'survivor-portal':
+            loadSurvivorPortal(section);
             break;
         case 'rainbo-portal':
             loadRainboPortal(section);

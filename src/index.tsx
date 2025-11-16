@@ -1748,6 +1748,10 @@ app.get('/', (c) => {
               <span className="ml-1 px-1.5 py-0.5 text-xs rounded animate-pulse" style="background-color: #00ff00; color: #1e3a8a;">Phase 1</span>
             </button>
             <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap relative" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
+              <i className="fas fa-heart mr-2"></i>Survivor Portal
+              <span className="ml-1 px-1.5 py-0.5 text-xs rounded animate-pulse" style="background-color: #ff69b4; color: #ffffff;">Safe</span>
+            </button>
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap relative" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
               <i className="fas fa-hospital mr-2"></i>Rainbo Portal
               <span className="ml-1 px-1.5 py-0.5 text-xs rounded" style="background-color: #ffd700; color: #1e3a8a;">New</span>
             </button>
@@ -2034,6 +2038,8 @@ app.get('/', (c) => {
       <script src="/static/risk-scoring.js"></script>
       <script src="/static/resource-forecast.js"></script>
       <script src="/static/trend-intelligence.js"></script>
+      <script src="/static/survivor-portal.js"></script>
+      <script src="/static/emergency-sos.js"></script>
       <script src="/static/portal-systems.js"></script>
       <script src="/static/voice-recording.js"></script>
       <script src="/static/view-cases.js"></script>
