@@ -7,17 +7,17 @@ function loadAnalyticsDashboard(section) {
     section.innerHTML = `
         <div class="space-y-6">
             <!-- Header -->
-            <div class="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 text-white p-8 rounded-xl shadow-lg">
+            <div class="text-white p-8 rounded-xl shadow-lg" style="background: linear-gradient(to right, #1e3a8a, #1e90ff, #32cd32);">
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-4xl font-bold mb-2">
                             <i class="fas fa-brain mr-3"></i>AI-Powered Predictive Analytics
                         </h1>
-                        <p class="text-purple-100 text-lg">Advanced forecasting, risk assessment, and trend intelligence</p>
+                        <p class="text-blue-100 text-lg">Advanced forecasting, risk assessment, and trend intelligence</p>
                     </div>
                     <div class="text-right">
                         <div class="text-5xl font-bold">85%</div>
-                        <div class="text-purple-100">Prediction Accuracy</div>
+                        <div class="text-blue-100">Prediction Accuracy</div>
                     </div>
                 </div>
                 
@@ -25,19 +25,19 @@ function loadAnalyticsDashboard(section) {
                 <div class="grid grid-cols-4 gap-4 mt-6">
                     <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
                         <div class="text-3xl font-bold">16</div>
-                        <div class="text-purple-100 text-sm">Districts Forecasted</div>
+                        <div class="text-blue-100 text-sm">Districts Forecasted</div>
                     </div>
                     <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
                         <div class="text-3xl font-bold">7-Day</div>
-                        <div class="text-purple-100 text-sm">Advance Warning</div>
+                        <div class="text-blue-100 text-sm">Advance Warning</div>
                     </div>
                     <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
                         <div class="text-3xl font-bold">1,847</div>
-                        <div class="text-purple-100 text-sm">Survivors Assessed</div>
+                        <div class="text-blue-100 text-sm">Survivors Assessed</div>
                     </div>
                     <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
                         <div class="text-3xl font-bold">34</div>
-                        <div class="text-purple-100 text-sm">Crises Prevented</div>
+                        <div class="text-blue-100 text-sm">Crises Prevented</div>
                     </div>
                 </div>
             </div>
@@ -47,34 +47,34 @@ function loadAnalyticsDashboard(section) {
                 <!-- Case Spike Prediction Card -->
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer group" 
                      onclick="showAnalyticsSection('spike-prediction')">
-                    <div class="bg-gradient-to-r from-purple-500 to-indigo-600 p-6 text-white">
+                    <div class="p-6 text-white" style="background: linear-gradient(to right, #1e3a8a, #1e90ff);">
                         <div class="flex items-center justify-between mb-3">
                             <i class="fas fa-chart-line text-5xl opacity-80"></i>
                             <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">AI</span>
                         </div>
                         <h3 class="text-2xl font-bold mb-2">Spike Prediction</h3>
-                        <p class="text-purple-100 text-sm">7-day case forecasting</p>
+                        <p class="text-blue-100 text-sm">7-day case forecasting</p>
                     </div>
                     <div class="p-6">
                         <ul class="space-y-2 text-sm text-gray-700 mb-4">
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>85% prediction accuracy</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>District-level forecasts</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>7-day advance warning</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>Recommended actions</span>
                             </li>
                         </ul>
-                        <button class="w-full px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold group-hover:bg-purple-700">
+                        <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" style="background-color: #1e3a8a;" onmouseover="this.style.backgroundColor='#1e90ff'" onmouseout="this.style.backgroundColor='#1e3a8a'">
                             <i class="fas fa-arrow-right mr-2"></i>View Predictions
                         </button>
                     </div>
@@ -83,34 +83,34 @@ function loadAnalyticsDashboard(section) {
                 <!-- Risk Scoring Card -->
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer group" 
                      onclick="showAnalyticsSection('risk-scoring')">
-                    <div class="bg-gradient-to-r from-pink-500 to-purple-600 p-6 text-white">
+                    <div class="p-6 text-white" style="background: linear-gradient(to right, #1e90ff, #32cd32);">
                         <div class="flex items-center justify-between mb-3">
                             <i class="fas fa-user-shield text-5xl opacity-80"></i>
                             <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">AI</span>
                         </div>
                         <h3 class="text-2xl font-bold mb-2">Risk Scoring</h3>
-                        <p class="text-pink-100 text-sm">Survivor risk assessment</p>
+                        <p class="text-blue-100 text-sm">Survivor risk assessment</p>
                     </div>
                     <div class="p-6">
                         <ul class="space-y-2 text-sm text-gray-700 mb-4">
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>1,847 survivors scored</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>Risk factor analysis</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>Intervention planning</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>82% accuracy rate</span>
                             </li>
                         </ul>
-                        <button class="w-full px-4 py-3 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors font-semibold group-hover:bg-pink-700">
+                        <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" style="background-color: #1e90ff;" onmouseover="this.style.backgroundColor='#32cd32'" onmouseout="this.style.backgroundColor='#1e90ff'">
                             <i class="fas fa-arrow-right mr-2"></i>Calculate Risk
                         </button>
                     </div>
@@ -119,34 +119,34 @@ function loadAnalyticsDashboard(section) {
                 <!-- Resource Forecast Card -->
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer group" 
                      onclick="showAnalyticsSection('resource-forecast')">
-                    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-6 text-white">
+                    <div class="p-6 text-white" style="background: linear-gradient(to right, #32cd32, #ffd700);">
                         <div class="flex items-center justify-between mb-3">
                             <i class="fas fa-box-open text-5xl opacity-80"></i>
                             <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">AI</span>
                         </div>
                         <h3 class="text-2xl font-bold mb-2">Resource Forecast</h3>
-                        <p class="text-blue-100 text-sm">Supply & budget predictions</p>
+                        <p class="text-green-100 text-sm">Supply & budget predictions</p>
                     </div>
                     <div class="p-6">
                         <ul class="space-y-2 text-sm text-gray-700 mb-4">
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>30-day forecast horizon</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>Medical supply tracking</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>Staffing requirements</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>87% forecast accuracy</span>
                             </li>
                         </ul>
-                        <button class="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold group-hover:bg-blue-700">
+                        <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" style="background-color: #32cd32;" onmouseover="this.style.backgroundColor='#ffd700'" onmouseout="this.style.backgroundColor='#32cd32'">
                             <i class="fas fa-arrow-right mr-2"></i>View Forecast
                         </button>
                     </div>
@@ -155,34 +155,34 @@ function loadAnalyticsDashboard(section) {
                 <!-- Trend Intelligence Card -->
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer group" 
                      onclick="showAnalyticsSection('trend-intelligence')">
-                    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 text-white">
+                    <div class="p-6 text-white" style="background: linear-gradient(to right, #ffd700, #1e3a8a);">
                         <div class="flex items-center justify-between mb-3">
                             <i class="fas fa-brain text-5xl opacity-80"></i>
                             <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">AI</span>
                         </div>
                         <h3 class="text-2xl font-bold mb-2">Trend Intelligence</h3>
-                        <p class="text-indigo-100 text-sm">Pattern & policy impact</p>
+                        <p class="text-yellow-100 text-sm">Pattern & policy impact</p>
                     </div>
                     <div class="p-6">
                         <ul class="space-y-2 text-sm text-gray-700 mb-4">
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>12 active patterns detected</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>Seasonal analysis</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>Perpetrator profiling</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>Policy effectiveness</span>
                             </li>
                         </ul>
-                        <button class="w-full px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold group-hover:bg-indigo-700">
+                        <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" style="background-color: #ffd700; color: #1e3a8a;" onmouseover="this.style.backgroundColor='#1e3a8a'; this.style.color='#ffffff'" onmouseout="this.style.backgroundColor='#ffd700'; this.style.color='#1e3a8a'">
                             <i class="fas fa-arrow-right mr-2"></i>Analyze Trends
                         </button>
                     </div>
