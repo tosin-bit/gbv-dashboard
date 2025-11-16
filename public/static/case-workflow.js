@@ -10,6 +10,14 @@
 // Load Case Management Workflow Dashboard
 function loadCaseWorkflow(section) {
     section.innerHTML = `
+        <!-- Back Button -->
+        <div class="mb-4">
+            <button onclick="loadSpotlightInitiative(document.getElementById('spotlight-initiative-section'))" 
+                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Spotlight Initiative Hub
+            </button>
+        </div>
+
         <!-- Header -->
         <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-lg shadow-xl p-8 mb-6 text-white">
             <div class="flex items-center justify-between">
