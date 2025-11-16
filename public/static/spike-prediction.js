@@ -10,9 +10,9 @@ function loadSpikePrediction(section) {
     section.innerHTML = `
         <!-- Back Button -->
         <div class="mb-4">
-            <button onclick="loadPredictiveAnalytics(document.getElementById('spotlight-initiative-section'))" 
+            <button onclick="window.location.reload()" 
                     class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
-                <i class="fas fa-arrow-left mr-2"></i>Back to Predictive Analytics
+                <i class="fas fa-arrow-left mr-2"></i>Back to Analytics Dashboard
             </button>
         </div>
 
