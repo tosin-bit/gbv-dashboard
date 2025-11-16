@@ -38,7 +38,15 @@ function loadSpotlightInitiative(section) {
                 </div>
             </div>
 
-            <!-- Navigation Cards -->
+            <!-- Phase 1 Label -->
+            <div class="flex items-center mb-2">
+                <h2 class="text-2xl font-bold text-gray-800 mr-3">Phase 1: Data & Transparency</h2>
+                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                    <i class="fas fa-check-circle mr-1"></i>Completed
+                </span>
+            </div>
+
+            <!-- Phase 1 Navigation Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- SDG Alignment Card -->
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer group" 
@@ -149,6 +157,125 @@ function loadSpotlightInitiative(section) {
                 </div>
             </div>
 
+            <!-- Phase 2 Label -->
+            <div class="flex items-center mb-2 mt-8">
+                <h2 class="text-2xl font-bold text-gray-800 mr-3">Phase 2: Operational Excellence</h2>
+                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold animate-pulse">
+                    <i class="fas fa-star mr-1"></i>New
+                </span>
+            </div>
+
+            <!-- Phase 2 Navigation Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Survivor Outcomes Card -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer group" 
+                     onclick="showSpotlightSection('survivor-outcomes')">
+                    <div class="bg-gradient-to-r from-teal-500 to-green-600 p-6 text-white">
+                        <div class="flex items-center justify-between mb-3">
+                            <i class="fas fa-heartbeat text-5xl opacity-80"></i>
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">Phase 2</span>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2">Survivor Outcomes</h3>
+                        <p class="text-teal-100 text-sm">Track real wellbeing beyond case numbers</p>
+                    </div>
+                    <div class="p-6">
+                        <ul class="space-y-2 text-sm text-gray-700 mb-4">
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <span>30/90/180-day follow-up tracking</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <span>Safety, health, justice outcomes</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <span>International benchmarking</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <span>Impact stories (anonymized)</span>
+                            </li>
+                        </ul>
+                        <button class="w-full px-4 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-semibold group-hover:bg-teal-700">
+                            <i class="fas fa-arrow-right mr-2"></i>View Outcomes
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Case Workflow Card -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer group" 
+                     onclick="showSpotlightSection('case-workflow')">
+                    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 text-white">
+                        <div class="flex items-center justify-between mb-3">
+                            <i class="fas fa-project-diagram text-5xl opacity-80"></i>
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">Phase 2</span>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2">Case Workflow</h3>
+                        <p class="text-indigo-100 text-sm">Multi-agency digital coordination</p>
+                    </div>
+                    <div class="p-6">
+                        <ul class="space-y-2 text-sm text-gray-700 mb-4">
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <span>Ministry → Rainbo → Police workflow</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <span>Real-time referral tracking</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <span>6.2 hour avg response time</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <span>94% coordination score</span>
+                            </li>
+                        </ul>
+                        <button class="w-full px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold group-hover:bg-indigo-700">
+                            <i class="fas fa-arrow-right mr-2"></i>Manage Workflow
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Alert System Card -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer group" 
+                     onclick="showSpotlightSection('alert-system')">
+                    <div class="bg-gradient-to-r from-red-500 to-orange-600 p-6 text-white">
+                        <div class="flex items-center justify-between mb-3">
+                            <i class="fas fa-exclamation-triangle text-5xl opacity-80"></i>
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">Phase 2</span>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2">Alert System</h3>
+                        <p class="text-red-100 text-sm">Proactive monitoring & early warning</p>
+                    </div>
+                    <div class="p-6">
+                        <ul class="space-y-2 text-sm text-gray-700 mb-4">
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <span>Real-time critical alerts</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <span>District spike detection</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <span>Service gap warnings</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <span>Automated notifications</span>
+                            </li>
+                        </ul>
+                        <button class="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-semibold group-hover:bg-red-700">
+                            <i class="fas fa-arrow-right mr-2"></i>View Alerts
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- About Spotlight Initiative -->
             <div class="bg-white rounded-lg shadow-lg p-6">
                 <h3 class="text-xl font-semibold mb-4 flex items-center" style="color: #1e3a8a;">
@@ -247,6 +374,7 @@ function showSpotlightSection(sectionType) {
     
     // Load the appropriate dashboard
     switch(sectionType) {
+        // Phase 1 Features
         case 'sdg-dashboard':
             if (typeof loadSDGDashboard === 'function') {
                 loadSDGDashboard(targetSection);
@@ -260,6 +388,22 @@ function showSpotlightSection(sectionType) {
         case 'public-dashboard':
             if (typeof loadPublicDashboard === 'function') {
                 loadPublicDashboard(targetSection);
+            }
+            break;
+        // Phase 2 Features
+        case 'survivor-outcomes':
+            if (typeof loadSurvivorOutcomes === 'function') {
+                loadSurvivorOutcomes(targetSection);
+            }
+            break;
+        case 'case-workflow':
+            if (typeof loadCaseWorkflow === 'function') {
+                loadCaseWorkflow(targetSection);
+            }
+            break;
+        case 'alert-system':
+            if (typeof loadAlertSystem === 'function') {
+                loadAlertSystem(targetSection);
             }
             break;
     }
