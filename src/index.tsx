@@ -1727,21 +1727,25 @@ app.get('/', (c) => {
       <nav className="border-b" style="background-color: #008000;">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-1 overflow-x-auto">
-            <button className="dashboard-tab bg-white py-3 px-4 text-sm font-medium whitespace-nowrap rounded-t" style="color: #1e3a8a;">
+            <button className="dashboard-tab bg-white py-3 px-4 text-sm font-medium whitespace-nowrap rounded-t" style="color: #1e3a8a;" data-translate="overview">
               <i className="fas fa-eye mr-2"></i>Overview
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'" data-translate="reportCase">
               <i className="fas fa-file-alt mr-2"></i>Report Case
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'" data-translate="viewCases">
               <i className="fas fa-list-alt mr-2"></i>View Cases
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'" data-translate="districtMap">
               <i className="fas fa-map mr-2"></i>District Map
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap relative" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap relative" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'" data-translate="analytics">
               <i className="fas fa-chart-bar mr-2"></i>Analytics
               <span className="ml-1 px-1.5 py-0.5 text-xs rounded" style="background-color: #ffd700; color: #1e3a8a;">New</span>
+            </button>
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap relative" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
+              <i className="fas fa-sun mr-2"></i>Spotlight Initiative
+              <span className="ml-1 px-1.5 py-0.5 text-xs rounded animate-pulse" style="background-color: #00ff00; color: #1e3a8a;">Phase 1</span>
             </button>
             <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap relative" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
               <i className="fas fa-hospital mr-2"></i>Rainbo Portal
@@ -1751,13 +1755,13 @@ app.get('/', (c) => {
               <i className="fas fa-shield-alt mr-2"></i>Police FSU
               <span className="ml-1 px-1.5 py-0.5 text-xs rounded" style="background-color: #ffd700; color: #1e3a8a;">New</span>
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'" data-translate="resources">
               <i className="fas fa-book mr-2"></i>Resources
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'" data-translate="voiceReport">
               <i className="fas fa-microphone mr-2"></i>Voice Report
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
+            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'" data-translate="admin">
               <i className="fas fa-user-cog mr-2"></i>Admin
             </button>
             <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap relative" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
@@ -1784,8 +1788,8 @@ app.get('/', (c) => {
           {/* Emergency Banner */}
           <div className="text-white p-3 rounded mb-4 text-center" style="background-color: #32cd32;">
             <i className="fas fa-phone-alt mr-2"></i>
-            <strong>EMERGENCY: Call 116 (Toll-Free) for immediate GBV support</strong>
-            <span className="ml-4">| Available 24/7 in Krio, English, Mende & Temne</span>
+            <strong data-translate="emergency">EMERGENCY: Call 116 (Toll-Free) for immediate GBV support</strong>
+            <span className="ml-4" data-translate="available247">| Available 24/7 in Krio, English, Mende & Temne</span>
           </div>
 
           {/* Refresh Button */}
@@ -1797,7 +1801,7 @@ app.get('/', (c) => {
               title="Refresh dashboard data"
             >
               <i className="fas fa-sync"></i>
-              <span>Refresh Data</span>
+              <span data-translate="refreshData">Refresh Data</span>
             </button>
           </div>
 
@@ -1820,7 +1824,7 @@ app.get('/', (c) => {
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
             <div className="bg-white border border-gray-200 rounded-lg p-6">
               <div className="flex items-center justify-between mb-2">
-                <div className="text-sm font-medium text-gray-500">Total Cases (2025)</div>
+                <div className="text-sm font-medium text-gray-500" data-translate="totalCases">Total Cases (2025)</div>
                 <div className="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: rgba(50, 205, 50, 0.2);">
                   <i className="fas fa-folder" style="color: #32cd32;"></i>
                 </div>
@@ -1833,7 +1837,7 @@ app.get('/', (c) => {
 
             <div className="bg-white border border-gray-200 rounded-lg p-6">
               <div className="flex items-center justify-between mb-2">
-                <div className="text-sm font-medium text-gray-500">This Month</div>
+                <div className="text-sm font-medium text-gray-500" data-translate="thisMonth">This Month</div>
                 <div className="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: rgba(30, 58, 138, 0.2);">
                   <i className="fas fa-calendar" style="color: #1e3a8a;"></i>
                 </div>
@@ -1846,7 +1850,7 @@ app.get('/', (c) => {
 
             <div className="bg-white border border-gray-200 rounded-lg p-6">
               <div className="flex items-center justify-between mb-2">
-                <div className="text-sm font-medium text-gray-500">Sexual Assault Cases</div>
+                <div className="text-sm font-medium text-gray-500" data-translate="sexualAssault">Sexual Assault Cases</div>
                 <div className="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: rgba(255, 215, 0, 0.2);">
                   <i className="fas fa-exclamation-triangle" style="color: #ffd700;"></i>
                 </div>
@@ -1859,7 +1863,7 @@ app.get('/', (c) => {
 
             <div className="bg-white border border-gray-200 rounded-lg p-6">
               <div className="flex items-center justify-between mb-2">
-                <div className="text-sm font-medium text-gray-500">Service Coverage</div>
+                <div className="text-sm font-medium text-gray-500" data-translate="serviceCoverage">Service Coverage</div>
                 <div className="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: rgba(50, 205, 50, 0.2);">
                   <i className="fas fa-hand-holding-heart" style="color: #32cd32;"></i>
                 </div>
@@ -2012,11 +2016,16 @@ app.get('/', (c) => {
       {/* Load JavaScript */}
       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+      <script src="/static/language-switch.js"></script>
       <script src="/static/app-simplified.js"></script>
       <script src="/static/tab-system.js"></script>
       <script src="/static/report-case-form.js"></script>
       <script src="/static/district-map.js"></script>
       <script src="/static/analytics-dashboard.js"></script>
+      <script src="/static/spotlight-initiative.js"></script>
+      <script src="/static/sdg-dashboard.js"></script>
+      <script src="/static/donor-reports.js"></script>
+      <script src="/static/public-dashboard.js"></script>
       <script src="/static/portal-systems.js"></script>
       <script src="/static/voice-recording.js"></script>
       <script src="/static/view-cases.js"></script>

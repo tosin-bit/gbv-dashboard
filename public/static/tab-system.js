@@ -10,6 +10,7 @@ const TAB_SECTIONS = {
     'view-cases': 'view-cases-section',
     'district-map': 'district-map-section',
     'analytics': 'analytics-section',
+    'spotlight-initiative': 'spotlight-initiative-section',
     'rainbo-portal': 'rainbo-portal-section',
     'police-fsu': 'police-fsu-section',
     'resources': 'resources-section',
@@ -74,7 +75,8 @@ function setupTabClickHandlers() {
             else if (tabText.includes('report case')) tabKey = 'report-case';
             else if (tabText.includes('view cases')) tabKey = 'view-cases';
             else if (tabText.includes('district map')) tabKey = 'district-map';
-            else if (tabText.includes('analytics')) tabKey = 'analytics';
+            else if (tabText.includes('analytics') && !tabText.includes('sdg')) tabKey = 'analytics';
+            else if (tabText.includes('spotlight initiative')) tabKey = 'spotlight-initiative';
             else if (tabText.includes('rainbo')) tabKey = 'rainbo-portal';
             else if (tabText.includes('police')) tabKey = 'police-fsu';
             else if (tabText.includes('resources')) tabKey = 'resources';
@@ -137,12 +139,13 @@ function updateTabButtonStates(activeTabKey) {
         'view-cases': 2,
         'district-map': 3,
         'analytics': 4,
-        'rainbo-portal': 5,
-        'police-fsu': 6,
-        'resources': 7,
-        'voice-report': 8,
-        'admin': 9,
-        'demo-flow': 10
+        'spotlight-initiative': 5,
+        'rainbo-portal': 6,
+        'police-fsu': 7,
+        'resources': 8,
+        'voice-report': 9,
+        'admin': 10,
+        'demo-flow': 11
     };
     
     tabs.forEach((tab, index) => {
@@ -183,6 +186,9 @@ function loadTabContent(tabKey, section) {
             break;
         case 'analytics':
             loadAnalyticsDashboard(section);
+            break;
+        case 'spotlight-initiative':
+            loadSpotlightInitiative(section);
             break;
         case 'rainbo-portal':
             loadRainboPortal(section);
