@@ -3,7 +3,14 @@
  * Trauma-informed design with safety and privacy as top priorities
  */
 
+// Store the current section reference for use in login handler
+let currentSurvivorSection = null;
+
 function loadSurvivorPortal(section) {
+    // Store section reference for login handler
+    currentSurvivorSection = section;
+    console.log('🔵 loadSurvivorPortal called, storing section reference:', section);
+    
     // Check if user is already logged in
     const survivorSession = sessionStorage.getItem('survivor_session');
     if (survivorSession) {
@@ -677,9 +684,15 @@ function handleSurvivorCaseLogin(event) {
             
             console.log('🔍 Looking for section to load dashboard...');
             
-            // Try multiple approaches to find the section
-            let section = document.getElementById('dashboard-content');
-            console.log('Method 1 - getElementById:', section ? 'Found' : 'Not found');
+            // FIRST: Use the stored section reference from loadSurvivorPortal
+            let section = currentSurvivorSection;
+            console.log('Method 0 - Stored reference:', section ? 'Found ✅' : 'Not found');
+            
+            // Fallback methods if stored reference not available
+            if (!section) {
+                section = document.getElementById('dashboard-content');
+                console.log('Method 1 - getElementById:', section ? 'Found' : 'Not found');
+            }
             
             if (!section || section.classList.contains('hidden')) {
                 // Try finding by the login form's parent
