@@ -488,22 +488,56 @@ function initializeSDGCharts() {
     }
 }
 
-function populateDistrictSDGTable() {
-    const districts = [
-        { name: 'Western Area Urban', sdg521: 42, sdg522: 22, sdg1623: 28, overall: 69, status: 'red' },
-        { name: 'Bo', sdg521: 35, sdg522: 18, sdg1623: 24, overall: 74, status: 'yellow' },
-        { name: 'Kenema', sdg521: 38, sdg522: 19, sdg1623: 25, overall: 72, status: 'yellow' },
-        { name: 'Bombali', sdg521: 33, sdg522: 16, sdg1623: 22, overall: 76, status: 'green' },
-        { name: 'Port Loko', sdg521: 31, sdg522: 15, sdg1623: 20, overall: 78, status: 'green' },
-        { name: 'Kailahun', sdg521: 36, sdg522: 17, sdg1623: 23, overall: 74, status: 'yellow' }
+async function populateDistrictSDGTable() {
+    let districts = [
+        { name: 'Western Area Urban', sdg521: 42, sdg522: 22, sdg1623: 28, overall: 69, status: 'red', cases: 0 },
+        { name: 'Bo', sdg521: 35, sdg522: 18, sdg1623: 24, overall: 74, status: 'yellow', cases: 0 },
+        { name: 'Kenema', sdg521: 38, sdg522: 19, sdg1623: 25, overall: 72, status: 'yellow', cases: 0 },
+        { name: 'Bombali', sdg521: 33, sdg522: 16, sdg1623: 22, overall: 76, status: 'green', cases: 0 },
+        { name: 'Port Loko', sdg521: 31, sdg522: 15, sdg1623: 20, overall: 78, status: 'green', cases: 0 },
+        { name: 'Kailahun', sdg521: 36, sdg522: 17, sdg1623: 23, overall: 74, status: 'yellow', cases: 0 },
+        { name: 'Kono', sdg521: 34, sdg522: 17, sdg1623: 21, overall: 75, status: 'green', cases: 0 },
+        { name: 'Moyamba', sdg521: 32, sdg522: 16, sdg1623: 20, overall: 77, status: 'green', cases: 0 },
+        { name: 'Tonkolili', sdg521: 35, sdg522: 18, sdg1623: 23, overall: 74, status: 'yellow', cases: 0 },
+        { name: 'Pujehun', sdg521: 30, sdg522: 15, sdg1623: 19, overall: 79, status: 'green', cases: 0 },
+        { name: 'Bonthe', sdg521: 29, sdg522: 14, sdg1623: 18, overall: 80, status: 'green', cases: 0 },
+        { name: 'Kambia', sdg521: 33, sdg522: 16, sdg1623: 21, overall: 76, status: 'green', cases: 0 },
+        { name: 'Koinadugu', sdg521: 31, sdg522: 15, sdg1623: 20, overall: 78, status: 'green', cases: 0 },
+        { name: 'Falaba', sdg521: 30, sdg522: 14, sdg1623: 19, overall: 79, status: 'green', cases: 0 },
+        { name: 'Karene', sdg521: 32, sdg522: 16, sdg1623: 21, overall: 77, status: 'green', cases: 0 },
+        { name: 'Western Area Rural', sdg521: 37, sdg522: 19, sdg1623: 24, overall: 73, status: 'yellow', cases: 0 }
     ];
+    
+    // Fetch real case data from API
+    try {
+        const response = await fetch('/api/districts');
+        const data = await response.json();
+        
+        if (data.districts) {
+            // Update districts with real case counts
+            districts = districts.map(d => {
+                const realDistrict = data.districts.find(rd => rd.name === d.name);
+                return {
+                    ...d,
+                    cases: realDistrict ? realDistrict.case_count : 0
+                };
+            });
+        }
+    } catch (error) {
+        console.log('Could not fetch district data, using default values');
+    }
     
     const tbody = document.getElementById('district-sdg-table');
     if (!tbody) return;
     
     tbody.innerHTML = districts.map(d => `
         <tr class="border-b hover:bg-gray-50">
-            <td class="px-4 py-3 font-medium text-gray-900">${d.name}</td>
+            <td class="px-4 py-3">
+                <div class="font-medium text-gray-900">${d.name}</div>
+                <div class="text-xs text-gray-500 mt-1">
+                    <i class="fas fa-folder mr-1" style="color: #1e3a8a;"></i>${d.cases} active case${d.cases !== 1 ? 's' : ''}
+                </div>
+            </td>
             <td class="px-4 py-3 text-center">
                 <span class="inline-flex items-center px-2 py-1 rounded text-sm ${
                     d.sdg521 < 30 ? 'bg-green-100 text-green-800' :
