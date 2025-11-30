@@ -6,244 +6,329 @@
 function loadSurvivorPortal(section) {
     section.innerHTML = `
         <div class="space-y-6">
-            <!-- Quick Exit Button (Always Visible) -->
-            <div class="fixed top-20 right-4 z-50">
-                <button onclick="quickExit()" 
-                        class="px-4 py-2 bg-red-600 text-white rounded-full shadow-lg hover:bg-red-700 transition-all transform hover:scale-105"
-                        title="Quick Exit - Escape to Safe Page">
-                    <i class="fas fa-times-circle mr-2"></i>Quick Exit
-                </button>
-            </div>
-
             <!-- Warm Welcome Header -->
-            <div class="text-white p-8 rounded-xl shadow-lg" style="background: linear-gradient(135deg, #4ade80, #1e90ff, #1e90ff);">
+            <div class="text-white p-8 rounded-xl shadow-lg" style="background: linear-gradient(135deg, #1e3a8a 0%, #1e90ff 50%, #32cd32 100%);">
                 <div class="max-w-4xl mx-auto text-center">
                     <div class="mb-4">
                         <i class="fas fa-heart text-6xl opacity-90"></i>
                     </div>
-                    <h1 class="text-4xl font-bold mb-3">You Are Not Alone</h1>
+                    <h1 class="text-4xl font-bold mb-3">Survivor Support Portal</h1>
                     <p class="text-xl text-blue-50 mb-4">
-                        This is a safe space. We believe you. We support you. Help is available 24/7.
+                        You are not alone. This is a safe, confidential space to report incidents, access support, and track your case journey.
                     </p>
                     <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4 inline-block">
-                        <p class="text-lg font-semibold mb-1">Emergency Hotline (Free & Confidential)</p>
+                        <p class="text-lg font-semibold mb-1">24/7 Emergency Hotline (Free & Confidential)</p>
                         <a href="tel:116" class="text-3xl font-bold hover:underline">
                             <i class="fas fa-phone-alt mr-2"></i>116
                         </a>
-                        <p class="text-sm text-blue-50 mt-1">Available 24/7 in Krio, English, Mende & Temne</p>
+                        <p class="text-sm text-blue-50 mt-1">Available in Krio, English, Mende & Temne</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Your Journey Section -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold mb-6" style="color: #1e3a8a;">
+                    <i class="fas fa-route mr-3"></i>Your Support Journey
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <!-- Step 1: Report -->
+                    <div class="text-center">
+                        <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3" style="background-color: rgba(30, 144, 255, 0.1);">
+                            <i class="fas fa-file-medical text-3xl" style="color: #1e90ff;"></i>
+                        </div>
+                        <h3 class="font-bold mb-2" style="color: #1e3a8a;">1. Report Incident</h3>
+                        <p class="text-sm text-gray-600">Share your story safely and confidentially</p>
+                    </div>
+                    
+                    <!-- Step 2: Connect -->
+                    <div class="text-center">
+                        <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3" style="background-color: rgba(50, 205, 50, 0.1);">
+                            <i class="fas fa-hands-helping text-3xl" style="color: #32cd32;"></i>
+                        </div>
+                        <h3 class="font-bold mb-2" style="color: #1e3a8a;">2. Get Connected</h3>
+                        <p class="text-sm text-gray-600">We link you to local support services</p>
+                    </div>
+                    
+                    <!-- Step 3: Support -->
+                    <div class="text-center">
+                        <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3" style="background-color: rgba(0, 128, 0, 0.1);">
+                            <i class="fas fa-heartbeat text-3xl" style="color: #008000;"></i>
+                        </div>
+                        <h3 class="font-bold mb-2" style="color: #1e3a8a;">3. Receive Care</h3>
+                        <p class="text-sm text-gray-600">Medical, counseling, and legal support</p>
+                    </div>
+                    
+                    <!-- Step 4: Recovery -->
+                    <div class="text-center">
+                        <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3" style="background-color: rgba(255, 215, 0, 0.1);">
+                            <i class="fas fa-sun text-3xl" style="color: #ffd700;"></i>
+                        </div>
+                        <h3 class="font-bold mb-2" style="color: #1e3a8a;">4. Move Forward</h3>
+                        <p class="text-sm text-gray-600">Long-term healing and empowerment</p>
                     </div>
                 </div>
             </div>
 
             <!-- Emergency Alert Box -->
-            <div class="bg-red-50 border-l-4 border-red-600 p-6 rounded-lg shadow-md">
+            <div class="border-l-4 p-6 rounded-lg shadow-md" style="background-color: rgba(239, 68, 68, 0.05); border-color: #ef4444;">
                 <div class="flex items-start">
                     <div class="flex-shrink-0">
-                        <i class="fas fa-exclamation-triangle text-red-600 text-3xl"></i>
+                        <i class="fas fa-exclamation-triangle text-3xl" style="color: #ef4444;"></i>
                     </div>
                     <div class="ml-4">
-                        <h3 class="text-xl font-bold text-red-800 mb-2">
+                        <h3 class="text-xl font-bold mb-2" style="color: #dc2626;">
                             Are You in Immediate Danger?
                         </h3>
-                        <p class="text-red-700 mb-4">
-                            If you are in immediate danger or need urgent help right now, please use the emergency button below.
+                        <p class="mb-4" style="color: #991b1b;">
+                            If you need urgent help right now, call emergency services or use the button below.
                         </p>
                         <button onclick="showEmergencySOS()" 
-                                class="px-8 py-4 bg-red-600 text-white rounded-lg text-xl font-bold hover:bg-red-700 transition-all transform hover:scale-105 shadow-lg animate-pulse">
+                                class="px-8 py-4 text-white rounded-lg text-xl font-bold transition-all transform hover:scale-105 shadow-lg animate-pulse"
+                                style="background-color: #ef4444;"
+                                onmouseover="this.style.backgroundColor='#dc2626'"
+                                onmouseout="this.style.backgroundColor='#ef4444'">
                             <i class="fas fa-exclamation-circle mr-3"></i>GET HELP NOW
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Service Cards - Primary Actions -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Anonymous Reporting -->
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow cursor-pointer group"
-                     onclick="showAnonymousReport()">
-                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #1e90ff, #1e90ff);">
-                        <div class="flex items-center justify-between mb-3">
-                            <i class="fas fa-file-alt text-5xl opacity-90"></i>
-                            <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">Safe</span>
+            <!-- Main Actions Section -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold mb-6" style="color: #1e3a8a;">
+                    <i class="fas fa-tasks mr-3"></i>What Would You Like To Do?
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Report New Incident -->
+                    <div class="border-2 rounded-xl p-6 hover:shadow-lg transition-all cursor-pointer" 
+                         style="border-color: #1e90ff;"
+                         onclick="showSurvivorCaseForm()">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: rgba(30, 144, 255, 0.1);">
+                                    <i class="fas fa-file-medical text-2xl" style="color: #1e90ff;"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4 flex-1">
+                                <h3 class="text-xl font-bold mb-2" style="color: #1e3a8a;">Report a New Incident</h3>
+                                <p class="text-gray-600 mb-4">File a confidential report and get connected to support services</p>
+                                <ul class="space-y-2 text-sm text-gray-700 mb-4">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
+                                        <span>Confidential and secure</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
+                                        <span>Share only what you're comfortable with</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
+                                        <span>Get a case number to track progress</span>
+                                    </li>
+                                </ul>
+                                <button class="w-full px-4 py-3 text-white rounded-lg font-semibold transition-colors" 
+                                        style="background-color: #1e90ff;"
+                                        onmouseover="this.style.backgroundColor='#1e3a8a'"
+                                        onmouseout="this.style.backgroundColor='#1e90ff'">
+                                    <i class="fas fa-arrow-right mr-2"></i>Start New Report
+                                </button>
+                            </div>
                         </div>
-                        <h3 class="text-2xl font-bold mb-2">Report Incident</h3>
-                        <p class="text-blue-50 text-sm">Anonymous & confidential reporting</p>
                     </div>
-                    <div class="p-6">
-                        <ul class="space-y-2 text-sm text-gray-700 mb-4">
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>No login required</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Stay anonymous if you choose</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Get a case number to track</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Voice recording option</span>
-                            </li>
-                        </ul>
-                        <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" 
-                                style="background-color: #1e90ff;" 
-                                onmouseover="this.style.backgroundColor='#1e90ff'" 
-                                onmouseout="this.style.backgroundColor='#1e90ff'">
-                            <i class="fas fa-arrow-right mr-2"></i>Start Report
-                        </button>
+
+                    <!-- Check Case Status -->
+                    <div class="border-2 rounded-xl p-6 hover:shadow-lg transition-all cursor-pointer" 
+                         style="border-color: #32cd32;"
+                         onclick="showCaseStatus()">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: rgba(50, 205, 50, 0.1);">
+                                    <i class="fas fa-clipboard-list text-2xl" style="color: #32cd32;"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4 flex-1">
+                                <h3 class="text-xl font-bold mb-2" style="color: #1e3a8a;">Check My Case Status</h3>
+                                <p class="text-gray-600 mb-4">Track your case progress and view updates</p>
+                                <ul class="space-y-2 text-sm text-gray-700 mb-4">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
+                                        <span>View case timeline and updates</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
+                                        <span>See upcoming appointments</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
+                                        <span>Secure access with case number</span>
+                                    </li>
+                                </ul>
+                                <button class="w-full px-4 py-3 text-white rounded-lg font-semibold transition-colors" 
+                                        style="background-color: #32cd32;"
+                                        onmouseover="this.style.backgroundColor='#008000'"
+                                        onmouseout="this.style.backgroundColor='#32cd32'">
+                                    <i class="fas fa-arrow-right mr-2"></i>Track My Case
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Find Help Near Me -->
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow cursor-pointer group"
-                     onclick="showServiceFinder()">
-                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #32cd32, #14b8a6);">
-                        <div class="flex items-center justify-between mb-3">
-                            <i class="fas fa-map-marked-alt text-5xl opacity-90"></i>
-                            <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">GPS</span>
+            <!-- Support Services Grid -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold mb-6" style="color: #1e3a8a;">
+                    <i class="fas fa-hands-helping mr-3"></i>Additional Support Services
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Find Help Near Me -->
+                    <div class="border rounded-xl p-6 hover:shadow-lg transition-all cursor-pointer"
+                         onclick="showServiceFinder()">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center mb-4" style="background-color: rgba(50, 205, 50, 0.1);">
+                            <i class="fas fa-map-marked-alt text-2xl" style="color: #32cd32;"></i>
                         </div>
-                        <h3 class="text-2xl font-bold mb-2">Find Help Near Me</h3>
-                        <p class="text-green-50 text-sm">Locate nearby support services</p>
-                    </div>
-                    <div class="p-6">
-                        <ul class="space-y-2 text-sm text-gray-700 mb-4">
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Rainbo Centers & One-Stop Centers</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Police Family Support Units</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Safe houses & counseling</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Walking directions provided</span>
-                            </li>
-                        </ul>
-                        <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" 
-                                style="background-color: #32cd32;" 
-                                onmouseover="this.style.backgroundColor='#14b8a6'" 
+                        <h3 class="text-lg font-bold mb-2" style="color: #1e3a8a;">Find Help Near Me</h3>
+                        <p class="text-sm text-gray-600 mb-4">Locate nearby Rainbo Centers, Police FSU, hospitals, and safe houses</p>
+                        <button class="w-full px-4 py-2 text-white rounded-lg font-semibold transition-colors text-sm" 
+                                style="background-color: #32cd32;"
+                                onmouseover="this.style.backgroundColor='#008000'"
                                 onmouseout="this.style.backgroundColor='#32cd32'">
-                            <i class="fas fa-arrow-right mr-2"></i>Find Services
+                            <i class="fas fa-location-arrow mr-2"></i>Find Services
                         </button>
                     </div>
-                </div>
 
-                <!-- Safety Planning -->
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow cursor-pointer group"
-                     onclick="showSafetyPlanning()">
-                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #1e3a8a, #1e3a8a);">
-                        <div class="flex items-center justify-between mb-3">
-                            <i class="fas fa-shield-alt text-5xl opacity-90"></i>
-                            <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">Private</span>
+                    <!-- Know Your Rights -->
+                    <div class="border rounded-xl p-6 hover:shadow-lg transition-all cursor-pointer"
+                         onclick="showKnowYourRights()">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center mb-4" style="background-color: rgba(255, 215, 0, 0.1);">
+                            <i class="fas fa-balance-scale text-2xl" style="color: #ffd700;"></i>
                         </div>
-                        <h3 class="text-2xl font-bold mb-2">Safety Planning</h3>
-                        <p class="text-purple-50 text-sm">Create your personal safety plan</p>
+                        <h3 class="text-lg font-bold mb-2" style="color: #1e3a8a;">Know Your Rights</h3>
+                        <p class="text-sm text-gray-600 mb-4">Legal information, protection orders, and court process explained</p>
+                        <button class="w-full px-4 py-2 text-white rounded-lg font-semibold transition-colors text-sm" 
+                                style="background-color: #ffd700; color: #1e3a8a;"
+                                onmouseover="this.style.backgroundColor='#1e90ff'; this.style.color='white'"
+                                onmouseout="this.style.backgroundColor='#ffd700'; this.style.color='#1e3a8a'">
+                            <i class="fas fa-book mr-2"></i>Learn More
+                        </button>
                     </div>
-                    <div class="p-6">
-                        <ul class="space-y-2 text-sm text-gray-700 mb-4">
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Emergency escape plan</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Safe contacts & code words</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Emergency bag checklist</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Stored privately on your device</span>
-                            </li>
-                        </ul>
-                        <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" 
-                                style="background-color: #1e3a8a;" 
-                                onmouseover="this.style.backgroundColor='#1e3a8a'" 
+
+                    <!-- Safety Planning -->
+                    <div class="border rounded-xl p-6 hover:shadow-lg transition-all cursor-pointer"
+                         onclick="showSafetyPlanning()">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center mb-4" style="background-color: rgba(30, 58, 138, 0.1);">
+                            <i class="fas fa-shield-alt text-2xl" style="color: #1e3a8a;"></i>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2" style="color: #1e3a8a;">Safety Planning</h3>
+                        <p class="text-sm text-gray-600 mb-4">Create emergency plans, safe contacts, and escape strategies</p>
+                        <button class="w-full px-4 py-2 text-white rounded-lg font-semibold transition-colors text-sm" 
+                                style="background-color: #1e3a8a;"
+                                onmouseover="this.style.backgroundColor='#1e90ff'"
                                 onmouseout="this.style.backgroundColor='#1e3a8a'">
-                            <i class="fas fa-arrow-right mr-2"></i>Create Plan
+                            <i class="fas fa-clipboard-list mr-2"></i>Create Plan
                         </button>
                     </div>
                 </div>
+            </div>
 
-                <!-- Know Your Rights -->
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow cursor-pointer group"
-                     onclick="showKnowYourRights()">
-                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #f59e0b, #ffd700);">
-                        <div class="flex items-center justify-between mb-3">
-                            <i class="fas fa-balance-scale text-5xl opacity-90"></i>
-                            <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">Legal</span>
+            <!-- Resources & Information -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Counseling Resources -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #1e90ff 0%, #32cd32 100%);">
+                        <div class="flex items-center">
+                            <i class="fas fa-comments text-4xl opacity-90 mr-4"></i>
+                            <div>
+                                <h3 class="text-xl font-bold">Counseling & Support Groups</h3>
+                                <p class="text-sm text-blue-50">Professional trauma-informed counseling</p>
+                            </div>
                         </div>
-                        <h3 class="text-2xl font-bold mb-2">Know Your Rights</h3>
-                        <p class="text-orange-50 text-sm">Legal information & support</p>
                     </div>
                     <div class="p-6">
-                        <ul class="space-y-2 text-sm text-gray-700 mb-4">
+                        <ul class="space-y-3 text-sm text-gray-700">
                             <li class="flex items-start">
                                 <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Your legal rights explained</span>
+                                <span>One-on-one counseling sessions</span>
                             </li>
                             <li class="flex items-start">
                                 <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>How to get protection orders</span>
+                                <span>Support groups for survivors</span>
                             </li>
                             <li class="flex items-start">
                                 <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Court process explained</span>
+                                <span>Family counseling available</span>
                             </li>
                             <li class="flex items-start">
                                 <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>Available in multiple languages</span>
                             </li>
                         </ul>
-                        <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" 
-                                style="background-color: #f59e0b;" 
-                                onmouseover="this.style.backgroundColor='#ffd700'" 
-                                onmouseout="this.style.backgroundColor='#f59e0b'">
-                            <i class="fas fa-arrow-right mr-2"></i>Learn More
-                        </button>
                     </div>
                 </div>
 
-                <!-- My Case Status -->
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow cursor-pointer group"
-                     onclick="showCaseStatus()">
-                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #1e90ff, #0ea5e9);">
-                        <div class="flex items-center justify-between mb-3">
-                            <i class="fas fa-clipboard-check text-5xl opacity-90"></i>
-                            <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">Secure</span>
+                <!-- Legal Aid -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #ffd700 0%, #1e3a8a 100%);">
+                        <div class="flex items-center">
+                            <i class="fas fa-gavel text-4xl opacity-90 mr-4"></i>
+                            <div>
+                                <h3 class="text-xl font-bold">Legal Aid & Court Support</h3>
+                                <p class="text-sm" style="color: rgba(255, 255, 255, 0.9);">Free legal assistance and advocacy</p>
+                            </div>
                         </div>
-                        <h3 class="text-2xl font-bold mb-2">My Case Status</h3>
-                        <p class="text-cyan-50 text-sm">Track your case progress</p>
                     </div>
                     <div class="p-6">
-                        <ul class="space-y-2 text-sm text-gray-700 mb-4">
+                        <ul class="space-y-3 text-sm text-gray-700">
                             <li class="flex items-start">
                                 <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>View case updates</span>
+                                <span>Free legal consultation</span>
                             </li>
                             <li class="flex items-start">
                                 <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Upcoming appointments</span>
+                                <span>Court accompaniment services</span>
                             </li>
                             <li class="flex items-start">
                                 <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Access your documents</span>
+                                <span>Protection order assistance</span>
                             </li>
                             <li class="flex items-start">
                                 <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>PIN protected access</span>
+                                <span>Child custody & divorce support</span>
                             </li>
                         </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold mb-6" style="color: #1e3a8a;">
+                    <i class="fas fa-phone-volume mr-3"></i>Emergency Contacts
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-center p-4 rounded-lg" style="background-color: rgba(30, 144, 255, 0.05);">
+                        <i class="fas fa-phone-alt text-3xl mb-3" style="color: #1e90ff;"></i>
+                        <h3 class="font-bold mb-2" style="color: #1e3a8a;">116 Hotline</h3>
+                        <p class="text-sm text-gray-600 mb-2">24/7 GBV Emergency</p>
+                        <a href="tel:116" class="text-2xl font-bold" style="color: #1e90ff;">116</a>
+                    </div>
+                    <div class="text-center p-4 rounded-lg" style="background-color: rgba(50, 205, 50, 0.05);">
+                        <i class="fas fa-ambulance text-3xl mb-3" style="color: #32cd32;"></i>
+                        <h3 class="font-bold mb-2" style="color: #1e3a8a;">Medical Emergency</h3>
+                        <p class="text-sm text-gray-600 mb-2">Ambulance & Hospital</p>
+                        <a href="tel:999" class="text-2xl font-bold" style="color: #32cd32;">999</a>
+                    </div>
+                    <div class="text-center p-4 rounded-lg" style="background-color: rgba(255, 215, 0, 0.05);">
+                        <i class="fas fa-shield-alt text-3xl mb-3" style="color: #ffd700;"></i>
+                        <h3 class="font-bold mb-2" style="color: #1e3a8a;">Police FSU</h3>
+                        <p class="text-sm text-gray-600 mb-2">Family Support Units</p>
+                        <a href="tel:019" class="text-2xl font-bold" style="color: #ffd700;">019</a>
+                    </div>
+                </div>
+            </div>
                         <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" 
                                 style="background-color: #1e90ff;" 
                                 onmouseover="this.style.backgroundColor='#0ea5e9'" 
@@ -321,26 +406,17 @@ function loadSurvivorPortal(section) {
                 </div>
             </div>
 
-            <!-- Affirmation of the Day -->
-            <div class="bg-gradient-to-r from-pink-100 to-purple-100 p-6 rounded-xl text-center">
-                <p class="text-2xl font-bold text-gray-800 mb-2">
-                    <i class="fas fa-star text-yellow-500 mr-2"></i>
+            <!-- Affirmation Message -->
+            <div class="p-6 rounded-xl text-center shadow-lg" style="background: linear-gradient(135deg, #32cd32 0%, #1e90ff 100%);">
+                <p class="text-2xl font-bold text-white mb-2">
+                    <i class="fas fa-heart mr-2" style="color: #ffd700;"></i>
                     "You are brave. You are strong. You deserve safety and peace."
-                    <i class="fas fa-star text-yellow-500 ml-2"></i>
+                    <i class="fas fa-heart ml-2" style="color: #ffd700;"></i>
                 </p>
-                <p class="text-sm text-gray-600 italic">Remember: What happened is not your fault</p>
+                <p class="text-white italic">Remember: What happened is not your fault. Help is available.</p>
             </div>
         </div>
     `;
-}
-
-// Quick Exit function - immediately leaves to safe page
-function quickExit() {
-    // Clear any form data
-    sessionStorage.clear();
-    
-    // Redirect to weather website (appears innocent)
-    window.location.replace('https://weather.com');
 }
 
 // Navigation functions for each feature
@@ -354,13 +430,18 @@ function showEmergencySOS() {
     }
 }
 
-function showAnonymousReport() {
+function showSurvivorCaseForm() {
     const section = document.querySelector('.space-y-6')?.parentElement || document.getElementById('dashboard-content');
     if (typeof loadAnonymousReport === 'function') {
+        // Use the same anonymous report form - it's designed for survivors
         loadAnonymousReport(section);
     } else {
-        console.log('Anonymous report feature will be loaded');
+        console.log('Survivor case form will be loaded');
     }
+}
+
+function showAnonymousReport() {
+    showSurvivorCaseForm();
 }
 
 function showServiceFinder() {
@@ -410,7 +491,7 @@ function showHealingResources() {
 
 // Export functions
 window.loadSurvivorPortal = loadSurvivorPortal;
-window.quickExit = quickExit;
+window.showSurvivorCaseForm = showSurvivorCaseForm;
 window.showEmergencySOS = showEmergencySOS;
 window.showAnonymousReport = showAnonymousReport;
 window.showServiceFinder = showServiceFinder;
