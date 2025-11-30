@@ -666,11 +666,30 @@ function handleSurvivorCaseLogin(event) {
             
             sessionStorage.setItem('survivor_session', JSON.stringify(sessionData));
             
-            // Reload portal to show dashboard
-            const section = document.querySelector('.space-y-6')?.parentElement || document.getElementById('dashboard-content');
-            loadSurvivorPortal(section);
+            // Find the section - use the parent element if we're on Survivor Portal page
+            let section = document.getElementById('dashboard-content');
             
-            console.log('✅ Survivor logged in:', caseNumber);
+            // If not found, try to find current content container
+            if (!section || section.classList.contains('hidden')) {
+                // Look for the parent container that's currently visible
+                section = document.querySelector('.space-y-6')?.parentElement;
+                if (!section) {
+                    section = document.getElementById('dashboard-content');
+                }
+            }
+            
+            // Make sure section is visible
+            if (section) {
+                section.style.display = 'block';
+                section.classList.remove('hidden');
+                loadSurvivorDashboard(section);
+                console.log('✅ Survivor logged in:', caseNumber);
+            } else {
+                console.error('Dashboard content section not found');
+                alert('Error loading dashboard. Please try again.');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
         } else {
             alert('Invalid case number format. Please use format: GBV-YYYY-NNNN\\n\\nExample: GBV-2025-0001');
             submitBtn.innerHTML = originalText;
@@ -692,11 +711,449 @@ function handleSurvivorLogout() {
     }
 }
 
+// Show survivor case form for new reports
+function showSurvivorCaseForm() {
+    // Find the section - try dashboard-content first, then current container
+    let section = document.getElementById('dashboard-content');
+    
+    // If not found or hidden, try to find current visible container
+    if (!section || section.classList.contains('hidden')) {
+        section = document.querySelector('.space-y-6')?.parentElement;
+        if (!section) {
+            section = document.getElementById('dashboard-content');
+        }
+    }
+    
+    if (!section) {
+        console.error('Could not find section to load form');
+        alert('Error loading form. Please refresh the page.');
+        return;
+    }
+    
+    section.style.display = 'block';
+    section.classList.remove('hidden');
+    
+    section.innerHTML = `
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <!-- Header -->
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-3xl font-bold mb-2" style="color: #1e3a8a;">
+                            <i class="fas fa-file-medical mr-3"></i>Report New Incident
+                        </h2>
+                        <p class="text-gray-600">Confidential and secure - Your information is protected</p>
+                    </div>
+                    <button onclick="handleTabNavigation('Survivor Portal')" 
+                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Portal
+                    </button>
+                </div>
+                
+                <!-- Privacy Notice -->
+                <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded mb-6">
+                    <div class="flex items-start">
+                        <i class="fas fa-shield-alt text-green-600 text-2xl mr-3 mt-1"></i>
+                        <div>
+                            <h3 class="font-semibold text-green-900 mb-1">Your Privacy is Protected</h3>
+                            <p class="text-sm text-green-800">All information is confidential. You can report anonymously. Only trained professionals will access your case.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Case Report Form -->
+                <form id="survivor-case-form" onsubmit="handleSurvivorCaseSubmit(event)" class="space-y-6">
+                    
+                    <!-- Basic Information -->
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h3 class="text-lg font-bold mb-4 text-gray-800">
+                            <i class="fas fa-info-circle mr-2"></i>Incident Information
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Incident Date -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    When did this happen? *
+                                </label>
+                                <input type="date" name="incident_date" required 
+                                       max="${new Date().toISOString().split('T')[0]}"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            
+                            <!-- District -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Which district? *
+                                </label>
+                                <select name="district" required 
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Select District</option>
+                                    <option value="Western Area Urban">Western Area Urban (Freetown)</option>
+                                    <option value="Western Area Rural">Western Area Rural</option>
+                                    <option value="Bo">Bo</option>
+                                    <option value="Kenema">Kenema</option>
+                                    <option value="Kailahun">Kailahun</option>
+                                    <option value="Kono">Kono</option>
+                                    <option value="Bombali">Bombali</option>
+                                    <option value="Port Loko">Port Loko</option>
+                                    <option value="Tonkolili">Tonkolili</option>
+                                    <option value="Kambia">Kambia</option>
+                                    <option value="Moyamba">Moyamba</option>
+                                    <option value="Pujehun">Pujehun</option>
+                                    <option value="Bonthe">Bonthe</option>
+                                    <option value="Karene">Karene</option>
+                                    <option value="Falaba">Falaba</option>
+                                    <option value="Koinadugu">Koinadugu</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Type of Violence -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Type of violence? *
+                                </label>
+                                <select name="gbv_type" required 
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Select Type</option>
+                                    <option value="Rape">Rape</option>
+                                    <option value="Sexual Assault">Sexual Assault</option>
+                                    <option value="Domestic Violence">Domestic Violence</option>
+                                    <option value="Child Abuse">Child Abuse</option>
+                                    <option value="FGM/C">FGM/C (Female Genital Mutilation)</option>
+                                    <option value="Early/Forced Marriage">Early/Forced Marriage</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Survivor Age -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Survivor's age (approximate is okay)
+                                </label>
+                                <input type="number" name="survivor_age" min="0" max="120"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                       placeholder="Age">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Description -->
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h3 class="text-lg font-bold mb-4 text-gray-800">
+                            <i class="fas fa-comment-alt mr-2"></i>What Happened?
+                        </h3>
+                        <p class="text-sm text-gray-600 mb-4">Share as much or as little as you feel comfortable. Take your time.</p>
+                        
+                        <textarea name="description" required rows="6"
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                  placeholder="Describe what happened in your own words..."></textarea>
+                    </div>
+                    
+                    <!-- Medical & Urgency -->
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h3 class="text-lg font-bold mb-4 text-gray-800">
+                            <i class="fas fa-heartbeat mr-2"></i>Medical & Safety
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <!-- Injuries -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Are there any physical injuries?
+                                </label>
+                                <div class="flex items-center space-x-6">
+                                    <label class="flex items-center">
+                                        <input type="radio" name="has_injuries" value="Yes" class="mr-2">
+                                        <span>Yes</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="has_injuries" value="No" class="mr-2" checked>
+                                        <span>No</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- Medical Help -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Has the survivor received medical help?
+                                </label>
+                                <div class="flex items-center space-x-6">
+                                    <label class="flex items-center">
+                                        <input type="radio" name="medical_help" value="Yes" class="mr-2">
+                                        <span>Yes</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="medical_help" value="No" class="mr-2" checked>
+                                        <span>No</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- Urgency -->
+                            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                                <label class="block text-sm font-medium text-red-900 mb-2">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>Is this an emergency requiring immediate help?
+                                </label>
+                                <div class="flex items-center space-x-6">
+                                    <label class="flex items-center">
+                                        <input type="radio" name="is_urgent" value="Yes" class="mr-2">
+                                        <span class="font-semibold">Yes - Need help NOW</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="is_urgent" value="No" class="mr-2" checked>
+                                        <span>No</span>
+                                    </label>
+                                </div>
+                                <p class="text-xs text-red-700 mt-2">
+                                    If immediate danger, call 116 or 999 right now!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Contact Information (Optional) -->
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h3 class="text-lg font-bold mb-4 text-gray-800">
+                            <i class="fas fa-phone mr-2"></i>Contact Information (Optional)
+                        </h3>
+                        <p class="text-sm text-gray-600 mb-4">
+                            Providing contact information helps us follow up. You can skip this to remain anonymous.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Name (optional)
+                                </label>
+                                <input type="text" name="reporter_name"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                       placeholder="Your name">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Phone Number (optional)
+                                </label>
+                                <input type="tel" name="phone"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                       placeholder="+232 XX XXX XXXX">
+                                <p class="text-xs text-gray-500 mt-1">Last 4 digits will be your login PIN</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Buttons -->
+                    <div class="flex justify-center space-x-4 pt-4">
+                        <button type="submit"
+                                class="px-10 py-4 rounded-lg text-white font-semibold text-lg shadow-lg hover:opacity-90 transition-opacity"
+                                style="background-color: #32cd32;">
+                            <i class="fas fa-paper-plane mr-2"></i>Submit Report
+                        </button>
+                        <button type="button" onclick="handleTabNavigation('Survivor Portal')"
+                                class="px-6 py-4 rounded-lg bg-gray-600 text-white font-semibold hover:bg-gray-700">
+                            <i class="fas fa-times mr-2"></i>Cancel
+                        </button>
+                    </div>
+                    
+                    <p class="text-center text-xs text-gray-500 mt-4">
+                        <i class="fas fa-lock mr-1"></i>Your information is encrypted and will be handled confidentially by trained professionals
+                    </p>
+                </form>
+            </div>
+        </div>
+    `;
+}
+
+// Handle survivor case form submission
+function handleSurvivorCaseSubmit(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    
+    // Show loading
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Submitting...';
+    submitBtn.disabled = true;
+    
+    // Collect form data
+    const formData = new FormData(form);
+    const caseData = {
+        incident_date: formData.get('incident_date'),
+        district: formData.get('district'),
+        gbv_type: formData.get('gbv_type'),
+        survivor_age: formData.get('survivor_age') || null,
+        description: formData.get('description'),
+        has_injuries: formData.get('has_injuries'),
+        medical_help_received: formData.get('medical_help'),
+        is_urgent: formData.get('is_urgent'),
+        reporter_name: formData.get('reporter_name') || 'Anonymous',
+        phone: formData.get('phone') || null,
+        priority: formData.get('is_urgent') === 'Yes' ? 'urgent' : 'medium',
+        source: 'survivor_portal'
+    };
+    
+    console.log('📝 Submitting case:', caseData);
+    
+    // Simulate API submission
+    setTimeout(() => {
+        // Generate case number
+        const year = new Date().getFullYear();
+        const caseNum = Math.floor(Math.random() * 9000) + 1000;
+        const caseNumber = `GBV-${year}-${caseNum}`;
+        
+        // Show success
+        showSurvivorCaseSuccess(caseNumber, formData.get('phone'));
+        
+    }, 2000);
+}
+
+// Show success screen after case submission
+function showSurvivorCaseSuccess(caseNumber, phone) {
+    const section = document.getElementById('dashboard-content');
+    if (!section) return;
+    
+    const pin = phone ? phone.slice(-4) : 'N/A';
+    
+    section.innerHTML = `
+        <div class="max-w-3xl mx-auto text-center">
+            <div class="bg-white rounded-lg shadow-xl p-12">
+                <div class="w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center" 
+                     style="background-color: rgba(50, 205, 50, 0.2);">
+                    <i class="fas fa-check-circle text-6xl" style="color: #32cd32;"></i>
+                </div>
+                
+                <h2 class="text-3xl font-bold mb-4" style="color: #1e3a8a;">
+                    Report Received Successfully
+                </h2>
+                
+                <p class="text-lg text-gray-700 mb-8">
+                    Your report has been submitted securely. Help is on the way.
+                </p>
+                
+                <!-- Case Number Box -->
+                <div class="bg-green-50 border-2 border-green-300 rounded-lg p-6 mb-6">
+                    <div class="text-sm text-gray-600 mb-2">Your Case Number:</div>
+                    <div class="text-4xl font-bold mb-3" style="color: #32cd32;">${caseNumber}</div>
+                    ${pin !== 'N/A' ? `
+                        <div class="text-sm text-gray-600 mb-1">Your Login PIN:</div>
+                        <div class="text-2xl font-bold" style="color: #1e3a8a;">${pin}</div>
+                        <p class="text-xs text-gray-500 mt-2">Use case number + PIN to access your case</p>
+                    ` : `
+                        <p class="text-sm text-gray-600 mt-2">
+                            <i class="fas fa-info-circle mr-2"></i>Anonymous report - Case number saved
+                        </p>
+                    `}
+                </div>
+                
+                <!-- Next Steps -->
+                <div class="bg-blue-50 rounded-lg p-6 mb-8 text-left">
+                    <h3 class="font-bold text-lg mb-4" style="color: #1e3a8a;">
+                        <i class="fas fa-clipboard-list mr-2"></i>What Happens Next:
+                    </h3>
+                    <div class="space-y-3 text-gray-700">
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-600 mr-3 mt-1"></i>
+                            <span>A trained counselor will contact you within 24 hours</span>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-600 mr-3 mt-1"></i>
+                            <span>Appropriate services have been notified based on your needs</span>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-600 mr-3 mt-1"></i>
+                            <span>You can track your case progress anytime using your case number</span>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-exclamation-triangle text-red-600 mr-3 mt-1"></i>
+                            <span class="font-semibold">For emergencies, call 116 or 999 immediately</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recommended Resources -->
+                <div class="bg-gray-50 rounded-lg p-6 mb-8 text-left">
+                    <h3 class="font-bold text-lg mb-4 text-gray-800">
+                        <i class="fas fa-hands-helping mr-2"></i>Recommended Resources:
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-start bg-white p-3 rounded-lg border-l-4" style="border-left-color: #32cd32;">
+                            <i class="fas fa-phone text-2xl mr-3" style="color: #32cd32;"></i>
+                            <div>
+                                <div class="font-semibold">116 GBV Hotline</div>
+                                <div class="text-sm text-gray-600">Free 24/7 support - Call anytime</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start bg-white p-3 rounded-lg border-l-4 border-blue-400">
+                            <i class="fas fa-hospital text-2xl text-blue-600 mr-3"></i>
+                            <div>
+                                <div class="font-semibold">Rainbo Initiative Centre</div>
+                                <div class="text-sm text-gray-600">Medical care and support services</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start bg-white p-3 rounded-lg border-l-4 border-red-400">
+                            <i class="fas fa-shield-alt text-2xl text-red-600 mr-3"></i>
+                            <div>
+                                <div class="font-semibold">Police Family Support Unit</div>
+                                <div class="text-sm text-gray-600">Report crime and get protection</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex justify-center space-x-4">
+                    ${pin !== 'N/A' ? `
+                        <button onclick="autoLoginSurvivor('${caseNumber}', '${pin}')"
+                                class="px-8 py-3 rounded-lg text-white font-semibold"
+                                style="background-color: #1e90ff;">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Access My Case Now
+                        </button>
+                    ` : ''}
+                    <button onclick="handleTabNavigation('Overview')"
+                            class="px-6 py-3 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300">
+                        <i class="fas fa-home mr-2"></i>Back to Dashboard
+                    </button>
+                </div>
+                
+                <div class="mt-8 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded text-left">
+                    <p class="text-sm text-yellow-800">
+                        <i class="fas fa-bookmark mr-2"></i>
+                        <strong>Important:</strong> Save your case number ${pin !== 'N/A' ? 'and PIN ' : ''}somewhere safe. 
+                        You'll need ${pin !== 'N/A' ? 'them' : 'it'} to access your case later.
+                    </p>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Auto-login survivor after case creation
+function autoLoginSurvivor(caseNumber, pin) {
+    const sessionData = {
+        caseNumber: caseNumber,
+        loginTime: new Date().toISOString(),
+        accessLevel: 'survivor'
+    };
+    
+    sessionStorage.setItem('survivor_session', JSON.stringify(sessionData));
+    
+    const section = document.getElementById('dashboard-content');
+    if (section) {
+        loadSurvivorDashboard(section);
+    }
+}
+
 // Export functions
 window.loadSurvivorPortal = loadSurvivorPortal;
 window.loadSurvivorDashboard = loadSurvivorDashboard;
 window.handleSurvivorCaseLogin = handleSurvivorCaseLogin;
 window.handleSurvivorLogout = handleSurvivorLogout;
+window.showSurvivorCaseForm = showSurvivorCaseForm;
+window.handleSurvivorCaseSubmit = handleSurvivorCaseSubmit;
+window.autoLoginSurvivor = autoLoginSurvivor;
 window.showSurvivorCaseForm = showSurvivorCaseForm;
 window.showEmergencySOS = showEmergencySOS;
 window.showAnonymousReport = showAnonymousReport;
