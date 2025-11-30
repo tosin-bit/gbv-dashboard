@@ -42,7 +42,7 @@ function loadSurvivorPortal(section) {
                             <p class="text-sm text-gray-600 mb-4">
                                 If you've already reported an incident, enter your case number to track progress and access support
                             </p>
-                            <form id="survivor-case-login-form" onsubmit="handleSurvivorCaseLogin(event)">
+                            <form id="survivor-case-login-form" onsubmit="return handleSurvivorCaseLogin(event)">
                                 <div class="space-y-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -644,11 +644,14 @@ function showHealingResources() {
 
 // Login handler for survivor case access
 function handleSurvivorCaseLogin(event) {
+    console.log('🚀 handleSurvivorCaseLogin CALLED!', event);
     event.preventDefault();
     
     const form = event.target;
     const caseNumber = form.caseNumber.value.trim().toUpperCase();
     const pin = form.pin.value;
+    
+    console.log('📝 Login attempt:', { caseNumber, pin: pin ? '****' : '(empty)' });
     
     // Validation
     if (!caseNumber || !pin) {
@@ -740,6 +743,8 @@ function handleSurvivorCaseLogin(event) {
             submitBtn.disabled = false;
         }
     }, 1000);
+    
+    return false; // Prevent form submission
 }
 
 // Logout handler
