@@ -26,8 +26,17 @@ function setupUnifiedTabNavigation() {
             e.preventDefault();
             e.stopPropagation();
             
-            const tabText = this.textContent.trim().split('\n')[0].trim();
-            console.log(`🖱️ Tab clicked: "${tabText}"`);
+            // Get tab text, removing badges like "New", "Phase 1", "Safe"
+            const fullText = this.textContent.trim();
+            // Remove common badge texts
+            const tabText = fullText
+                .replace(/New$/i, '')
+                .replace(/Phase \d+$/i, '')
+                .replace(/Safe$/i, '')
+                .replace(/Live$/i, '')
+                .trim();
+            
+            console.log(`🖱️ Tab clicked: "${tabText}" (original: "${fullText}")`);
             
             // Update active tab styling
             tabs.forEach(t => {
