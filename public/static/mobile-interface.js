@@ -318,7 +318,7 @@ function addMobileStyles() {
         }
         
         .mobile-nav-btn.active {
-            color: #2563eb !important;
+            color: #1e3a8a !important;
         }
         
         @media (max-width: 768px) {

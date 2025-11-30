@@ -906,7 +906,7 @@ function renderProfileTrendsChart(trends) {
             datasets: [{
                 label: 'Cases',
                 data: counts,
-                borderColor: '#3b82f6',
+                borderColor: '#1e90ff',
                 backgroundColor: 'rgba(59, 130, 246, 0.1)',
                 tension: 0.4,
                 fill: true,

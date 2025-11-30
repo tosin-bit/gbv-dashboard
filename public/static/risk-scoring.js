@@ -700,7 +700,7 @@ function initRiskScoringCharts() {
                         '#EF4444', '#DC2626'
                     ],
                     borderColor: [
-                        '#059669', '#059669', '#10B981', '#10B981',
+                        '#008000', '#008000', '#10B981', '#10B981',
                         '#F59E0B', '#F59E0B',
                         '#EA580C', '#EA580C',
                         '#DC2626', '#B91C1C'
@@ -768,7 +768,7 @@ function initRiskScoringCharts() {
                         if (value >= 8) return '#B91C1C';
                         if (value >= 6) return '#EA580C';
                         if (value >= 4) return '#F59E0B';
-                        return '#059669';
+                        return '#008000';
                     },
                     borderWidth: 2
                 }]

@@ -316,20 +316,20 @@ function startBreathingExercise() {
         instruction.textContent = 'Breathe IN through your nose...';
         circle.textContent = 'IN';
         circle.style.transform = 'scale(1.5)';
-        circle.style.backgroundColor = '#3b82f6';
+        circle.style.backgroundColor = '#1e90ff';
         
         setTimeout(() => {
             // Hold (7 seconds)
             instruction.textContent = 'HOLD your breath...';
             circle.textContent = 'HOLD';
-            circle.style.backgroundColor = '#10b981';
+            circle.style.backgroundColor = '#32cd32';
             
             setTimeout(() => {
                 // Breathe Out (8 seconds)
                 instruction.textContent = 'Breathe OUT through your mouth...';
                 circle.textContent = 'OUT';
                 circle.style.transform = 'scale(1)';
-                circle.style.backgroundColor = '#6366f1';
+                circle.style.backgroundColor = '#1e3a8a';
                 
                 setTimeout(() => {
                     doRound();

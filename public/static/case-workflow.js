@@ -342,7 +342,7 @@ function loadCaseWorkflow(section) {
                     <div class="relative w-40 h-40">
                         <svg class="transform -rotate-90 w-40 h-40">
                             <circle cx="80" cy="80" r="70" stroke="#e5e7eb" stroke-width="12" fill="none" />
-                            <circle cx="80" cy="80" r="70" stroke="#8b5cf6" stroke-width="12" fill="none"
+                            <circle cx="80" cy="80" r="70" stroke="#1e3a8a" stroke-width="12" fill="none"
                                 stroke-dasharray="440" stroke-dashoffset="26.4" stroke-linecap="round" />
                         </svg>
                         <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">

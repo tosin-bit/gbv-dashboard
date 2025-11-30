@@ -550,8 +550,23 @@ async function handleReportSubmission(e) {
         submittedAt: new Date().toISOString()
     };
 
-    // Store locally (in real app, this would go to backend)
+    // Store using unified case system (prevents duplicates across all portals)
+    let finalCaseNumber = caseNumber;
     try {
+        // Use unified case system for cross-portal sync (AWAIT the async function)
+        const result = await saveUnifiedCase(reportData, CASE_SOURCES.SURVIVOR);
+        
+        if (result.success && result.caseId) {
+            finalCaseNumber = result.caseId; // Use the server-generated case number
+        }
+        
+        if (result.isDuplicate) {
+            alert(`⚠️ ${result.message}\n\nYour information has been added to the existing case for additional context.`);
+            finalCaseNumber = result.linkedToCaseId; // Use the existing case number
+        }
+        
+        // Also keep in old storage for backward compatibility
+        reportData.caseNumber = finalCaseNumber;
         const existingReports = JSON.parse(localStorage.getItem('survivor_reports') || '[]');
         existingReports.push(reportData);
         localStorage.setItem('survivor_reports', JSON.stringify(existingReports));
@@ -559,10 +574,11 @@ async function handleReportSubmission(e) {
         // Store audio separately if exists
         if (window.reportAudioBlob) {
             // In real app, upload to secure server
-            console.log('Audio recording attached to case:', caseNumber);
+            console.log('Audio recording attached to case:', finalCaseNumber);
         }
     } catch (error) {
         console.error('Error saving report:', error);
+        // Continue with local case number if API fails
     }
 
     // Show success message
@@ -582,12 +598,12 @@ async function handleReportSubmission(e) {
                     <i class="fas fa-hashtag mr-2 text-green-600"></i>${t.caseNumber}
                 </h2>
                 <div class="bg-gray-100 p-6 rounded-lg mb-4">
-                    <p class="text-4xl font-bold text-green-600 font-mono tracking-wider">${caseNumber}</p>
+                    <p class="text-4xl font-bold text-green-600 font-mono tracking-wider">${finalCaseNumber}</p>
                 </div>
                 <p class="text-sm text-gray-600 mb-4">
                     <i class="fas fa-save mr-2"></i>${t.saveThis}
                 </p>
-                <button onclick="navigator.clipboard.writeText('${caseNumber}')" 
+                <button onclick="navigator.clipboard.writeText('${finalCaseNumber}')" 
                         class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all">
                     <i class="fas fa-copy mr-2"></i>Copy Case Number
                 </button>

@@ -1343,11 +1343,11 @@ function renderServicesChart(services) {
                 services?.follow_up_required_count || 0
             ],
             backgroundColor: [
-                '#9333ea', // purple
-                '#3b82f6', // blue
-                '#ec4899', // pink
-                '#8b5cf6', // violet
-                '#06b6d4'  // cyan
+                '#1e3a8a', // purple
+                '#1e90ff', // blue
+                '#32cd32', // pink
+                '#1e3a8a', // violet
+                '#1e90ff'  // cyan
             ]
         }]
     };
@@ -1396,7 +1396,7 @@ function renderMonthlyTrendsChart(trends) {
             datasets: [{
                 label: 'Services Provided',
                 data: counts,
-                borderColor: '#9333ea',
+                borderColor: '#1e3a8a',
                 backgroundColor: 'rgba(147, 51, 234, 0.1)',
                 tension: 0.4,
                 fill: true

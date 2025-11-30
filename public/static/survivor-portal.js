@@ -16,7 +16,7 @@ function loadSurvivorPortal(section) {
             </div>
 
             <!-- Warm Welcome Header -->
-            <div class="text-white p-8 rounded-xl shadow-lg" style="background: linear-gradient(135deg, #4ade80, #22d3ee, #3b82f6);">
+            <div class="text-white p-8 rounded-xl shadow-lg" style="background: linear-gradient(135deg, #4ade80, #1e90ff, #1e90ff);">
                 <div class="max-w-4xl mx-auto text-center">
                     <div class="mb-4">
                         <i class="fas fa-heart text-6xl opacity-90"></i>
@@ -61,7 +61,7 @@ function loadSurvivorPortal(section) {
                 <!-- Anonymous Reporting -->
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow cursor-pointer group"
                      onclick="showAnonymousReport()">
-                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);">
+                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #1e90ff, #1e90ff);">
                         <div class="flex items-center justify-between mb-3">
                             <i class="fas fa-file-alt text-5xl opacity-90"></i>
                             <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">Safe</span>
@@ -89,9 +89,9 @@ function loadSurvivorPortal(section) {
                             </li>
                         </ul>
                         <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" 
-                                style="background-color: #3b82f6;" 
-                                onmouseover="this.style.backgroundColor='#06b6d4'" 
-                                onmouseout="this.style.backgroundColor='#3b82f6'">
+                                style="background-color: #1e90ff;" 
+                                onmouseover="this.style.backgroundColor='#1e90ff'" 
+                                onmouseout="this.style.backgroundColor='#1e90ff'">
                             <i class="fas fa-arrow-right mr-2"></i>Start Report
                         </button>
                     </div>
@@ -100,7 +100,7 @@ function loadSurvivorPortal(section) {
                 <!-- Find Help Near Me -->
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow cursor-pointer group"
                      onclick="showServiceFinder()">
-                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #10b981, #14b8a6);">
+                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #32cd32, #14b8a6);">
                         <div class="flex items-center justify-between mb-3">
                             <i class="fas fa-map-marked-alt text-5xl opacity-90"></i>
                             <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">GPS</span>
@@ -128,9 +128,9 @@ function loadSurvivorPortal(section) {
                             </li>
                         </ul>
                         <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" 
-                                style="background-color: #10b981;" 
+                                style="background-color: #32cd32;" 
                                 onmouseover="this.style.backgroundColor='#14b8a6'" 
-                                onmouseout="this.style.backgroundColor='#10b981'">
+                                onmouseout="this.style.backgroundColor='#32cd32'">
                             <i class="fas fa-arrow-right mr-2"></i>Find Services
                         </button>
                     </div>
@@ -139,7 +139,7 @@ function loadSurvivorPortal(section) {
                 <!-- Safety Planning -->
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow cursor-pointer group"
                      onclick="showSafetyPlanning()">
-                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #8b5cf6, #a855f7);">
+                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #1e3a8a, #1e3a8a);">
                         <div class="flex items-center justify-between mb-3">
                             <i class="fas fa-shield-alt text-5xl opacity-90"></i>
                             <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">Private</span>
@@ -167,9 +167,9 @@ function loadSurvivorPortal(section) {
                             </li>
                         </ul>
                         <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" 
-                                style="background-color: #8b5cf6;" 
-                                onmouseover="this.style.backgroundColor='#a855f7'" 
-                                onmouseout="this.style.backgroundColor='#8b5cf6'">
+                                style="background-color: #1e3a8a;" 
+                                onmouseover="this.style.backgroundColor='#1e3a8a'" 
+                                onmouseout="this.style.backgroundColor='#1e3a8a'">
                             <i class="fas fa-arrow-right mr-2"></i>Create Plan
                         </button>
                     </div>
@@ -178,7 +178,7 @@ function loadSurvivorPortal(section) {
                 <!-- Know Your Rights -->
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow cursor-pointer group"
                      onclick="showKnowYourRights()">
-                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #f59e0b, #f97316);">
+                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #f59e0b, #ffd700);">
                         <div class="flex items-center justify-between mb-3">
                             <i class="fas fa-balance-scale text-5xl opacity-90"></i>
                             <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">Legal</span>
@@ -207,7 +207,7 @@ function loadSurvivorPortal(section) {
                         </ul>
                         <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" 
                                 style="background-color: #f59e0b;" 
-                                onmouseover="this.style.backgroundColor='#f97316'" 
+                                onmouseover="this.style.backgroundColor='#ffd700'" 
                                 onmouseout="this.style.backgroundColor='#f59e0b'">
                             <i class="fas fa-arrow-right mr-2"></i>Learn More
                         </button>
@@ -217,7 +217,7 @@ function loadSurvivorPortal(section) {
                 <!-- My Case Status -->
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow cursor-pointer group"
                      onclick="showCaseStatus()">
-                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #06b6d4, #0ea5e9);">
+                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #1e90ff, #0ea5e9);">
                         <div class="flex items-center justify-between mb-3">
                             <i class="fas fa-clipboard-check text-5xl opacity-90"></i>
                             <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">Secure</span>
@@ -245,9 +245,9 @@ function loadSurvivorPortal(section) {
                             </li>
                         </ul>
                         <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" 
-                                style="background-color: #06b6d4;" 
+                                style="background-color: #1e90ff;" 
                                 onmouseover="this.style.backgroundColor='#0ea5e9'" 
-                                onmouseout="this.style.backgroundColor='#06b6d4'">
+                                onmouseout="this.style.backgroundColor='#1e90ff'">
                             <i class="fas fa-arrow-right mr-2"></i>Check Status
                         </button>
                     </div>
@@ -256,7 +256,7 @@ function loadSurvivorPortal(section) {
                 <!-- Healing Resources -->
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow cursor-pointer group"
                      onclick="showHealingResources()">
-                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #ec4899, #f472b6);">
+                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #32cd32, #32cd32);">
                         <div class="flex items-center justify-between mb-3">
                             <i class="fas fa-spa text-5xl opacity-90"></i>
                             <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">Wellness</span>
@@ -284,9 +284,9 @@ function loadSurvivorPortal(section) {
                             </li>
                         </ul>
                         <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" 
-                                style="background-color: #ec4899;" 
-                                onmouseover="this.style.backgroundColor='#f472b6'" 
-                                onmouseout="this.style.backgroundColor='#ec4899'">
+                                style="background-color: #32cd32;" 
+                                onmouseover="this.style.backgroundColor='#32cd32'" 
+                                onmouseout="this.style.backgroundColor='#32cd32'">
                             <i class="fas fa-arrow-right mr-2"></i>Explore Resources
                         </button>
                     </div>

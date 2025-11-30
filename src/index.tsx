@@ -454,6 +454,66 @@ app.post('/api/cases', async (c) => {
     // Helper to convert empty/null/undefined to null
     const n = (v: any) => (v === '' || v === undefined || v === null) ? null : v;
     
+    // ========================================
+    // DEDUPLICATION CHECK
+    // ========================================
+    // Check for potential duplicates based on key attributes
+    if (formData.incident_date && formData.district) {
+      const districtValue = typeof formData.district === 'string' && isNaN(parseInt(formData.district)) 
+        ? formData.district 
+        : null;
+      
+      let duplicateCheck;
+      if (districtValue) {
+        // District name provided
+        duplicateCheck = await env.DB.prepare(`
+          SELECT gc.id, gc.case_number 
+          FROM gbv_cases gc
+          JOIN districts d ON gc.district_id = d.id
+          WHERE gc.incident_date = ? 
+            AND d.name = ?
+            AND gc.survivor_age_group = ?
+            AND gc.survivor_gender = ?
+            AND gc.created_at >= datetime('now', '-24 hours')
+          LIMIT 1
+        `).bind(
+          formData.incident_date,
+          districtValue,
+          formData.survivor_age_group || '18-25',
+          formData.survivor_gender || 'Not Specified'
+        ).first();
+      } else {
+        // District ID provided
+        const districtId = parseInt(formData.district || formData.district_id || '1');
+        duplicateCheck = await env.DB.prepare(`
+          SELECT id, case_number 
+          FROM gbv_cases 
+          WHERE incident_date = ? 
+            AND district_id = ?
+            AND survivor_age_group = ?
+            AND survivor_gender = ?
+            AND created_at >= datetime('now', '-24 hours')
+          LIMIT 1
+        `).bind(
+          formData.incident_date,
+          districtId,
+          formData.survivor_age_group || '18-25',
+          formData.survivor_gender || 'Not Specified'
+        ).first();
+      }
+      
+      if (duplicateCheck) {
+        console.log('⚠️ Potential duplicate case detected:', duplicateCheck.case_number);
+        return c.json({
+          success: true,
+          duplicate: true,
+          case_id: duplicateCheck.id,
+          case_number: duplicateCheck.case_number,
+          message: `This case may have already been reported as ${duplicateCheck.case_number}. Returning existing case number to avoid duplication.`
+        });
+      }
+    }
+    
     // Generate case number
     const year = new Date().getFullYear();
     const count = await env.DB.prepare(`SELECT COUNT(*) as c FROM gbv_cases WHERE strftime('%Y', created_at) = ?`).bind(year.toString()).first();
@@ -2022,6 +2082,7 @@ app.get('/', (c) => {
       <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
       <script src="/static/language-switch.js"></script>
       <script src="/static/app-simplified.js"></script>
+      <script src="/static/unified-case-system.js"></script>
       <script src="/static/tab-system.js"></script>
       <script src="/static/report-case-form.js"></script>
       <script src="/static/district-map.js"></script>

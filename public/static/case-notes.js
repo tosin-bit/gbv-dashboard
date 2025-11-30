@@ -139,7 +139,7 @@ function updateRecordingUI(recording) {
         } else {
             btn.classList.remove('recording');
             btn.innerHTML = '<i class="fas fa-microphone"></i>';
-            btn.style.backgroundColor = '#3b82f6';
+            btn.style.backgroundColor = '#1e90ff';
         }
     });
 }

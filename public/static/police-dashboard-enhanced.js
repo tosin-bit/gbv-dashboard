@@ -1178,7 +1178,7 @@ function renderInvestigationChart(statusData) {
                 data: counts,
                 backgroundColor: [
                     '#1e40af', // dark blue
-                    '#3b82f6', // blue
+                    '#1e90ff', // blue
                     '#60a5fa', // light blue
                     '#93c5fd', // lighter blue
                     '#dbeafe'  // very light blue

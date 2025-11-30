@@ -400,7 +400,7 @@ function initializePublicChart() {
                 datasets: [{
                     label: 'Cases Reported',
                     data: [245, 263, 230, 215, 245, 268, 276, 289, 310, 305, 298, 287],
-                    borderColor: '#10b981',
+                    borderColor: '#32cd32',
                     backgroundColor: 'rgba(16, 185, 129, 0.1)',
                     tension: 0.4,
                     fill: true,

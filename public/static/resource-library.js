@@ -736,7 +736,7 @@ function printResource(resourceId) {
         <title>${resource.title}</title>
         <style>
           body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
-          h1 { color: #2563eb; border-bottom: 2px solid #2563eb; padding-bottom: 10px; }
+          h1 { color: #1e3a8a; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px; }
           .description { font-style: italic; color: #666; margin: 20px 0; }
           .content { white-space: pre-wrap; }
           .tags { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; }

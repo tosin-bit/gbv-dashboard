@@ -511,7 +511,7 @@ function printSafetyPlan() {
             <title>My Personal Safety Plan</title>
             <style>
                 body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
-                h1 { color: #7c3aed; border-bottom: 3px solid #7c3aed; padding-bottom: 10px; }
+                h1 { color: #1e3a8a; border-bottom: 3px solid #1e3a8a; padding-bottom: 10px; }
                 h2 { color: #4b5563; margin-top: 30px; }
                 .section { margin-bottom: 30px; }
                 .contact { background: #f3f4f6; padding: 15px; margin-bottom: 10px; border-radius: 8px; }

@@ -361,7 +361,7 @@ function generateResourceCards() {
     
     const colors = {
         red: '#ef4444', blue: '#1e3a8a', green: '#32cd32',
-        purple: '#9333ea', yellow: '#ffd700', teal: '#14b8a6'
+        purple: '#1e3a8a', yellow: '#ffd700', teal: '#14b8a6'
     };
     
     return resources.map(r => `

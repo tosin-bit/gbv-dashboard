@@ -424,7 +424,7 @@ function initializeSDGCharts() {
                     {
                         label: 'SDG 5.2.1 (Target: 20%)',
                         data: [50, 47, 44, 41, 39, 37.2, 34, 31, 28, 24, 20],
-                        borderColor: '#ec4899',
+                        borderColor: '#32cd32',
                         backgroundColor: 'rgba(236, 72, 153, 0.1)',
                         tension: 0.4,
                         fill: true
@@ -432,7 +432,7 @@ function initializeSDGCharts() {
                     {
                         label: 'SDG 5.2.2 (Target: 10%)',
                         data: [25, 24, 22, 20, 19, 18.7, 17, 15, 13, 11, 10],
-                        borderColor: '#a855f7',
+                        borderColor: '#1e3a8a',
                         backgroundColor: 'rgba(168, 85, 247, 0.1)',
                         tension: 0.4,
                         fill: true
@@ -440,7 +440,7 @@ function initializeSDGCharts() {
                     {
                         label: 'SDG 16.2.3 (Target: 15%)',
                         data: [30, 29, 27, 26, 25, 24.3, 22, 20, 18, 16, 15],
-                        borderColor: '#3b82f6',
+                        borderColor: '#1e90ff',
                         backgroundColor: 'rgba(59, 130, 246, 0.1)',
                         tension: 0.4,
                         fill: true

@@ -94,7 +94,7 @@ window.analyticsReportsSystem = (function() {
                 label: 'Resolution Rate (%)',
                 data: [94, 87, 91, 89, 83, 78, 85, 81],
                 backgroundColor: [
-                    '#10B981', '#059669', '#047857', '#065F46',
+                    '#10B981', '#008000', '#047857', '#065F46',
                     '#F59E0B', '#D97706', '#B45309', '#92400E'
                 ]
             }]
