@@ -2086,6 +2086,7 @@ app.get('/', (c) => {
       <script src="/static/tab-system.js"></script>
       <script src="/static/report-case-form.js"></script>
       <script src="/static/district-map.js"></script>
+      <script src="/static/analytics-enhanced.js"></script>
       <script src="/static/analytics-dashboard.js"></script>
       <script src="/static/spotlight-initiative.js"></script>
       <script src="/static/sdg-dashboard.js"></script>

@@ -4,6 +4,13 @@
  */
 
 function loadAnalyticsDashboard(section) {
+    // Use enhanced analytics dashboard if available
+    if (typeof loadEnhancedAnalyticsDashboard === 'function') {
+        loadEnhancedAnalyticsDashboard(section);
+        return;
+    }
+    
+    // Fallback to original
     section.innerHTML = `
         <div class="space-y-6">
             <!-- Header -->
