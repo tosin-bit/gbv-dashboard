@@ -15,6 +15,9 @@ let analyticsState = {
  * Load Enhanced Analytics Dashboard with Real Data
  */
 async function loadEnhancedAnalyticsDashboard(section) {
+    // Store reference to section for navigation
+    window.analyticsSection = section;
+    
     // Fetch real data from API
     try {
         const [statsResponse, districtsResponse] = await Promise.all([
@@ -161,7 +164,7 @@ async function loadEnhancedAnalyticsDashboard(section) {
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Spike Prediction -->
                 <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all cursor-pointer group" 
-                     onclick="showAnalyticsSection('spike-prediction')">
+                     onclick="navigateToAnalyticsModule('spike-prediction')">
                     <div class="p-6" style="background: linear-gradient(135deg, #1e3a8a 0%, #1e90ff 100%);">
                         <div class="flex items-center justify-between mb-3">
                             <i class="fas fa-chart-line text-5xl text-white opacity-80"></i>
@@ -192,7 +195,7 @@ async function loadEnhancedAnalyticsDashboard(section) {
                                 </span>
                             </div>
                         </div>
-                        <button onclick="showAnalyticsSection('spike-prediction'); event.stopPropagation();" 
+                        <button onclick="navigateToAnalyticsModule('spike-prediction'); event.stopPropagation();" 
                                 class="w-full px-4 py-3 text-white rounded-lg font-semibold transition-all group-hover:scale-105" 
                                 style="background-color: #1e3a8a;">
                             <i class="fas fa-arrow-right mr-2"></i>View Predictions
@@ -202,7 +205,7 @@ async function loadEnhancedAnalyticsDashboard(section) {
 
                 <!-- Risk Scoring -->
                 <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all cursor-pointer group" 
-                     onclick="showAnalyticsSection('risk-scoring')">
+                     onclick="navigateToAnalyticsModule('risk-scoring')">
                     <div class="p-6" style="background: linear-gradient(135deg, #1e90ff 0%, #32cd32 100%);">
                         <div class="flex items-center justify-between mb-3">
                             <i class="fas fa-user-shield text-5xl text-white opacity-80"></i>
@@ -233,7 +236,7 @@ async function loadEnhancedAnalyticsDashboard(section) {
                                 </span>
                             </div>
                         </div>
-                        <button onclick="showAnalyticsSection('risk-scoring'); event.stopPropagation();" 
+                        <button onclick="navigateToAnalyticsModule('risk-scoring'); event.stopPropagation();" 
                                 class="w-full px-4 py-3 text-white rounded-lg font-semibold transition-all group-hover:scale-105" 
                                 style="background-color: #1e90ff;">
                             <i class="fas fa-calculator mr-2"></i>Calculate Risk Score
@@ -243,7 +246,7 @@ async function loadEnhancedAnalyticsDashboard(section) {
 
                 <!-- Resource Forecast -->
                 <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all cursor-pointer group" 
-                     onclick="showAnalyticsSection('resource-forecast')">
+                     onclick="navigateToAnalyticsModule('resource-forecast')">
                     <div class="p-6" style="background: linear-gradient(135deg, #32cd32 0%, #ffd700 100%);">
                         <div class="flex items-center justify-between mb-3">
                             <i class="fas fa-box-open text-5xl text-white opacity-80"></i>
@@ -275,7 +278,7 @@ async function loadEnhancedAnalyticsDashboard(section) {
                             </div>
                         </div>
                         <button class="w-full px-4 py-3 text-white rounded-lg font-semibold transition-all group-hover:scale-105" 
-                                style="background-color: #32cd32;" onclick="showAnalyticsSection('resource-forecast'); event.stopPropagation();">
+                                style="background-color: #32cd32;" onclick="navigateToAnalyticsModule('resource-forecast'); event.stopPropagation();">
                             <i class="fas fa-chart-bar mr-2"></i>View Forecast
                         </button>
                     </div>
@@ -283,7 +286,7 @@ async function loadEnhancedAnalyticsDashboard(section) {
 
                 <!-- Trend Intelligence -->
                 <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all cursor-pointer group" 
-                     onclick="showAnalyticsSection('trend-intelligence')">
+                     onclick="navigateToAnalyticsModule('trend-intelligence')">
                     <div class="p-6" style="background: linear-gradient(135deg, #ffd700 0%, #1e3a8a 100%);">
                         <div class="flex items-center justify-between mb-3">
                             <i class="fas fa-brain text-5xl text-white opacity-80"></i>
@@ -315,7 +318,7 @@ async function loadEnhancedAnalyticsDashboard(section) {
                             </div>
                         </div>
                         <button class="w-full px-4 py-3 text-white rounded-lg font-semibold transition-all group-hover:scale-105" 
-                                style="background-color: #ffd700; color: #1e3a8a;" onclick="showAnalyticsSection('trend-intelligence'); event.stopPropagation();">
+                                style="background-color: #ffd700; color: #1e3a8a;" onclick="navigateToAnalyticsModule('trend-intelligence'); event.stopPropagation();">
                             <i class="fas fa-search mr-2"></i>Analyze Trends
                         </button>
                     </div>
@@ -720,6 +723,64 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
+/**
+ * Navigate to Analytics Module
+ * This function directly loads analytics modules without relying on DOM selectors
+ */
+function navigateToAnalyticsModule(moduleType) {
+    console.log('🎯 Navigating to module:', moduleType);
+    
+    // Get the analytics section
+    const analyticsSection = window.analyticsSection || document.getElementById('analytics-section');
+    
+    if (!analyticsSection) {
+        console.error('Analytics section not found');
+        return;
+    }
+    
+    // Load the module based on type
+    switch(moduleType) {
+        case 'spike-prediction':
+            if (typeof loadSpikePrediction === 'function') {
+                console.log('✅ Loading Spike Prediction');
+                loadSpikePrediction(analyticsSection);
+            } else {
+                console.error('loadSpikePrediction function not found');
+            }
+            break;
+            
+        case 'risk-scoring':
+            if (typeof loadRiskScoring === 'function') {
+                console.log('✅ Loading Risk Scoring');
+                loadRiskScoring(analyticsSection);
+            } else {
+                console.error('loadRiskScoring function not found');
+            }
+            break;
+            
+        case 'resource-forecast':
+            if (typeof loadResourceForecast === 'function') {
+                console.log('✅ Loading Resource Forecast');
+                loadResourceForecast(analyticsSection);
+            } else {
+                console.error('loadResourceForecast function not found');
+            }
+            break;
+            
+        case 'trend-intelligence':
+            if (typeof loadTrendIntelligence === 'function') {
+                console.log('✅ Loading Trend Intelligence');
+                loadTrendIntelligence(analyticsSection);
+            } else {
+                console.error('loadTrendIntelligence function not found');
+            }
+            break;
+            
+        default:
+            console.error('Unknown module type:', moduleType);
+    }
+}
+
 // Export functions
 window.loadEnhancedAnalyticsDashboard = loadEnhancedAnalyticsDashboard;
 window.updateAnalyticsTimeframe = updateAnalyticsTimeframe;
@@ -729,3 +790,4 @@ window.updateChartView = updateChartView;
 window.viewDistrictDetails = viewDistrictDetails;
 window.showAllAlerts = showAllAlerts;
 window.exportHeatmapData = exportHeatmapData;
+window.navigateToAnalyticsModule = navigateToAnalyticsModule;
