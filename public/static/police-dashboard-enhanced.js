@@ -227,6 +227,9 @@ function loadDashboard() {
                         <button onclick="switchTab('cases')" id="tab-cases" class="py-4 px-4 border-b-2 border-blue-600 text-blue-600 font-semibold">
                             <i class="fas fa-folder-open mr-2"></i>Cases
                         </button>
+                        <button onclick="switchTab('report')" id="tab-report" class="py-4 px-4 border-b-2 border-transparent text-gray-500 hover:text-blue-600 font-semibold">
+                            <i class="fas fa-file-medical mr-2"></i>Report New Case
+                        </button>
                         <button onclick="switchTab('statistics')" id="tab-statistics" class="py-4 px-4 border-b-2 border-transparent text-gray-500 hover:text-blue-600 font-semibold">
                             <i class="fas fa-chart-bar mr-2"></i>Investigation Reports & Statistics
                         </button>
@@ -264,6 +267,11 @@ function loadDashboard() {
                         </div>
                     </div>
                 </div>
+            </div>
+            
+            <!-- Tab Content: Report New Case -->
+            <div id="content-report" class="tab-content hidden">
+                <!-- Form will be loaded here by loadReportCaseForm() -->
             </div>
             
             <!-- Tab Content: Statistics & Reports -->
@@ -1083,7 +1091,7 @@ async function logout() {
 // Tab switching functionality
 function switchTab(tabName) {
     // Update tab buttons
-    const tabs = ['cases', 'statistics'];
+    const tabs = ['cases', 'report', 'statistics'];
     tabs.forEach(tab => {
         const button = document.getElementById(`tab-${tab}`);
         const content = document.getElementById(`content-${tab}`);
@@ -1100,9 +1108,42 @@ function switchTab(tabName) {
     });
     
     // Load content for the selected tab
-    if (tabName === 'statistics') {
+    if (tabName === 'report') {
+        loadReportCaseFormInPolice();
+    } else if (tabName === 'statistics') {
         loadStatistics();
         loadInvestigationReport();
+    }
+}
+
+// Load GBV Report Form for Police FSU Portal
+function loadReportCaseFormInPolice() {
+    const reportSection = document.getElementById('content-report');
+    if (!reportSection) return;
+    
+    // Check if form is already loaded
+    if (reportSection.querySelector('form')) {
+        return; // Form already loaded
+    }
+    
+    // Use the global loadReportCaseForm function if available
+    if (typeof window.loadReportCaseForm === 'function') {
+        window.loadReportCaseForm(reportSection);
+    } else {
+        // Fallback: show loading message
+        reportSection.innerHTML = `
+            <div class="text-center py-12">
+                <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
+                <p class="text-gray-600">Loading report form...</p>
+            </div>
+        `;
+        
+        // Try loading after a short delay (form script should be loaded)
+        setTimeout(() => {
+            if (typeof window.loadReportCaseForm === 'function') {
+                window.loadReportCaseForm(reportSection);
+            }
+        }, 500);
     }
 }
 

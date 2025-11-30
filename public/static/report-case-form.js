@@ -747,3 +747,12 @@ function updateGBVSubTypes(typeId) {
         // Would normally fetch from API here
     }
 }
+
+// Export functions to window for use in other portals
+window.loadReportCaseForm = loadReportCaseForm;
+window.updateAgeGroup = updateAgeGroup;
+window.toggleMultiplePerps = toggleMultiplePerps;
+window.saveDraft = saveDraft;
+window.clearForm = clearForm;
+window.loadChiefdoms = loadChiefdoms;
+window.updateGBVSubTypes = updateGBVSubTypes;
