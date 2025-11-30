@@ -1,27 +1,21 @@
 /**
- * Survivor Portal - Safe, Compassionate Support for GBV Survivors
- * Trauma-informed design with safety and privacy as top priorities
+ * Survivor Portal - REBUILT FROM SCRATCH
+ * Simple, working login and dashboard
  */
 
-// Store the current section reference for use in login handler
-let currentSurvivorSection = null;
-
 function loadSurvivorPortal(section) {
-    // Store section reference for login handler
-    currentSurvivorSection = section;
-    console.log('🔵 loadSurvivorPortal called, storing section reference:', section);
-    console.log('   Section ID:', section?.id, 'Section exists:', !!section);
+    console.log('🔵 Loading Survivor Portal...');
     
-    // Check if user is already logged in
+    // Check if already logged in
     const survivorSession = sessionStorage.getItem('survivor_session');
     if (survivorSession) {
-        loadSurvivorDashboard(section);
+        showSurvivorDashboard(section);
         return;
     }
     
-    // Show login screen
+    // Show login form
     section.innerHTML = `
-        <div class="max-w-2xl mx-auto">
+        <div class="max-w-2xl mx-auto space-y-6">
             <div class="bg-white rounded-lg shadow-2xl overflow-hidden">
                 <!-- Header -->
                 <div class="p-8 text-center" style="background: linear-gradient(135deg, #1e3a8a 0%, #1e90ff 50%, #32cd32 100%);">
@@ -32,1183 +26,243 @@ function loadSurvivorPortal(section) {
                     <p class="text-white text-opacity-90">Safe, Confidential Access to Your Case</p>
                 </div>
 
-                <!-- Login Options -->
+                <!-- Login Form -->
                 <div class="p-8">
-                    <div class="space-y-6">
-                        <!-- Option 1: Access with Case Number -->
-                        <div class="border-2 rounded-xl p-6" style="border-color: #1e90ff;">
-                            <h3 class="text-lg font-bold mb-3" style="color: #1e3a8a;">
-                                <i class="fas fa-file-medical mr-2"></i>Access My Case
-                            </h3>
-                            <p class="text-sm text-gray-600 mb-4">
-                                If you've already reported an incident, enter your case number to track progress and access support
-                            </p>
-                            <form id="survivor-case-login-form" onsubmit="return handleSurvivorCaseLogin(event)">
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                                            <i class="fas fa-hashtag mr-2"></i>Case Number
-                                        </label>
-                                        <input type="text" name="caseNumber" required
-                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                               placeholder="e.g., GBV-2025-0001">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                                            <i class="fas fa-key mr-2"></i>Security PIN (Last 4 digits of phone)
-                                        </label>
-                                        <input type="password" name="pin" required maxlength="4" pattern="[0-9]{4}"
-                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                               placeholder="Enter 4-digit PIN">
-                                        <p class="text-xs text-gray-500 mt-1">This is the last 4 digits of the phone number you provided when reporting</p>
-                                    </div>
-                                    <button type="submit"
-                                            class="w-full py-3 px-4 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity"
-                                            style="background-color: #1e90ff;">
-                                        <i class="fas fa-sign-in-alt mr-2"></i>Access My Case
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-
-                        <!-- Divider -->
-                        <div class="relative">
-                            <div class="absolute inset-0 flex items-center">
-                                <div class="w-full border-t border-gray-300"></div>
+                    <div class="border-2 rounded-xl p-6" style="border-color: #1e90ff;">
+                        <h3 class="text-lg font-bold mb-4" style="color: #1e3a8a;">
+                            <i class="fas fa-file-medical mr-2"></i>Access My Case
+                        </h3>
+                        <form id="survivor-login-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Case Number (e.g., GBV-2025-0001)
+                                </label>
+                                <input type="text" id="case-number" required
+                                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    placeholder="GBV-YYYY-NNNN">
                             </div>
-                            <div class="relative flex justify-center text-sm">
-                                <span class="px-4 bg-white text-gray-500">OR</span>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    PIN Code
+                                </label>
+                                <input type="password" id="pin-code" required
+                                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    placeholder="Enter your 4-digit PIN">
                             </div>
-                        </div>
-
-                        <!-- Option 2: Report New Incident -->
-                        <div class="border-2 rounded-xl p-6" style="border-color: #32cd32;">
-                            <h3 class="text-lg font-bold mb-3" style="color: #1e3a8a;">
-                                <i class="fas fa-file-alt mr-2"></i>Report New Incident
-                            </h3>
-                            <p class="text-sm text-gray-600 mb-4">
-                                First time reporting? Start here to file a confidential report and get connected to support services
-                            </p>
-                            <button onclick="showSurvivorCaseForm()"
-                                    class="w-full py-3 px-4 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity"
-                                    style="background-color: #32cd32;">
-                                <i class="fas fa-plus-circle mr-2"></i>Start New Report
+                            <button type="submit" 
+                                class="w-full py-3 text-white font-bold rounded-lg transition"
+                                style="background: linear-gradient(135deg, #1e3a8a 0%, #1e90ff 100%);">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Access My Case
                             </button>
-                        </div>
-                    </div>
-
-                    <!-- Emergency Help -->
-                    <div class="mt-6 pt-6 border-t">
-                        <div class="text-center p-4 rounded-lg" style="background-color: rgba(239, 68, 68, 0.05);">
-                            <p class="text-sm font-semibold mb-2" style="color: #dc2626;">
-                                <i class="fas fa-exclamation-triangle mr-2"></i>Need Help Now?
-                            </p>
-                            <div class="flex items-center justify-center space-x-4 text-sm">
-                                <a href="tel:116" class="font-bold" style="color: #1e90ff;">
-                                    <i class="fas fa-phone mr-1"></i>Call 116
-                                </a>
-                                <span class="text-gray-400">|</span>
-                                <button onclick="showEmergencySOS()" class="font-bold" style="color: #ef4444;">
-                                    <i class="fas fa-ambulance mr-1"></i>Emergency SOS
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Features Info -->
-                <div class="bg-gray-50 p-6">
-                    <h3 class="text-sm font-semibold text-gray-700 mb-3">What You Can Do:</h3>
-                    <div class="grid grid-cols-2 gap-3 text-sm text-gray-600">
-                        <div><i class="fas fa-check-circle mr-2" style="color: #32cd32;"></i>Track case progress</div>
-                        <div><i class="fas fa-check-circle mr-2" style="color: #32cd32;"></i>View appointments</div>
-                        <div><i class="fas fa-check-circle mr-2" style="color: #32cd32;"></i>Message your counselor</div>
-                        <div><i class="fas fa-check-circle mr-2" style="color: #32cd32;"></i>Access resources</div>
-                        <div><i class="fas fa-check-circle mr-2" style="color: #32cd32;"></i>Find help near you</div>
-                        <div><i class="fas fa-check-circle mr-2" style="color: #32cd32;"></i>Know your rights</div>
-                    </div>
-                    <div class="mt-4 text-xs text-center text-gray-500">
-                        <i class="fas fa-lock mr-1"></i>All information is confidential and secure
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-// Load survivor dashboard after successful login
-function loadSurvivorDashboard(section) {
-    console.log('📊 loadSurvivorDashboard called, section:', section);
-    
-    if (!section) {
-        console.error('❌ No section provided to loadSurvivorDashboard');
-        alert('Error: Could not load dashboard. Please refresh the page.');
-        return;
-    }
-    
-    const sessionData = JSON.parse(sessionStorage.getItem('survivor_session') || '{}');
-    console.log('📝 Session data:', sessionData);
-    
-    section.innerHTML = `
-        <div class="space-y-6">
-            <!-- Warm Welcome Header -->
-            <div class="text-white p-8 rounded-xl shadow-lg" style="background: linear-gradient(135deg, #1e3a8a 0%, #1e90ff 50%, #32cd32 100%);">
-                <div class="max-w-4xl mx-auto">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center">
-                            <i class="fas fa-heart text-5xl opacity-90 mr-4"></i>
-                            <div>
-                                <h1 class="text-3xl font-bold mb-1">Welcome Back</h1>
-                                <p class="text-blue-50">Case: ${sessionData.caseNumber || 'Not Available'}</p>
-                            </div>
-                        </div>
-                        <button onclick="handleSurvivorLogout()" 
-                                class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-white font-semibold transition-colors">
-                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                        </button>
-                    </div>
-                    <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4">
-                        <p class="text-lg font-semibold mb-1">24/7 Emergency Hotline (Free & Confidential)</p>
-                        <a href="tel:116" class="text-2xl font-bold hover:underline">
-                            <i class="fas fa-phone-alt mr-2"></i>116
-                        </a>
-                        <span class="mx-3">|</span>
-                        <a href="tel:999" class="text-2xl font-bold hover:underline">
-                            <i class="fas fa-ambulance mr-2"></i>999
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Your Journey Section -->
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <h2 class="text-2xl font-bold mb-6" style="color: #1e3a8a;">
-                    <i class="fas fa-route mr-3"></i>Your Support Journey
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <!-- Step 1: Report -->
-                    <div class="text-center">
-                        <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3" style="background-color: rgba(30, 144, 255, 0.1);">
-                            <i class="fas fa-file-medical text-3xl" style="color: #1e90ff;"></i>
-                        </div>
-                        <h3 class="font-bold mb-2" style="color: #1e3a8a;">1. Report Incident</h3>
-                        <p class="text-sm text-gray-600">Share your story safely and confidentially</p>
+                        </form>
+                        <div id="login-status" class="mt-4 text-center"></div>
                     </div>
                     
-                    <!-- Step 2: Connect -->
-                    <div class="text-center">
-                        <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3" style="background-color: rgba(50, 205, 50, 0.1);">
-                            <i class="fas fa-hands-helping text-3xl" style="color: #32cd32;"></i>
-                        </div>
-                        <h3 class="font-bold mb-2" style="color: #1e3a8a;">2. Get Connected</h3>
-                        <p class="text-sm text-gray-600">We link you to local support services</p>
-                    </div>
-                    
-                    <!-- Step 3: Support -->
-                    <div class="text-center">
-                        <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3" style="background-color: rgba(0, 128, 0, 0.1);">
-                            <i class="fas fa-heartbeat text-3xl" style="color: #008000;"></i>
-                        </div>
-                        <h3 class="font-bold mb-2" style="color: #1e3a8a;">3. Receive Care</h3>
-                        <p class="text-sm text-gray-600">Medical, counseling, and legal support</p>
-                    </div>
-                    
-                    <!-- Step 4: Recovery -->
-                    <div class="text-center">
-                        <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3" style="background-color: rgba(255, 215, 0, 0.1);">
-                            <i class="fas fa-sun text-3xl" style="color: #ffd700;"></i>
-                        </div>
-                        <h3 class="font-bold mb-2" style="color: #1e3a8a;">4. Move Forward</h3>
-                        <p class="text-sm text-gray-600">Long-term healing and empowerment</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Emergency Alert Box -->
-            <div class="border-l-4 p-6 rounded-lg shadow-md" style="background-color: rgba(239, 68, 68, 0.05); border-color: #ef4444;">
-                <div class="flex items-start">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-exclamation-triangle text-3xl" style="color: #ef4444;"></i>
-                    </div>
-                    <div class="ml-4">
-                        <h3 class="text-xl font-bold mb-2" style="color: #dc2626;">
-                            Are You in Immediate Danger?
-                        </h3>
-                        <p class="mb-4" style="color: #991b1b;">
-                            If you need urgent help right now, call emergency services or use the button below.
-                        </p>
-                        <button onclick="showEmergencySOS()" 
-                                class="px-8 py-4 text-white rounded-lg text-xl font-bold transition-all transform hover:scale-105 shadow-lg animate-pulse"
-                                style="background-color: #ef4444;"
-                                onmouseover="this.style.backgroundColor='#dc2626'"
-                                onmouseout="this.style.backgroundColor='#ef4444'">
-                            <i class="fas fa-exclamation-circle mr-3"></i>GET HELP NOW
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Main Actions Section -->
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <h2 class="text-2xl font-bold mb-6" style="color: #1e3a8a;">
-                    <i class="fas fa-tasks mr-3"></i>What Would You Like To Do?
-                </h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Report New Incident -->
-                    <div class="border-2 rounded-xl p-6 hover:shadow-lg transition-all cursor-pointer" 
-                         style="border-color: #1e90ff;"
-                         onclick="showSurvivorCaseForm()">
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0">
-                                <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: rgba(30, 144, 255, 0.1);">
-                                    <i class="fas fa-file-medical text-2xl" style="color: #1e90ff;"></i>
-                                </div>
-                            </div>
-                            <div class="ml-4 flex-1">
-                                <h3 class="text-xl font-bold mb-2" style="color: #1e3a8a;">Report a New Incident</h3>
-                                <p class="text-gray-600 mb-4">File a confidential report and get connected to support services</p>
-                                <ul class="space-y-2 text-sm text-gray-700 mb-4">
-                                    <li class="flex items-start">
-                                        <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                        <span>Confidential and secure</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                        <span>Share only what you're comfortable with</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                        <span>Get a case number to track progress</span>
-                                    </li>
-                                </ul>
-                                <button class="w-full px-4 py-3 text-white rounded-lg font-semibold transition-colors" 
-                                        style="background-color: #1e90ff;"
-                                        onmouseover="this.style.backgroundColor='#1e3a8a'"
-                                        onmouseout="this.style.backgroundColor='#1e90ff'">
-                                    <i class="fas fa-arrow-right mr-2"></i>Start New Report
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Check Case Status -->
-                    <div class="border-2 rounded-xl p-6 hover:shadow-lg transition-all cursor-pointer" 
-                         style="border-color: #32cd32;"
-                         onclick="showCaseStatus()">
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0">
-                                <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: rgba(50, 205, 50, 0.1);">
-                                    <i class="fas fa-clipboard-list text-2xl" style="color: #32cd32;"></i>
-                                </div>
-                            </div>
-                            <div class="ml-4 flex-1">
-                                <h3 class="text-xl font-bold mb-2" style="color: #1e3a8a;">Check My Case Status</h3>
-                                <p class="text-gray-600 mb-4">Track your case progress and view updates</p>
-                                <ul class="space-y-2 text-sm text-gray-700 mb-4">
-                                    <li class="flex items-start">
-                                        <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                        <span>View case timeline and updates</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                        <span>See upcoming appointments</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                        <span>Secure access with case number</span>
-                                    </li>
-                                </ul>
-                                <button class="w-full px-4 py-3 text-white rounded-lg font-semibold transition-colors" 
-                                        style="background-color: #32cd32;"
-                                        onmouseover="this.style.backgroundColor='#008000'"
-                                        onmouseout="this.style.backgroundColor='#32cd32'">
-                                    <i class="fas fa-arrow-right mr-2"></i>Track My Case
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Support Services Grid -->
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <h2 class="text-2xl font-bold mb-6" style="color: #1e3a8a;">
-                    <i class="fas fa-hands-helping mr-3"></i>Additional Support Services
-                </h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Find Help Near Me -->
-                    <div class="border rounded-xl p-6 hover:shadow-lg transition-all cursor-pointer"
-                         onclick="showServiceFinder()">
-                        <div class="w-12 h-12 rounded-full flex items-center justify-center mb-4" style="background-color: rgba(50, 205, 50, 0.1);">
-                            <i class="fas fa-map-marked-alt text-2xl" style="color: #32cd32;"></i>
-                        </div>
-                        <h3 class="text-lg font-bold mb-2" style="color: #1e3a8a;">Find Help Near Me</h3>
-                        <p class="text-sm text-gray-600 mb-4">Locate nearby Rainbo Centers, Police FSU, hospitals, and safe houses</p>
-                        <button class="w-full px-4 py-2 text-white rounded-lg font-semibold transition-colors text-sm" 
-                                style="background-color: #32cd32;"
-                                onmouseover="this.style.backgroundColor='#008000'"
-                                onmouseout="this.style.backgroundColor='#32cd32'">
-                            <i class="fas fa-location-arrow mr-2"></i>Find Services
-                        </button>
-                    </div>
-
-                    <!-- Know Your Rights -->
-                    <div class="border rounded-xl p-6 hover:shadow-lg transition-all cursor-pointer"
-                         onclick="showKnowYourRights()">
-                        <div class="w-12 h-12 rounded-full flex items-center justify-center mb-4" style="background-color: rgba(255, 215, 0, 0.1);">
-                            <i class="fas fa-balance-scale text-2xl" style="color: #ffd700;"></i>
-                        </div>
-                        <h3 class="text-lg font-bold mb-2" style="color: #1e3a8a;">Know Your Rights</h3>
-                        <p class="text-sm text-gray-600 mb-4">Legal information, protection orders, and court process explained</p>
-                        <button class="w-full px-4 py-2 text-white rounded-lg font-semibold transition-colors text-sm" 
-                                style="background-color: #ffd700; color: #1e3a8a;"
-                                onmouseover="this.style.backgroundColor='#1e90ff'; this.style.color='white'"
-                                onmouseout="this.style.backgroundColor='#ffd700'; this.style.color='#1e3a8a'">
-                            <i class="fas fa-book mr-2"></i>Learn More
-                        </button>
-                    </div>
-
-                    <!-- Safety Planning -->
-                    <div class="border rounded-xl p-6 hover:shadow-lg transition-all cursor-pointer"
-                         onclick="showSafetyPlanning()">
-                        <div class="w-12 h-12 rounded-full flex items-center justify-center mb-4" style="background-color: rgba(30, 58, 138, 0.1);">
-                            <i class="fas fa-shield-alt text-2xl" style="color: #1e3a8a;"></i>
-                        </div>
-                        <h3 class="text-lg font-bold mb-2" style="color: #1e3a8a;">Safety Planning</h3>
-                        <p class="text-sm text-gray-600 mb-4">Create emergency plans, safe contacts, and escape strategies</p>
-                        <button class="w-full px-4 py-2 text-white rounded-lg font-semibold transition-colors text-sm" 
-                                style="background-color: #1e3a8a;"
-                                onmouseover="this.style.backgroundColor='#1e90ff'"
-                                onmouseout="this.style.backgroundColor='#1e3a8a'">
-                            <i class="fas fa-clipboard-list mr-2"></i>Create Plan
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Resources & Information -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Counseling Resources -->
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #1e90ff 0%, #32cd32 100%);">
-                        <div class="flex items-center">
-                            <i class="fas fa-comments text-4xl opacity-90 mr-4"></i>
-                            <div>
-                                <h3 class="text-xl font-bold">Counseling & Support Groups</h3>
-                                <p class="text-sm text-blue-50">Professional trauma-informed counseling</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <ul class="space-y-3 text-sm text-gray-700">
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>One-on-one counseling sessions</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Support groups for survivors</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Family counseling available</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Available in multiple languages</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Legal Aid -->
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #ffd700 0%, #1e3a8a 100%);">
-                        <div class="flex items-center">
-                            <i class="fas fa-gavel text-4xl opacity-90 mr-4"></i>
-                            <div>
-                                <h3 class="text-xl font-bold">Legal Aid & Court Support</h3>
-                                <p class="text-sm" style="color: rgba(255, 255, 255, 0.9);">Free legal assistance and advocacy</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <ul class="space-y-3 text-sm text-gray-700">
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Free legal consultation</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Court accompaniment services</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Protection order assistance</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Child custody & divorce support</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Contact Information -->
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <h2 class="text-2xl font-bold mb-6" style="color: #1e3a8a;">
-                    <i class="fas fa-phone-volume mr-3"></i>Emergency Contacts
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="text-center p-4 rounded-lg" style="background-color: rgba(30, 144, 255, 0.05);">
-                        <i class="fas fa-phone-alt text-3xl mb-3" style="color: #1e90ff;"></i>
-                        <h3 class="font-bold mb-2" style="color: #1e3a8a;">116 Hotline</h3>
-                        <p class="text-sm text-gray-600 mb-2">24/7 GBV Emergency</p>
-                        <a href="tel:116" class="text-2xl font-bold" style="color: #1e90ff;">116</a>
-                    </div>
-                    <div class="text-center p-4 rounded-lg" style="background-color: rgba(50, 205, 50, 0.05);">
-                        <i class="fas fa-ambulance text-3xl mb-3" style="color: #32cd32;"></i>
-                        <h3 class="font-bold mb-2" style="color: #1e3a8a;">Medical Emergency</h3>
-                        <p class="text-sm text-gray-600 mb-2">Ambulance & Hospital</p>
-                        <a href="tel:999" class="text-2xl font-bold" style="color: #32cd32;">999</a>
-                    </div>
-                    <div class="text-center p-4 rounded-lg" style="background-color: rgba(255, 215, 0, 0.05);">
-                        <i class="fas fa-shield-alt text-3xl mb-3" style="color: #ffd700;"></i>
-                        <h3 class="font-bold mb-2" style="color: #1e3a8a;">Police FSU</h3>
-                        <p class="text-sm text-gray-600 mb-2">Family Support Units</p>
-                        <a href="tel:019" class="text-2xl font-bold" style="color: #ffd700;">019</a>
-                    </div>
-                </div>
-            </div>
-                        <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" 
-                                style="background-color: #1e90ff;" 
-                                onmouseover="this.style.backgroundColor='#0ea5e9'" 
-                                onmouseout="this.style.backgroundColor='#1e90ff'">
-                            <i class="fas fa-arrow-right mr-2"></i>Check Status
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Healing Resources -->
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow cursor-pointer group"
-                     onclick="showHealingResources()">
-                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #32cd32, #32cd32);">
-                        <div class="flex items-center justify-between mb-3">
-                            <i class="fas fa-spa text-5xl opacity-90"></i>
-                            <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">Wellness</span>
-                        </div>
-                        <h3 class="text-2xl font-bold mb-2">Healing Resources</h3>
-                        <p class="text-pink-50 text-sm">Self-care & coping tools</p>
-                    </div>
-                    <div class="p-6">
-                        <ul class="space-y-2 text-sm text-gray-700 mb-4">
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Breathing exercises</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Self-care tips</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Positive affirmations</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
-                                <span>Hope & success stories</span>
-                            </li>
-                        </ul>
-                        <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" 
-                                style="background-color: #32cd32;" 
-                                onmouseover="this.style.backgroundColor='#32cd32'" 
-                                onmouseout="this.style.backgroundColor='#32cd32'">
-                            <i class="fas fa-arrow-right mr-2"></i>Explore Resources
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Important Information -->
-            <div class="bg-blue-50 border-l-4 border-blue-600 p-6 rounded-lg">
-                <div class="flex items-start">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-info-circle text-blue-600 text-3xl"></i>
-                    </div>
-                    <div class="ml-4">
-                        <h3 class="text-lg font-bold text-blue-800 mb-2">Your Safety & Privacy</h3>
-                        <ul class="space-y-2 text-sm text-blue-700">
-                            <li><i class="fas fa-lock mr-2"></i><strong>Private & Secure:</strong> Your information is protected and confidential</li>
-                            <li><i class="fas fa-user-secret mr-2"></i><strong>Anonymous Options:</strong> You can get help without revealing your identity</li>
-                            <li><i class="fas fa-clock mr-2"></i><strong>24/7 Support:</strong> Help is available any time, day or night</li>
-                            <li><i class="fas fa-heart mr-2"></i><strong>No Judgment:</strong> You will be treated with respect and compassion</li>
-                            <li><i class="fas fa-language mr-2"></i><strong>Your Language:</strong> Services available in Krio, English, Mende & Temne</li>
-                        </ul>
-                        <div class="mt-4 p-4 bg-white rounded-lg">
-                            <p class="text-sm font-semibold text-gray-800 mb-2">
-                                <i class="fas fa-times-circle text-red-600 mr-2"></i>
-                                Use the "Quick Exit" button at the top right if you need to leave this page quickly
-                            </p>
-                            <p class="text-xs text-gray-600">
-                                It will immediately take you to a safe website (weather page)
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Affirmation Message -->
-            <div class="p-6 rounded-xl text-center shadow-lg" style="background: linear-gradient(135deg, #32cd32 0%, #1e90ff 100%);">
-                <p class="text-2xl font-bold text-white mb-2">
-                    <i class="fas fa-heart mr-2" style="color: #ffd700;"></i>
-                    "You are brave. You are strong. You deserve safety and peace."
-                    <i class="fas fa-heart ml-2" style="color: #ffd700;"></i>
-                </p>
-                <p class="text-white italic">Remember: What happened is not your fault. Help is available.</p>
-            </div>
-        </div>
-    `;
-}
-
-// Navigation functions for each feature
-function showEmergencySOS() {
-    const section = document.querySelector('.space-y-6')?.parentElement || document.getElementById('dashboard-content');
-    if (typeof loadEmergencySOS === 'function') {
-        loadEmergencySOS(section);
-    } else {
-        alert('Emergency feature loading... For immediate help, call 116');
-        window.location.href = 'tel:116';
-    }
-}
-
-function showSurvivorCaseForm() {
-    const section = document.querySelector('.space-y-6')?.parentElement || document.getElementById('dashboard-content');
-    if (typeof loadAnonymousReport === 'function') {
-        // Use the same anonymous report form - it's designed for survivors
-        loadAnonymousReport(section);
-    } else {
-        console.log('Survivor case form will be loaded');
-    }
-}
-
-function showAnonymousReport() {
-    showSurvivorCaseForm();
-}
-
-function showServiceFinder() {
-    const section = document.querySelector('.space-y-6')?.parentElement || document.getElementById('dashboard-content');
-    if (typeof loadServiceFinder === 'function') {
-        loadServiceFinder(section);
-    } else {
-        console.log('Service finder feature will be loaded');
-    }
-}
-
-function showSafetyPlanning() {
-    const section = document.querySelector('.space-y-6')?.parentElement || document.getElementById('dashboard-content');
-    if (typeof loadSafetyPlanning === 'function') {
-        loadSafetyPlanning(section);
-    } else {
-        console.log('Safety planning feature will be loaded');
-    }
-}
-
-function showKnowYourRights() {
-    const section = document.querySelector('.space-y-6')?.parentElement || document.getElementById('dashboard-content');
-    if (typeof loadKnowYourRights === 'function') {
-        loadKnowYourRights(section);
-    } else {
-        console.log('Know your rights feature will be loaded');
-    }
-}
-
-function showCaseStatus() {
-    const section = document.querySelector('.space-y-6')?.parentElement || document.getElementById('dashboard-content');
-    if (typeof loadCaseStatus === 'function') {
-        loadCaseStatus(section);
-    } else {
-        console.log('Case status feature will be loaded');
-    }
-}
-
-function showHealingResources() {
-    const section = document.querySelector('.space-y-6')?.parentElement || document.getElementById('dashboard-content');
-    if (typeof loadHealingResources === 'function') {
-        loadHealingResources(section);
-    } else {
-        console.log('Healing resources feature will be loaded');
-    }
-}
-
-// Login handler for survivor case access
-function handleSurvivorCaseLogin(event) {
-    console.log('🚀 handleSurvivorCaseLogin CALLED!', event);
-    event.preventDefault();
-    
-    const form = event.target;
-    const caseNumber = form.caseNumber.value.trim().toUpperCase();
-    const pin = form.pin.value;
-    
-    console.log('📝 Login attempt:', { caseNumber, pin: pin ? '****' : '(empty)' });
-    
-    // Validation
-    console.log('✔️ Validating credentials...');
-    if (!caseNumber || !pin) {
-        console.log('❌ Validation failed: Missing case number or PIN');
-        alert('Please enter both case number and PIN');
-        return;
-    }
-    
-    console.log('✔️ PIN length check:', pin.length, 'Is 4 digits:', /^\d{4}$/.test(pin));
-    if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
-        console.log('❌ Validation failed: PIN must be 4 digits');
-        alert('PIN must be exactly 4 digits');
-        return;
-    }
-    
-    console.log('✅ Validation passed!');
-    
-    // Show loading state
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-    console.log('🔄 Setting button to Verifying state...');
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Verifying...';
-    submitBtn.disabled = true;
-    
-    // Simulate authentication (in production, this would call /api/auth/survivor)
-    console.log('⏰ Starting 1-second authentication timeout...');
-    setTimeout(() => {
-        console.log('⏰ Timeout completed, processing login...');
-        // For demo purposes, accept any case number with format GBV-YYYY-NNNN
-        const casePattern = /^GBV-\d{4}-\d{4}$/;
-        
-        if (casePattern.test(caseNumber)) {
-            // Create session
-            const sessionData = {
-                caseNumber: caseNumber,
-                loginTime: new Date().toISOString(),
-                accessLevel: 'survivor'
-            };
-            
-            sessionStorage.setItem('survivor_session', JSON.stringify(sessionData));
-            
-            console.log('🔍 Looking for section to load dashboard...');
-            
-            // FIRST: Use the stored section reference from loadSurvivorPortal
-            let section = currentSurvivorSection;
-            console.log('Method 0 - Stored reference:', section ? 'Found ✅' : 'Not found');
-            if (section) {
-                console.log('   Stored section ID:', section.id, 'Still in DOM:', document.contains(section));
-            }
-            
-            // Fallback methods if stored reference not available or if it's no longer in the DOM
-            if (!section || !document.contains(section)) {
-                console.log('   Stored reference invalid, trying fallback methods...');
-                
-                // Method 1: Try dashboard-content by ID
-                section = document.getElementById('dashboard-content');
-                console.log('Method 1 - getElementById(dashboard-content):', section ? 'Found ✅' : 'Not found ❌');
-                
-                // Method 2: Try finding by the login form's parent
-                if (!section) {
-                    const loginForm = document.getElementById('survivor-case-login-form');
-                    if (loginForm) {
-                        section = loginForm.closest('.space-y-6');
-                        console.log('Method 2 - Via login form:', section ? 'Found ✅' : 'Not found ❌');
-                    }
-                }
-                
-                // Method 3: Try finding the main content container
-                if (!section) {
-                    const containers = document.querySelectorAll('.space-y-6');
-                    for (let container of containers) {
-                        if (container.innerHTML.includes('Survivor Portal')) {
-                            section = container;
-                            console.log('Method 3 - Via Survivor Portal text:', section ? 'Found ✅' : 'Not found ❌');
-                            break;
-                        }
-                    }
-                }
-                
-                // Method 4: Last resort - use body
-                if (!section) {
-                    section = document.body;
-                    console.log('Method 4 - Last resort (using body):', section ? 'Found ✅' : 'Not found ❌');
-                }
-            }
-            
-            // Make sure section is visible
-            if (section) {
-                section.style.display = 'block';
-                section.classList.remove('hidden');
-                console.log('✅ Loading dashboard into section...');
-                loadSurvivorDashboard(section);
-                console.log('✅ Survivor logged in:', caseNumber);
-            } else {
-                console.error('❌ Dashboard content section not found');
-                alert('Error loading dashboard. Please try again.');
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            }
-        } else {
-            alert('Invalid case number format. Please use format: GBV-YYYY-NNNN\\n\\nExample: GBV-2025-0001');
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        }
-    }, 1000);
-    
-    return false; // Prevent form submission
-}
-
-// Logout handler
-function handleSurvivorLogout() {
-    if (confirm('Are you sure you want to logout?')) {
-        sessionStorage.removeItem('survivor_session');
-        
-        // Reload portal to show login screen
-        const section = document.querySelector('.space-y-6')?.parentElement || document.getElementById('dashboard-content');
-        loadSurvivorPortal(section);
-        
-        console.log('✅ Survivor logged out');
-    }
-}
-
-// Show survivor case form for new reports
-function showSurvivorCaseForm() {
-    // Find the section - try dashboard-content first, then current container
-    let section = document.getElementById('dashboard-content');
-    
-    // If not found or hidden, try to find current visible container
-    if (!section || section.classList.contains('hidden')) {
-        section = document.querySelector('.space-y-6')?.parentElement;
-        if (!section) {
-            section = document.getElementById('dashboard-content');
-        }
-    }
-    
-    if (!section) {
-        console.error('Could not find section to load form');
-        alert('Error loading form. Please refresh the page.');
-        return;
-    }
-    
-    section.style.display = 'block';
-    section.classList.remove('hidden');
-    
-    // Use the full GBV report form if available
-    if (typeof window.loadReportCaseForm === 'function') {
-        // Create a wrapper div with back button
-        section.innerHTML = `
-            <div class="mb-4">
-                <button onclick="goBackToSurvivorPortal()" 
-                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                    <i class="fas fa-arrow-left mr-2"></i>Back to Survivor Portal
-                </button>
-            </div>
-            <div id="survivor-form-container"></div>
-        `;
-        
-        // Load the full form into the container
-        const formContainer = document.getElementById('survivor-form-container');
-        window.loadReportCaseForm(formContainer);
-        return;
-    }
-    
-    // Fallback to simplified form if full form not available
-    
-    section.innerHTML = `
-        <div class="max-w-4xl mx-auto">
-            <div class="bg-white rounded-lg shadow-lg p-8">
-                <!-- Header -->
-                <div class="flex items-center justify-between mb-6">
-                    <div>
-                        <h2 class="text-3xl font-bold mb-2" style="color: #1e3a8a;">
-                            <i class="fas fa-file-medical mr-3"></i>Report New Incident
-                        </h2>
-                        <p class="text-gray-600">Confidential and secure - Your information is protected</p>
-                    </div>
-                    <button onclick="goBackToSurvivorPortal()" 
-                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
-                        <i class="fas fa-arrow-left mr-2"></i>Back to Portal
-                    </button>
-                </div>
-                
-                <!-- Privacy Notice -->
-                <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded mb-6">
-                    <div class="flex items-start">
-                        <i class="fas fa-shield-alt text-green-600 text-2xl mr-3 mt-1"></i>
-                        <div>
-                            <h3 class="font-semibold text-green-900 mb-1">Your Privacy is Protected</h3>
-                            <p class="text-sm text-green-800">All information is confidential. You can report anonymously. Only trained professionals will access your case.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Case Report Form -->
-                <form id="survivor-case-form" onsubmit="handleSurvivorCaseSubmit(event)" class="space-y-6">
-                    
-                    <!-- Basic Information -->
-                    <div class="bg-gray-50 rounded-lg p-6">
-                        <h3 class="text-lg font-bold mb-4 text-gray-800">
-                            <i class="fas fa-info-circle mr-2"></i>Incident Information
-                        </h3>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Incident Date -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    When did this happen? *
-                                </label>
-                                <input type="date" name="incident_date" required 
-                                       max="${new Date().toISOString().split('T')[0]}"
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            
-                            <!-- District -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Which district? *
-                                </label>
-                                <select name="district" required 
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                    <option value="">Select District</option>
-                                    <option value="Western Area Urban">Western Area Urban (Freetown)</option>
-                                    <option value="Western Area Rural">Western Area Rural</option>
-                                    <option value="Bo">Bo</option>
-                                    <option value="Kenema">Kenema</option>
-                                    <option value="Kailahun">Kailahun</option>
-                                    <option value="Kono">Kono</option>
-                                    <option value="Bombali">Bombali</option>
-                                    <option value="Port Loko">Port Loko</option>
-                                    <option value="Tonkolili">Tonkolili</option>
-                                    <option value="Kambia">Kambia</option>
-                                    <option value="Moyamba">Moyamba</option>
-                                    <option value="Pujehun">Pujehun</option>
-                                    <option value="Bonthe">Bonthe</option>
-                                    <option value="Karene">Karene</option>
-                                    <option value="Falaba">Falaba</option>
-                                    <option value="Koinadugu">Koinadugu</option>
-                                </select>
-                            </div>
-                            
-                            <!-- Type of Violence -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Type of violence? *
-                                </label>
-                                <select name="gbv_type" required 
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                    <option value="">Select Type</option>
-                                    <option value="Rape">Rape</option>
-                                    <option value="Sexual Assault">Sexual Assault</option>
-                                    <option value="Domestic Violence">Domestic Violence</option>
-                                    <option value="Child Abuse">Child Abuse</option>
-                                    <option value="FGM/C">FGM/C (Female Genital Mutilation)</option>
-                                    <option value="Early/Forced Marriage">Early/Forced Marriage</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-                            
-                            <!-- Survivor Age -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Survivor's age (approximate is okay)
-                                </label>
-                                <input type="number" name="survivor_age" min="0" max="120"
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                       placeholder="Age">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Description -->
-                    <div class="bg-gray-50 rounded-lg p-6">
-                        <h3 class="text-lg font-bold mb-4 text-gray-800">
-                            <i class="fas fa-comment-alt mr-2"></i>What Happened?
-                        </h3>
-                        <p class="text-sm text-gray-600 mb-4">Share as much or as little as you feel comfortable. Take your time.</p>
-                        
-                        <textarea name="description" required rows="6"
-                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                  placeholder="Describe what happened in your own words..."></textarea>
-                    </div>
-                    
-                    <!-- Medical & Urgency -->
-                    <div class="bg-gray-50 rounded-lg p-6">
-                        <h3 class="text-lg font-bold mb-4 text-gray-800">
-                            <i class="fas fa-heartbeat mr-2"></i>Medical & Safety
-                        </h3>
-                        
-                        <div class="space-y-4">
-                            <!-- Injuries -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Are there any physical injuries?
-                                </label>
-                                <div class="flex items-center space-x-6">
-                                    <label class="flex items-center">
-                                        <input type="radio" name="has_injuries" value="Yes" class="mr-2">
-                                        <span>Yes</span>
-                                    </label>
-                                    <label class="flex items-center">
-                                        <input type="radio" name="has_injuries" value="No" class="mr-2" checked>
-                                        <span>No</span>
-                                    </label>
-                                </div>
-                            </div>
-                            
-                            <!-- Medical Help -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Has the survivor received medical help?
-                                </label>
-                                <div class="flex items-center space-x-6">
-                                    <label class="flex items-center">
-                                        <input type="radio" name="medical_help" value="Yes" class="mr-2">
-                                        <span>Yes</span>
-                                    </label>
-                                    <label class="flex items-center">
-                                        <input type="radio" name="medical_help" value="No" class="mr-2" checked>
-                                        <span>No</span>
-                                    </label>
-                                </div>
-                            </div>
-                            
-                            <!-- Urgency -->
-                            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-                                <label class="block text-sm font-medium text-red-900 mb-2">
-                                    <i class="fas fa-exclamation-triangle mr-2"></i>Is this an emergency requiring immediate help?
-                                </label>
-                                <div class="flex items-center space-x-6">
-                                    <label class="flex items-center">
-                                        <input type="radio" name="is_urgent" value="Yes" class="mr-2">
-                                        <span class="font-semibold">Yes - Need help NOW</span>
-                                    </label>
-                                    <label class="flex items-center">
-                                        <input type="radio" name="is_urgent" value="No" class="mr-2" checked>
-                                        <span>No</span>
-                                    </label>
-                                </div>
-                                <p class="text-xs text-red-700 mt-2">
-                                    If immediate danger, call 116 or 999 right now!
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Contact Information (Optional) -->
-                    <div class="bg-gray-50 rounded-lg p-6">
-                        <h3 class="text-lg font-bold mb-4 text-gray-800">
-                            <i class="fas fa-phone mr-2"></i>Contact Information (Optional)
+                    <div class="mt-6 border-2 rounded-xl p-6" style="border-color: #32cd32;">
+                        <h3 class="text-lg font-bold mb-3" style="color: #1e3a8a;">
+                            <i class="fas fa-plus-circle mr-2"></i>Report New Incident
                         </h3>
                         <p class="text-sm text-gray-600 mb-4">
-                            Providing contact information helps us follow up. You can skip this to remain anonymous.
+                            If this is your first time, start a new confidential report
                         </p>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Name (optional)
-                                </label>
-                                <input type="text" name="reporter_name"
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                       placeholder="Your name">
+                        <button onclick="showNewIncidentForm()" 
+                            class="w-full py-3 text-white font-bold rounded-lg transition"
+                            style="background: linear-gradient(135deg, #32cd32 0%, #228b22 100%);">
+                            <i class="fas fa-file-medical-alt mr-2"></i>Start New Report
+                        </button>
+                    </div>
+
+                    <!-- Emergency Hotlines -->
+                    <div class="mt-6 bg-red-50 border-2 border-red-200 rounded-xl p-6">
+                        <h3 class="text-lg font-bold mb-3 text-red-800">
+                            <i class="fas fa-phone-volume mr-2"></i>24/7 Emergency Hotlines
+                        </h3>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-red-800">National Helpline:</span>
+                                <a href="tel:116" class="text-xl font-bold text-red-600">116</a>
                             </div>
-                            
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Phone Number (optional)
-                                </label>
-                                <input type="tel" name="phone"
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                       placeholder="+232 XX XXX XXXX">
-                                <p class="text-xs text-gray-500 mt-1">Last 4 digits will be your login PIN</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-red-800">Police Emergency:</span>
+                                <a href="tel:019" class="text-xl font-bold text-red-600">019</a>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Submit Buttons -->
-                    <div class="flex justify-center space-x-4 pt-4">
-                        <button type="submit"
-                                class="px-10 py-4 rounded-lg text-white font-semibold text-lg shadow-lg hover:opacity-90 transition-opacity"
-                                style="background-color: #32cd32;">
-                            <i class="fas fa-paper-plane mr-2"></i>Submit Report
-                        </button>
-                        <button type="button" onclick="goBackToSurvivorPortal()"
-                                class="px-6 py-4 rounded-lg bg-gray-600 text-white font-semibold hover:bg-gray-700">
-                            <i class="fas fa-times mr-2"></i>Cancel
-                        </button>
-                    </div>
-                    
-                    <p class="text-center text-xs text-gray-500 mt-4">
-                        <i class="fas fa-lock mr-1"></i>Your information is encrypted and will be handled confidentially by trained professionals
-                    </p>
-                </form>
+                </div>
             </div>
         </div>
     `;
+    
+    // Attach form handler
+    const form = document.getElementById('survivor-login-form');
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        handleSurvivorLogin(section);
+    });
 }
 
-// Handle survivor case form submission
-function handleSurvivorCaseSubmit(event) {
-    event.preventDefault();
+function handleSurvivorLogin(section) {
+    const caseNumber = document.getElementById('case-number').value.trim();
+    const pinCode = document.getElementById('pin-code').value.trim();
+    const statusDiv = document.getElementById('login-status');
     
-    const form = event.target;
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
+    console.log('🔐 Login attempt:', caseNumber);
     
-    // Show loading
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Submitting...';
-    submitBtn.disabled = true;
+    statusDiv.innerHTML = '<p class="text-blue-600"><i class="fas fa-spinner fa-spin mr-2"></i>Verifying...</p>';
     
-    // Collect form data
-    const formData = new FormData(form);
-    const caseData = {
-        incident_date: formData.get('incident_date'),
-        district: formData.get('district'),
-        gbv_type: formData.get('gbv_type'),
-        survivor_age: formData.get('survivor_age') || null,
-        description: formData.get('description'),
-        has_injuries: formData.get('has_injuries'),
-        medical_help_received: formData.get('medical_help'),
-        is_urgent: formData.get('is_urgent'),
-        reporter_name: formData.get('reporter_name') || 'Anonymous',
-        phone: formData.get('phone') || null,
-        priority: formData.get('is_urgent') === 'Yes' ? 'urgent' : 'medium',
-        source: 'survivor_portal'
-    };
-    
-    console.log('📝 Submitting case:', caseData);
-    
-    // Simulate API submission
+    // Simulate validation (in production, this would be an API call)
     setTimeout(() => {
-        // Generate case number
-        const year = new Date().getFullYear();
-        const caseNum = Math.floor(Math.random() * 9000) + 1000;
-        const caseNumber = `GBV-${year}-${caseNum}`;
-        
-        // Show success
-        showSurvivorCaseSuccess(caseNumber, formData.get('phone'));
-        
-    }, 2000);
+        if (caseNumber === 'GBV-2025-0001' && pinCode === '1234') {
+            // Save session
+            sessionStorage.setItem('survivor_session', JSON.stringify({
+                caseNumber: caseNumber,
+                loginTime: new Date().toISOString()
+            }));
+            
+            console.log('✅ Login successful!');
+            showSurvivorDashboard(section);
+        } else {
+            statusDiv.innerHTML = '<p class="text-red-600"><i class="fas fa-exclamation-circle mr-2"></i>Invalid case number or PIN</p>';
+        }
+    }, 1000);
 }
 
-// Show success screen after case submission
-function showSurvivorCaseSuccess(caseNumber, phone) {
-    const section = document.getElementById('dashboard-content');
-    if (!section) return;
+function showSurvivorDashboard(section) {
+    console.log('📊 Loading dashboard...');
     
-    const pin = phone ? phone.slice(-4) : 'N/A';
+    const session = JSON.parse(sessionStorage.getItem('survivor_session'));
+    const caseNumber = session.caseNumber;
     
     section.innerHTML = `
-        <div class="max-w-3xl mx-auto text-center">
-            <div class="bg-white rounded-lg shadow-xl p-12">
-                <div class="w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center" 
-                     style="background-color: rgba(50, 205, 50, 0.2);">
-                    <i class="fas fa-check-circle text-6xl" style="color: #32cd32;"></i>
-                </div>
-                
-                <h2 class="text-3xl font-bold mb-4" style="color: #1e3a8a;">
-                    Report Received Successfully
-                </h2>
-                
-                <p class="text-lg text-gray-700 mb-8">
-                    Your report has been submitted securely. Help is on the way.
-                </p>
-                
-                <!-- Case Number Box -->
-                <div class="bg-green-50 border-2 border-green-300 rounded-lg p-6 mb-6">
-                    <div class="text-sm text-gray-600 mb-2">Your Case Number:</div>
-                    <div class="text-4xl font-bold mb-3" style="color: #32cd32;">${caseNumber}</div>
-                    ${pin !== 'N/A' ? `
-                        <div class="text-sm text-gray-600 mb-1">Your Login PIN:</div>
-                        <div class="text-2xl font-bold" style="color: #1e3a8a;">${pin}</div>
-                        <p class="text-xs text-gray-500 mt-2">Use case number + PIN to access your case</p>
-                    ` : `
-                        <p class="text-sm text-gray-600 mt-2">
-                            <i class="fas fa-info-circle mr-2"></i>Anonymous report - Case number saved
-                        </p>
-                    `}
-                </div>
-                
-                <!-- Next Steps -->
-                <div class="bg-blue-50 rounded-lg p-6 mb-8 text-left">
-                    <h3 class="font-bold text-lg mb-4" style="color: #1e3a8a;">
-                        <i class="fas fa-clipboard-list mr-2"></i>What Happens Next:
-                    </h3>
-                    <div class="space-y-3 text-gray-700">
-                        <div class="flex items-start">
-                            <i class="fas fa-check-circle text-green-600 mr-3 mt-1"></i>
-                            <span>A trained counselor will contact you within 24 hours</span>
-                        </div>
-                        <div class="flex items-start">
-                            <i class="fas fa-check-circle text-green-600 mr-3 mt-1"></i>
-                            <span>Appropriate services have been notified based on your needs</span>
-                        </div>
-                        <div class="flex items-start">
-                            <i class="fas fa-check-circle text-green-600 mr-3 mt-1"></i>
-                            <span>You can track your case progress anytime using your case number</span>
-                        </div>
-                        <div class="flex items-start">
-                            <i class="fas fa-exclamation-triangle text-red-600 mr-3 mt-1"></i>
-                            <span class="font-semibold">For emergencies, call 116 or 999 immediately</span>
-                        </div>
+        <div class="max-w-4xl mx-auto space-y-6">
+            <!-- Header -->
+            <div class="bg-white rounded-lg shadow-lg p-6" style="background: linear-gradient(135deg, #1e3a8a 0%, #1e90ff 50%, #32cd32 100%);">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white mb-2">Welcome Back</h2>
+                        <p class="text-white text-opacity-90">Case: ${caseNumber}</p>
                     </div>
-                </div>
-                
-                <!-- Recommended Resources -->
-                <div class="bg-gray-50 rounded-lg p-6 mb-8 text-left">
-                    <h3 class="font-bold text-lg mb-4 text-gray-800">
-                        <i class="fas fa-hands-helping mr-2"></i>Recommended Resources:
-                    </h3>
-                    <div class="space-y-3">
-                        <div class="flex items-start bg-white p-3 rounded-lg border-l-4" style="border-left-color: #32cd32;">
-                            <i class="fas fa-phone text-2xl mr-3" style="color: #32cd32;"></i>
-                            <div>
-                                <div class="font-semibold">116 GBV Hotline</div>
-                                <div class="text-sm text-gray-600">Free 24/7 support - Call anytime</div>
-                            </div>
-                        </div>
-                        <div class="flex items-start bg-white p-3 rounded-lg border-l-4 border-blue-400">
-                            <i class="fas fa-hospital text-2xl text-blue-600 mr-3"></i>
-                            <div>
-                                <div class="font-semibold">Rainbo Initiative Centre</div>
-                                <div class="text-sm text-gray-600">Medical care and support services</div>
-                            </div>
-                        </div>
-                        <div class="flex items-start bg-white p-3 rounded-lg border-l-4 border-red-400">
-                            <i class="fas fa-shield-alt text-2xl text-red-600 mr-3"></i>
-                            <div>
-                                <div class="font-semibold">Police Family Support Unit</div>
-                                <div class="text-sm text-gray-600">Report crime and get protection</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Action Buttons -->
-                <div class="flex justify-center space-x-4">
-                    ${pin !== 'N/A' ? `
-                        <button onclick="autoLoginSurvivor('${caseNumber}', '${pin}')"
-                                class="px-8 py-3 rounded-lg text-white font-semibold"
-                                style="background-color: #1e90ff;">
-                            <i class="fas fa-sign-in-alt mr-2"></i>Access My Case Now
-                        </button>
-                    ` : ''}
-                    <button onclick="goBackToSurvivorPortal()"
-                            class="px-6 py-3 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300">
-                        <i class="fas fa-arrow-left mr-2"></i>Back to Survivor Portal
+                    <button onclick="logoutSurvivor()" 
+                        class="px-4 py-2 bg-white text-blue-800 rounded-lg font-bold hover:bg-gray-100">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
                     </button>
                 </div>
-                
-                <div class="mt-8 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded text-left">
-                    <p class="text-sm text-yellow-800">
-                        <i class="fas fa-bookmark mr-2"></i>
-                        <strong>Important:</strong> Save your case number ${pin !== 'N/A' ? 'and PIN ' : ''}somewhere safe. 
-                        You'll need ${pin !== 'N/A' ? 'them' : 'it'} to access your case later.
+            </div>
+
+            <!-- Emergency Hotlines -->
+            <div class="bg-red-50 border-2 border-red-200 rounded-xl p-6">
+                <h3 class="text-lg font-bold mb-3 text-red-800">
+                    <i class="fas fa-phone-volume mr-2"></i>24/7 Emergency Support
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <a href="tel:116" class="bg-red-600 text-white p-4 rounded-lg text-center hover:bg-red-700">
+                        <i class="fas fa-phone text-2xl mb-2"></i>
+                        <div class="font-bold text-xl">116</div>
+                        <div class="text-sm">National Helpline</div>
+                    </a>
+                    <a href="tel:999" class="bg-red-600 text-white p-4 rounded-lg text-center hover:bg-red-700">
+                        <i class="fas fa-ambulance text-2xl mb-2"></i>
+                        <div class="font-bold text-xl">999</div>
+                        <div class="text-sm">Medical Emergency</div>
+                    </a>
+                    <a href="tel:019" class="bg-red-600 text-white p-4 rounded-lg text-center hover:bg-red-700">
+                        <i class="fas fa-shield-alt text-2xl mb-2"></i>
+                        <div class="font-bold text-xl">019</div>
+                        <div class="text-sm">Police FSU</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Your Support Journey -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-bold mb-4" style="color: #1e3a8a;">
+                    <i class="fas fa-road mr-2"></i>Your Support Journey
+                </h3>
+                <div class="space-y-3">
+                    <div class="flex items-center p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
+                        <i class="fas fa-check-circle text-green-600 text-2xl mr-4"></i>
+                        <div>
+                            <div class="font-bold">Incident Reported</div>
+                            <div class="text-sm text-gray-600">Your case has been documented safely</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                        <i class="fas fa-user-md text-blue-600 text-2xl mr-4"></i>
+                        <div>
+                            <div class="font-bold">Support Team Assigned</div>
+                            <div class="text-sm text-gray-600">Counselor and case worker are ready</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center p-4 bg-gray-50 rounded-lg border-l-4 border-gray-300">
+                        <i class="fas fa-clock text-gray-400 text-2xl mr-4"></i>
+                        <div>
+                            <div class="font-bold">Medical Referral</div>
+                            <div class="text-sm text-gray-600">Pending coordination</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Report New Incident -->
+                <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition cursor-pointer" 
+                    onclick="showNewIncidentFormDashboard()">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center mr-4" 
+                            style="background: linear-gradient(135deg, #32cd32 0%, #228b22 100%);">
+                            <i class="fas fa-plus text-white text-xl"></i>
+                        </div>
+                        <h4 class="text-lg font-bold">Report Another Incident</h4>
+                    </div>
+                    <p class="text-sm text-gray-600">
+                        Document a new incident for additional support
+                    </p>
+                </div>
+
+                <!-- Check Status -->
+                <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition cursor-pointer"
+                    onclick="alert('Case Status: Active\\nSupport Team: Assigned\\nNext Update: Within 24 hours')">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center mr-4" 
+                            style="background: linear-gradient(135deg, #1e90ff 0%, #1e3a8a 100%);">
+                            <i class="fas fa-info-circle text-white text-xl"></i>
+                        </div>
+                        <h4 class="text-lg font-bold">Check Case Status</h4>
+                    </div>
+                    <p class="text-sm text-gray-600">
+                        View latest updates on your case
+                    </p>
+                </div>
+
+                <!-- Find Support Services -->
+                <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition cursor-pointer"
+                    onclick="alert('Support Services:\\n\\n🏥 Rainbo Initiative - Medical Care\\n⚖️ Legal Aid Board - Legal Support\\n🏛️ Police FSU - Investigation\\n❤️ Counseling Services')">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center mr-4" 
+                            style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);">
+                            <i class="fas fa-hands-helping text-white text-xl"></i>
+                        </div>
+                        <h4 class="text-lg font-bold">Find Support Services</h4>
+                    </div>
+                    <p class="text-sm text-gray-600">
+                        Locate medical, legal, and counseling help
+                    </p>
+                </div>
+
+                <!-- Safety Planning -->
+                <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition cursor-pointer"
+                    onclick="alert('Safety Planning:\\n\\n✓ Keep emergency contacts handy\\n✓ Pack essential documents\\n✓ Know safe locations nearby\\n✓ Trust your instincts\\n\\nCall 116 for immediate help')">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center mr-4" 
+                            style="background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%);">
+                            <i class="fas fa-shield-alt text-white text-xl"></i>
+                        </div>
+                        <h4 class="text-lg font-bold">Safety Planning</h4>
+                    </div>
+                    <p class="text-sm text-gray-600">
+                        Create a personal safety plan
                     </p>
                 </div>
             </div>
@@ -1216,51 +270,34 @@ function showSurvivorCaseSuccess(caseNumber, phone) {
     `;
 }
 
-// Auto-login survivor after case creation
-function autoLoginSurvivor(caseNumber, pin) {
-    const sessionData = {
-        caseNumber: caseNumber,
-        loginTime: new Date().toISOString(),
-        accessLevel: 'survivor'
-    };
-    
-    sessionStorage.setItem('survivor_session', JSON.stringify(sessionData));
-    
+function showNewIncidentForm() {
     const section = document.getElementById('dashboard-content');
-    if (section) {
-        loadSurvivorDashboard(section);
+    if (section && typeof window.loadReportCaseForm === 'function') {
+        window.loadReportCaseForm(section);
+    } else {
+        alert('Report form is loading. Please try again in a moment.');
     }
 }
 
-// Go back to Survivor Portal (reload portal page)
-function goBackToSurvivorPortal() {
+function showNewIncidentFormDashboard() {
+    showNewIncidentForm();
+}
+
+function logoutSurvivor() {
+    sessionStorage.removeItem('survivor_session');
     const section = document.getElementById('dashboard-content');
-    if (!section) return;
-    
-    // Check if logged in
-    const survivorSession = sessionStorage.getItem('survivor_session');
-    if (survivorSession) {
-        // Go back to dashboard
-        loadSurvivorDashboard(section);
-    } else {
-        // Go back to login screen
+    if (section) {
         loadSurvivorPortal(section);
+    } else {
+        location.reload();
     }
 }
 
 // Export functions
 window.loadSurvivorPortal = loadSurvivorPortal;
-window.loadSurvivorDashboard = loadSurvivorDashboard;
-window.handleSurvivorCaseLogin = handleSurvivorCaseLogin;
-window.handleSurvivorLogout = handleSurvivorLogout;
-window.showSurvivorCaseForm = showSurvivorCaseForm;
-window.handleSurvivorCaseSubmit = handleSurvivorCaseSubmit;
-window.autoLoginSurvivor = autoLoginSurvivor;
-window.goBackToSurvivorPortal = goBackToSurvivorPortal;
-window.showEmergencySOS = showEmergencySOS;
-window.showAnonymousReport = showAnonymousReport;
-window.showServiceFinder = showServiceFinder;
-window.showSafetyPlanning = showSafetyPlanning;
-window.showKnowYourRights = showKnowYourRights;
-window.showCaseStatus = showCaseStatus;
-window.showHealingResources = showHealingResources;
+window.showSurvivorDashboard = showSurvivorDashboard;
+window.showNewIncidentForm = showNewIncidentForm;
+window.showNewIncidentFormDashboard = showNewIncidentFormDashboard;
+window.logoutSurvivor = logoutSurvivor;
+
+console.log('✅ Survivor Portal REBUILT - Ready!');
