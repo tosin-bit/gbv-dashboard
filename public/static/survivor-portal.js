@@ -733,6 +733,27 @@ function showSurvivorCaseForm() {
     section.style.display = 'block';
     section.classList.remove('hidden');
     
+    // Use the full GBV report form if available
+    if (typeof window.loadReportCaseForm === 'function') {
+        // Create a wrapper div with back button
+        section.innerHTML = `
+            <div class="mb-4">
+                <button onclick="goBackToSurvivorPortal()" 
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Survivor Portal
+                </button>
+            </div>
+            <div id="survivor-form-container"></div>
+        `;
+        
+        // Load the full form into the container
+        const formContainer = document.getElementById('survivor-form-container');
+        window.loadReportCaseForm(formContainer);
+        return;
+    }
+    
+    // Fallback to simplified form if full form not available
+    
     section.innerHTML = `
         <div class="max-w-4xl mx-auto">
             <div class="bg-white rounded-lg shadow-lg p-8">
@@ -744,7 +765,7 @@ function showSurvivorCaseForm() {
                         </h2>
                         <p class="text-gray-600">Confidential and secure - Your information is protected</p>
                     </div>
-                    <button onclick="handleTabNavigation('Survivor Portal')" 
+                    <button onclick="goBackToSurvivorPortal()" 
                             class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
                         <i class="fas fa-arrow-left mr-2"></i>Back to Portal
                     </button>
@@ -951,7 +972,7 @@ function showSurvivorCaseForm() {
                                 style="background-color: #32cd32;">
                             <i class="fas fa-paper-plane mr-2"></i>Submit Report
                         </button>
-                        <button type="button" onclick="handleTabNavigation('Survivor Portal')"
+                        <button type="button" onclick="goBackToSurvivorPortal()"
                                 class="px-6 py-4 rounded-lg bg-gray-600 text-white font-semibold hover:bg-gray-700">
                             <i class="fas fa-times mr-2"></i>Cancel
                         </button>
@@ -1112,9 +1133,9 @@ function showSurvivorCaseSuccess(caseNumber, phone) {
                             <i class="fas fa-sign-in-alt mr-2"></i>Access My Case Now
                         </button>
                     ` : ''}
-                    <button onclick="handleTabNavigation('Overview')"
+                    <button onclick="goBackToSurvivorPortal()"
                             class="px-6 py-3 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300">
-                        <i class="fas fa-home mr-2"></i>Back to Dashboard
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Survivor Portal
                     </button>
                 </div>
                 
@@ -1146,6 +1167,22 @@ function autoLoginSurvivor(caseNumber, pin) {
     }
 }
 
+// Go back to Survivor Portal (reload portal page)
+function goBackToSurvivorPortal() {
+    const section = document.getElementById('dashboard-content');
+    if (!section) return;
+    
+    // Check if logged in
+    const survivorSession = sessionStorage.getItem('survivor_session');
+    if (survivorSession) {
+        // Go back to dashboard
+        loadSurvivorDashboard(section);
+    } else {
+        // Go back to login screen
+        loadSurvivorPortal(section);
+    }
+}
+
 // Export functions
 window.loadSurvivorPortal = loadSurvivorPortal;
 window.loadSurvivorDashboard = loadSurvivorDashboard;
@@ -1154,7 +1191,7 @@ window.handleSurvivorLogout = handleSurvivorLogout;
 window.showSurvivorCaseForm = showSurvivorCaseForm;
 window.handleSurvivorCaseSubmit = handleSurvivorCaseSubmit;
 window.autoLoginSurvivor = autoLoginSurvivor;
-window.showSurvivorCaseForm = showSurvivorCaseForm;
+window.goBackToSurvivorPortal = goBackToSurvivorPortal;
 window.showEmergencySOS = showEmergencySOS;
 window.showAnonymousReport = showAnonymousReport;
 window.showServiceFinder = showServiceFinder;
