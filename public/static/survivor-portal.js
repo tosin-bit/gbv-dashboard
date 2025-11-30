@@ -212,31 +212,31 @@ function showSurvivorDashboard(section) {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Report New Incident -->
                 <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition cursor-pointer" 
-                    onclick="showNewIncidentFormDashboard()">
+                    onclick="showSurvivorReportForm()">
                     <div class="flex items-center mb-4">
                         <div class="w-12 h-12 rounded-full flex items-center justify-center mr-4" 
                             style="background: linear-gradient(135deg, #32cd32 0%, #228b22 100%);">
                             <i class="fas fa-plus text-white text-xl"></i>
                         </div>
-                        <h4 class="text-lg font-bold">Report Another Incident</h4>
+                        <h4 class="text-lg font-bold">Report New Incident</h4>
                     </div>
                     <p class="text-sm text-gray-600">
-                        Document a new incident for additional support
+                        Confidential reporting - your information is safe
                     </p>
                 </div>
 
-                <!-- Check Status -->
+                <!-- Track My Cases -->
                 <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition cursor-pointer"
-                    onclick="alert('Case Status: Active\\nSupport Team: Assigned\\nNext Update: Within 24 hours')">
+                    onclick="showSurvivorCases()">
                     <div class="flex items-center mb-4">
                         <div class="w-12 h-12 rounded-full flex items-center justify-center mr-4" 
                             style="background: linear-gradient(135deg, #1e90ff 0%, #1e3a8a 100%);">
-                            <i class="fas fa-info-circle text-white text-xl"></i>
+                            <i class="fas fa-folder-open text-white text-xl"></i>
                         </div>
-                        <h4 class="text-lg font-bold">Check Case Status</h4>
+                        <h4 class="text-lg font-bold">Track My Cases</h4>
                     </div>
                     <p class="text-sm text-gray-600">
-                        View latest updates on your case
+                        View all your reported cases and their status
                     </p>
                 </div>
 
@@ -274,17 +274,192 @@ function showSurvivorDashboard(section) {
     `;
 }
 
-function showNewIncidentForm() {
+function showSurvivorReportForm() {
     const section = document.getElementById('dashboard-content');
-    if (section && typeof window.loadReportCaseForm === 'function') {
-        window.loadReportCaseForm(section);
+    if (!section) {
+        console.error('Cannot find dashboard-content section');
+        return;
+    }
+    
+    console.log('📝 Loading report form for survivor...');
+    
+    // Check if loadReportCaseForm is available
+    if (typeof window.loadReportCaseForm === 'function') {
+        window.loadReportCaseForm(section, 'survivor');
     } else {
+        console.error('loadReportCaseForm not available');
         alert('Report form is loading. Please try again in a moment.');
     }
 }
 
+function showSurvivorCases() {
+    const section = document.getElementById('dashboard-content');
+    if (!section) return;
+    
+    console.log('📂 Loading survivor cases...');
+    
+    section.innerHTML = `
+        <div class="max-w-6xl mx-auto space-y-6">
+            <!-- Header -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold" style="color: #1e3a8a;">
+                            <i class="fas fa-folder-open mr-2"></i>My Reported Cases
+                        </h2>
+                        <p class="text-gray-600 mt-1">Track the status of your cases</p>
+                    </div>
+                    <button onclick="loadSurvivorPortal(document.getElementById('dashboard-content'))" 
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Portal
+                    </button>
+                </div>
+            </div>
+
+            <!-- Cases List -->
+            <div id="survivor-cases-list">
+                <div class="text-center py-8">
+                    <i class="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
+                    <p class="mt-4 text-gray-600">Loading your cases...</p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Load cases from API
+    setTimeout(() => {
+        loadSurvivorCasesData();
+    }, 500);
+}
+
+async function loadSurvivorCasesData() {
+    const casesList = document.getElementById('survivor-cases-list');
+    if (!casesList) return;
+    
+    try {
+        // Fetch cases from API
+        const response = await fetch('/api/cases');
+        const cases = await response.json();
+        
+        if (!cases || cases.length === 0) {
+            casesList.innerHTML = `
+                <div class="bg-white rounded-lg shadow-lg p-12 text-center">
+                    <i class="fas fa-folder-open text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-bold text-gray-700 mb-2">No Cases Yet</h3>
+                    <p class="text-gray-600 mb-6">You haven't reported any cases yet</p>
+                    <button onclick="showSurvivorReportForm()" 
+                        class="px-6 py-3 text-white font-bold rounded-lg"
+                        style="background: linear-gradient(135deg, #32cd32 0%, #228b22 100%);">
+                        <i class="fas fa-plus mr-2"></i>Report Your First Case
+                    </button>
+                </div>
+            `;
+            return;
+        }
+        
+        // Display cases
+        let casesHTML = '<div class="space-y-4">';
+        cases.forEach(caseItem => {
+            const statusColor = getStatusColor(caseItem.status);
+            const priorityBadge = getPriorityBadge(caseItem.priority);
+            
+            casesHTML += `
+                <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <h3 class="text-lg font-bold text-gray-800">
+                                    ${caseItem.case_number}
+                                </h3>
+                                <span class="px-3 py-1 rounded-full text-sm font-bold" 
+                                    style="background: ${statusColor.bg}; color: ${statusColor.text};">
+                                    ${caseItem.status}
+                                </span>
+                                ${priorityBadge}
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 mt-4">
+                                <div>
+                                    <p class="text-sm text-gray-500">Incident Date</p>
+                                    <p class="font-semibold">${formatDate(caseItem.incident_date)}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Type of Violence</p>
+                                    <p class="font-semibold">${caseItem.gbv_type || 'Not specified'}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">District</p>
+                                    <p class="font-semibold">${caseItem.district || 'Not specified'}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Reported On</p>
+                                    <p class="font-semibold">${formatDate(caseItem.created_at)}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="viewCaseDetails('${caseItem.case_number}')" 
+                            class="ml-4 px-4 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700">
+                            <i class="fas fa-eye mr-2"></i>View Details
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        casesHTML += '</div>';
+        
+        casesList.innerHTML = casesHTML;
+        
+    } catch (error) {
+        console.error('Error loading cases:', error);
+        casesList.innerHTML = `
+            <div class="bg-red-50 border-2 border-red-200 rounded-lg p-6 text-center">
+                <i class="fas fa-exclamation-triangle text-4xl text-red-600 mb-4"></i>
+                <h3 class="text-xl font-bold text-red-800 mb-2">Error Loading Cases</h3>
+                <p class="text-red-700 mb-4">Unable to load your cases. Please try again.</p>
+                <button onclick="loadSurvivorCasesData()" 
+                    class="px-6 py-3 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700">
+                    <i class="fas fa-sync mr-2"></i>Retry
+                </button>
+            </div>
+        `;
+    }
+}
+
+function getStatusColor(status) {
+    const colors = {
+        'Pending': { bg: '#fef3c7', text: '#92400e' },
+        'Active': { bg: '#dbeafe', text: '#1e3a8a' },
+        'Under Investigation': { bg: '#e0e7ff', text: '#3730a3' },
+        'Resolved': { bg: '#d1fae5', text: '#065f46' },
+        'Closed': { bg: '#f3f4f6', text: '#1f2937' }
+    };
+    return colors[status] || { bg: '#f3f4f6', text: '#1f2937' };
+}
+
+function getPriorityBadge(priority) {
+    const badges = {
+        'High': '<span class="px-2 py-1 bg-red-100 text-red-800 text-xs font-bold rounded">🔴 HIGH</span>',
+        'Medium': '<span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-bold rounded">🟡 MEDIUM</span>',
+        'Low': '<span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-bold rounded">🟢 LOW</span>'
+    };
+    return badges[priority] || '';
+}
+
+function formatDate(dateString) {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function viewCaseDetails(caseNumber) {
+    alert(`Case Details: ${caseNumber}\\n\\nFull case details view coming soon...\\n\\nYou can contact support for updates on this case.`);
+}
+
+function showNewIncidentForm() {
+    showSurvivorReportForm();
+}
+
 function showNewIncidentFormDashboard() {
-    showNewIncidentForm();
+    showSurvivorReportForm();
 }
 
 function logoutSurvivor() {
@@ -300,8 +475,12 @@ function logoutSurvivor() {
 // Export functions
 window.loadSurvivorPortal = loadSurvivorPortal;
 window.showSurvivorDashboard = showSurvivorDashboard;
+window.showSurvivorReportForm = showSurvivorReportForm;
+window.showSurvivorCases = showSurvivorCases;
+window.loadSurvivorCasesData = loadSurvivorCasesData;
+window.viewCaseDetails = viewCaseDetails;
 window.showNewIncidentForm = showNewIncidentForm;
 window.showNewIncidentFormDashboard = showNewIncidentFormDashboard;
 window.logoutSurvivor = logoutSurvivor;
 
-console.log('✅ Survivor Portal REBUILT - Ready!');
+console.log('✅ Survivor Portal with Report & Track Cases - Ready!');
