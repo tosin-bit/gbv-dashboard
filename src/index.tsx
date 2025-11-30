@@ -1856,8 +1856,50 @@ app.get('/', (c) => {
             <span className="ml-4" data-translate="available247">| Available 24/7 in Krio, English, Mende & Temne</span>
           </div>
 
-          {/* Refresh Button */}
-          <div className="flex justify-end mb-4">
+          {/* Quick Actions Bar */}
+          <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
+            <div className="flex gap-3 flex-wrap">
+              <button onclick="showMessagingSystem()" 
+                      className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all font-semibold shadow-md flex items-center gap-2">
+                <i className="fas fa-comments"></i>
+                <span>Team Chat</span>
+              </button>
+              <button onclick="showInteractiveTraining()" 
+                      className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all font-semibold shadow-md flex items-center gap-2">
+                <i className="fas fa-gamepad"></i>
+                <span>Training</span>
+              </button>
+              <button onclick="showSurvivorPortal()" 
+                      className="px-4 py-2 bg-gradient-to-r from-green-600 to-teal-600 text-white rounded-lg hover:from-green-700 hover:to-teal-700 transition-all font-semibold shadow-md flex items-center gap-2">
+                <i className="fas fa-user-shield"></i>
+                <span>Survivor Portal</span>
+              </button>
+              <button onclick="showVideoResources()" 
+                      className="px-4 py-2 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-lg hover:from-red-700 hover:to-orange-700 transition-all font-semibold shadow-md flex items-center gap-2">
+                <i className="fas fa-video"></i>
+                <span>Videos</span>
+              </button>
+              <button onclick="showCustomReportBuilder()" 
+                      className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all font-semibold shadow-md flex items-center gap-2">
+                <i className="fas fa-file-invoice"></i>
+                <span>Reports</span>
+              </button>
+              <button onclick="showWhatsAppSMS()" 
+                      className="px-4 py-2 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg hover:from-green-600 hover:to-teal-600 transition-all font-semibold shadow-md flex items-center gap-2">
+                <i className="fas fa-mobile-alt"></i>
+                <span>WhatsApp/SMS</span>
+              </button>
+              <button onclick="showExportSystem()" 
+                      className="px-4 py-2 bg-gradient-to-r from-gray-700 to-gray-900 text-white rounded-lg hover:from-gray-800 hover:to-black transition-all font-semibold shadow-md flex items-center gap-2">
+                <i className="fas fa-file-download"></i>
+                <span>Export</span>
+              </button>
+              <button onclick="showPictureBasedReport()" 
+                      className="px-4 py-2 bg-gradient-to-r from-pink-600 to-red-600 text-white rounded-lg hover:from-pink-700 hover:to-red-700 transition-all font-semibold shadow-md flex items-center gap-2 animate-pulse">
+                <i className="fas fa-image"></i>
+                <span>📸 Picture Report</span>
+              </button>
+            </div>
             <button 
               onclick="refreshDashboard()"
               className="px-4 py-2 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity flex items-center space-x-2"
@@ -2112,6 +2154,24 @@ app.get('/', (c) => {
       <script src="/static/voice-recording.js"></script>
       <script src="/static/view-cases.js"></script>
       <script src="/static/case-notes.js"></script>
+      <script src="/static/dark-mode.js"></script>
+      <script src="/static/notifications.js"></script>
+      <script src="/static/ai-chatbot.js"></script>
+      <script src="/static/risk-assessment.js"></script>
+      <script src="/static/advanced-analytics.js"></script>
+      <script src="/static/panic-button.js"></script>
+      <script src="/static/internal-messaging.js"></script>
+      <script src="/static/interactive-training.js"></script>
+      <script src="/static/survivor-portal.js"></script>
+      <script src="/static/whatsapp-sms.js"></script>
+      <script src="/static/custom-report-builder.js"></script>
+      <script src="/static/video-resources.js"></script>
+      <script src="/static/keyboard-shortcuts.js"></script>
+      <script src="/static/quick-stats-widget.js"></script>
+      <script src="/static/export-system.js"></script>
+      <script src="/static/accessibility-voice-navigation.js"></script>
+      <script src="/static/accessibility-picture-reporting.js"></script>
+      <script src="/static/accessibility-simple-mode.js"></script>
     </div>
   );
 });
