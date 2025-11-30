@@ -4,6 +4,13 @@
  */
 
 function loadSurvivorPortal(section) {
+    console.log('🔵 Loading Survivor Portal - Direct Access (No Login)...');
+    
+    // DIRECTLY SHOW DASHBOARD - No login required
+    showSurvivorDashboard(section);
+}
+
+function loadSurvivorPortalOLD_WITH_LOGIN(section) {
     console.log('🔵 Loading Survivor Portal...');
     
     // Check if already logged in
@@ -131,22 +138,19 @@ function handleSurvivorLogin(section) {
 function showSurvivorDashboard(section) {
     console.log('📊 Loading dashboard...');
     
-    const session = JSON.parse(sessionStorage.getItem('survivor_session'));
-    const caseNumber = session.caseNumber;
+    // No login required - direct access
+    const caseNumber = 'Welcome';
     
     section.innerHTML = `
         <div class="max-w-4xl mx-auto space-y-6">
             <!-- Header -->
             <div class="bg-white rounded-lg shadow-lg p-6" style="background: linear-gradient(135deg, #1e3a8a 0%, #1e90ff 50%, #32cd32 100%);">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h2 class="text-2xl font-bold text-white mb-2">Welcome Back</h2>
-                        <p class="text-white text-opacity-90">Case: ${caseNumber}</p>
+                <div class="text-center">
+                    <div class="w-24 h-24 mx-auto mb-4 bg-white rounded-full flex items-center justify-center">
+                        <i class="fas fa-heart text-5xl" style="color: #1e3a8a;"></i>
                     </div>
-                    <button onclick="logoutSurvivor()" 
-                        class="px-4 py-2 bg-white text-blue-800 rounded-lg font-bold hover:bg-gray-100">
-                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                    </button>
+                    <h2 class="text-3xl font-bold text-white mb-2">Survivor Support Portal</h2>
+                    <p class="text-white text-opacity-90">Safe, Confidential Access to Support & Resources</p>
                 </div>
             </div>
 
