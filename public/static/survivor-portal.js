@@ -130,7 +130,16 @@ function loadSurvivorPortal(section) {
 
 // Load survivor dashboard after successful login
 function loadSurvivorDashboard(section) {
+    console.log('📊 loadSurvivorDashboard called, section:', section);
+    
+    if (!section) {
+        console.error('❌ No section provided to loadSurvivorDashboard');
+        alert('Error: Could not load dashboard. Please refresh the page.');
+        return;
+    }
+    
     const sessionData = JSON.parse(sessionStorage.getItem('survivor_session') || '{}');
+    console.log('📝 Session data:', sessionData);
     
     section.innerHTML = `
         <div class="space-y-6">
@@ -666,26 +675,48 @@ function handleSurvivorCaseLogin(event) {
             
             sessionStorage.setItem('survivor_session', JSON.stringify(sessionData));
             
-            // Find the section - use the parent element if we're on Survivor Portal page
-            let section = document.getElementById('dashboard-content');
+            console.log('🔍 Looking for section to load dashboard...');
             
-            // If not found, try to find current content container
+            // Try multiple approaches to find the section
+            let section = document.getElementById('dashboard-content');
+            console.log('Method 1 - getElementById:', section ? 'Found' : 'Not found');
+            
             if (!section || section.classList.contains('hidden')) {
-                // Look for the parent container that's currently visible
-                section = document.querySelector('.space-y-6')?.parentElement;
-                if (!section) {
-                    section = document.getElementById('dashboard-content');
+                // Try finding by the login form's parent
+                const loginForm = document.getElementById('survivor-case-login-form');
+                if (loginForm) {
+                    section = loginForm.closest('.max-w-2xl')?.parentElement;
+                    console.log('Method 2 - Via login form:', section ? 'Found' : 'Not found');
                 }
+            }
+            
+            if (!section || section.classList.contains('hidden')) {
+                // Try finding the space-y-6 container
+                const containers = document.querySelectorAll('.space-y-6');
+                for (let container of containers) {
+                    if (container.querySelector('.bg-white.rounded-lg.shadow-2xl')) {
+                        section = container.parentElement;
+                        console.log('Method 3 - Via space-y-6:', section ? 'Found' : 'Not found');
+                        break;
+                    }
+                }
+            }
+            
+            if (!section) {
+                // Last resort: find any main container
+                section = document.querySelector('main') || document.querySelector('.container') || document.body;
+                console.log('Method 4 - Last resort:', section ? 'Found' : 'Using body');
             }
             
             // Make sure section is visible
             if (section) {
                 section.style.display = 'block';
                 section.classList.remove('hidden');
+                console.log('✅ Loading dashboard into section...');
                 loadSurvivorDashboard(section);
                 console.log('✅ Survivor logged in:', caseNumber);
             } else {
-                console.error('Dashboard content section not found');
+                console.error('❌ Dashboard content section not found');
                 alert('Error loading dashboard. Please try again.');
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
