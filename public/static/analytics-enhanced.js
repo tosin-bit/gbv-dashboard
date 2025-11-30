@@ -192,7 +192,8 @@ async function loadEnhancedAnalyticsDashboard(section) {
                                 </span>
                             </div>
                         </div>
-                        <button class="w-full px-4 py-3 text-white rounded-lg font-semibold transition-all group-hover:scale-105" 
+                        <button onclick="showAnalyticsSection('spike-prediction'); event.stopPropagation();" 
+                                class="w-full px-4 py-3 text-white rounded-lg font-semibold transition-all group-hover:scale-105" 
                                 style="background-color: #1e3a8a;">
                             <i class="fas fa-arrow-right mr-2"></i>View Predictions
                         </button>
@@ -232,7 +233,8 @@ async function loadEnhancedAnalyticsDashboard(section) {
                                 </span>
                             </div>
                         </div>
-                        <button class="w-full px-4 py-3 text-white rounded-lg font-semibold transition-all group-hover:scale-105" 
+                        <button onclick="showAnalyticsSection('risk-scoring'); event.stopPropagation();" 
+                                class="w-full px-4 py-3 text-white rounded-lg font-semibold transition-all group-hover:scale-105" 
                                 style="background-color: #1e90ff;">
                             <i class="fas fa-calculator mr-2"></i>Calculate Risk Score
                         </button>
@@ -273,7 +275,7 @@ async function loadEnhancedAnalyticsDashboard(section) {
                             </div>
                         </div>
                         <button class="w-full px-4 py-3 text-white rounded-lg font-semibold transition-all group-hover:scale-105" 
-                                style="background-color: #32cd32;">
+                                style="background-color: #32cd32;" onclick="showAnalyticsSection('resource-forecast'); event.stopPropagation();">
                             <i class="fas fa-chart-bar mr-2"></i>View Forecast
                         </button>
                     </div>
@@ -313,7 +315,7 @@ async function loadEnhancedAnalyticsDashboard(section) {
                             </div>
                         </div>
                         <button class="w-full px-4 py-3 text-white rounded-lg font-semibold transition-all group-hover:scale-105" 
-                                style="background-color: #ffd700; color: #1e3a8a;">
+                                style="background-color: #ffd700; color: #1e3a8a;" onclick="showAnalyticsSection('trend-intelligence'); event.stopPropagation();">
                             <i class="fas fa-search mr-2"></i>Analyze Trends
                         </button>
                     </div>
