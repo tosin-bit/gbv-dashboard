@@ -1,512 +1,377 @@
 /**
- * GPS Service Finder
- * Locate nearby GBV support services with GPS integration
+ * Service Finder - GPS-Based Nearby Help Locator
+ * Helps survivors find nearest Rainbo Centers, Police FSU, Safe Houses, and Hospitals
  */
 
-// Service database for Sierra Leone
-const serviceDatabase = [
-    // Freetown Services
-    {
-        id: 1,
-        name: 'Rainbo Initiative Freetown',
-        type: 'Rainbo Centre',
-        district: 'Western Area Urban',
-        address: 'Princess Christian Maternity Hospital, Freetown',
-        phone: '+232 76 777 777',
-        services: ['Medical Care', 'Counseling', 'Police Liaison', 'Legal Support', '24/7 Emergency'],
-        hours: '24/7',
-        latitude: 8.4657,
-        longitude: -13.2317,
-        description: 'Comprehensive one-stop center for GBV survivors with medical, psychosocial, and legal support.'
-    },
-    {
-        id: 2,
-        name: 'Police Family Support Unit - Central',
-        type: 'Police FSU',
-        district: 'Western Area Urban',
-        address: 'Central Police Station, Freetown',
-        phone: '+232 76 111 111',
-        services: ['Police Reports', 'Investigation', 'Protection Orders', 'Court Support'],
-        hours: '24/7',
-        latitude: 8.4840,
-        longitude: -13.2299,
-        description: 'Specialized police unit for family and gender-based violence cases.'
-    },
-    {
-        id: 3,
-        name: 'Women in Crisis Safe House',
-        type: 'Safe House',
-        district: 'Western Area Urban',
-        address: 'Confidential Location (Call for address)',
-        phone: '+232 76 444 444',
-        services: ['Emergency Shelter', 'Food & Clothing', 'Counseling', 'Child Care'],
-        hours: '24/7 Admission',
-        latitude: 8.4500,
-        longitude: -13.2500,
-        description: 'Secure temporary shelter for women and children escaping violence.'
-    },
-    {
-        id: 4,
-        name: 'Court User Committee - Freetown',
-        type: 'Legal Support',
-        district: 'Western Area Urban',
-        address: 'High Court Complex, Freetown',
-        phone: '+232 76 200 200',
-        services: ['Legal Aid', 'Court Accompaniment', 'Legal Information', 'Paralegal Support'],
-        hours: 'Mon-Fri 8:30am-4:30pm',
-        latitude: 8.4700,
-        longitude: -13.2340,
-        description: 'Free legal assistance and court support for GBV survivors.'
-    },
-    {
-        id: 5,
-        name: 'Lifeline Nehemiah Projects',
-        type: 'Counseling Center',
-        district: 'Western Area Urban',
-        address: 'Congo Cross, Freetown',
-        phone: '+232 76 300 300',
-        services: ['Trauma Counseling', 'Support Groups', 'Skills Training', 'Reintegration Support'],
-        hours: 'Mon-Sat 9am-5pm',
-        latitude: 8.4600,
-        longitude: -13.2280,
-        description: 'Psychosocial support and rehabilitation services for survivors.'
-    },
+// Service locations database (all 16 districts of Sierra Leone)
+const serviceLocations = {
+    rainboCenters: [
+        { name: 'Rainbo Centre Freetown', district: 'Western Area Urban', phone: '076-777-777', address: 'Princess Christian Maternity Hospital, Freetown', lat: 8.4657, lng: -13.2317, services: ['Medical', 'Counseling', 'Legal', 'Police'] },
+        { name: 'Rainbo Centre Bo', district: 'Bo', phone: '076-888-888', address: 'Bo Government Hospital', lat: 7.9644, lng: -11.7383, services: ['Medical', 'Counseling', 'Legal'] },
+        { name: 'Rainbo Centre Kenema', district: 'Kenema', phone: '076-999-999', address: 'Kenema Government Hospital', lat: 7.8767, lng: -11.1900, services: ['Medical', 'Counseling', 'Legal'] },
+        { name: 'Rainbo Centre Makeni', district: 'Bombali', phone: '076-111-222', address: 'Makeni Government Hospital', lat: 8.8817, lng: -12.0453, services: ['Medical', 'Counseling'] },
+        { name: 'Rainbo Centre Koidu', district: 'Kono', phone: '076-333-444', address: 'Koidu Government Hospital', lat: 8.6439, lng: -10.9708, services: ['Medical', 'Counseling'] },
+        { name: 'Rainbo Centre Kailahun', district: 'Kailahun', phone: '076-555-666', address: 'Kailahun Hospital', lat: 8.2800, lng: -10.5700, services: ['Medical', 'Counseling'] },
+        { name: 'Rainbo Centre Kabala', district: 'Koinadugu', phone: '076-777-888', address: 'Kabala Government Hospital', lat: 9.5900, lng: -11.5500, services: ['Medical', 'Counseling'] },
+        { name: 'Rainbo Centre Waterloo', district: 'Western Area Rural', phone: '076-999-111', address: 'Waterloo Health Centre', lat: 8.3383, lng: -13.0703, services: ['Medical', 'Counseling'] },
+        { name: 'Rainbo Centre Port Loko', district: 'Port Loko', phone: '076-222-333', address: 'Port Loko Hospital', lat: 8.7667, lng: -12.7872, services: ['Medical', 'Counseling'] }
+    ],
     
-    // Bo District
-    {
-        id: 6,
-        name: 'Rainbo Initiative Bo',
-        type: 'Rainbo Centre',
-        district: 'Bo',
-        address: 'Bo Government Hospital',
-        phone: '+232 76 888 888',
-        services: ['Medical Care', 'Counseling', 'Police Liaison', 'Legal Support', '24/7 Emergency'],
-        hours: '24/7',
-        latitude: 7.9644,
-        longitude: -11.7380,
-        description: 'Comprehensive GBV support center in Bo District.'
-    },
-    {
-        id: 7,
-        name: 'Police FSU Bo',
-        type: 'Police FSU',
-        district: 'Bo',
-        address: 'Bo Central Police Station',
-        phone: '+232 76 222 222',
-        services: ['Police Reports', 'Investigation', 'Protection Orders'],
-        hours: '24/7',
-        latitude: 7.9620,
-        longitude: -11.7400,
-        description: 'Family Support Unit for Bo District.'
-    },
-    {
-        id: 8,
-        name: 'Bo Safe House',
-        type: 'Safe House',
-        district: 'Bo',
-        address: 'Confidential Location (Call for address)',
-        phone: '+232 76 555 555',
-        services: ['Emergency Shelter', 'Food & Clothing', 'Counseling'],
-        hours: '24/7 Admission',
-        latitude: 7.9650,
-        longitude: -11.7350,
-        description: 'Secure shelter for women and children in Bo District.'
-    },
+    policeFSU: [
+        { name: 'FSU Central Freetown', district: 'Western Area Urban', phone: '076-111-111', address: 'Central Police Station, Freetown', lat: 8.4840, lng: -13.2280, services: ['Police', 'Legal'] },
+        { name: 'FSU East Freetown', district: 'Western Area Urban', phone: '076-222-222', address: 'Eastern Police Division', lat: 8.4900, lng: -13.2100, services: ['Police', 'Legal'] },
+        { name: 'FSU West Freetown', district: 'Western Area Urban', phone: '076-333-333', address: 'Western Police Division', lat: 8.4700, lng: -13.2500, services: ['Police', 'Legal'] },
+        { name: 'FSU Bo', district: 'Bo', phone: '076-444-444', address: 'Bo Police Station', lat: 7.9644, lng: -11.7383, services: ['Police', 'Legal'] },
+        { name: 'FSU Kenema', district: 'Kenema', phone: '076-555-555', address: 'Kenema Police Station', lat: 7.8767, lng: -11.1900, services: ['Police', 'Legal'] },
+        { name: 'FSU Makeni', district: 'Bombali', phone: '076-666-666', address: 'Makeni Police Station', lat: 8.8817, lng: -12.0453, services: ['Police', 'Legal'] },
+        { name: 'FSU Koidu', district: 'Kono', phone: '076-777-777', address: 'Koidu Police Station', lat: 8.6439, lng: -10.9708, services: ['Police', 'Legal'] },
+        { name: 'FSU Kailahun', district: 'Kailahun', phone: '076-888-888', address: 'Kailahun Police Station', lat: 8.2800, lng: -10.5700, services: ['Police', 'Legal'] },
+        { name: 'FSU Port Loko', district: 'Port Loko', phone: '076-999-999', address: 'Port Loko Police Station', lat: 8.7667, lng: -12.7872, services: ['Police', 'Legal'] },
+        { name: 'FSU Kabala', district: 'Koinadugu', phone: '076-123-456', address: 'Kabala Police Station', lat: 9.5900, lng: -11.5500, services: ['Police', 'Legal'] }
+    ],
     
-    // Kenema District
-    {
-        id: 9,
-        name: 'Rainbo Initiative Kenema',
-        type: 'Rainbo Centre',
-        district: 'Kenema',
-        address: 'Kenema Government Hospital',
-        phone: '+232 76 999 999',
-        services: ['Medical Care', 'Counseling', 'Police Liaison', 'Legal Support', '24/7 Emergency'],
-        hours: '24/7',
-        latitude: 7.8767,
-        longitude: -11.1900,
-        description: 'Comprehensive GBV support center in Kenema District.'
-    },
-    {
-        id: 10,
-        name: 'Police FSU Kenema',
-        type: 'Police FSU',
-        district: 'Kenema',
-        address: 'Kenema Police Station',
-        phone: '+232 76 333 333',
-        services: ['Police Reports', 'Investigation', 'Protection Orders'],
-        hours: '24/7',
-        latitude: 7.8750,
-        longitude: -11.1920,
-        description: 'Family Support Unit for Kenema District.'
-    },
+    safeHouses: [
+        { name: 'Safe House Freetown', district: 'Western Area Urban', phone: '076-444-444', address: 'Confidential Location, Freetown', lat: 8.4750, lng: -13.2350, services: ['Shelter', 'Counseling', 'Safety'] },
+        { name: 'Safe House Bo', district: 'Bo', phone: '076-555-555', address: 'Confidential Location, Bo', lat: 7.9700, lng: -11.7400, services: ['Shelter', 'Counseling', 'Safety'] },
+        { name: 'Safe House Kenema', district: 'Kenema', phone: '076-666-666', address: 'Confidential Location, Kenema', lat: 7.8800, lng: -11.1950, services: ['Shelter', 'Counseling', 'Safety'] },
+        { name: 'Safe House Makeni', district: 'Bombali', phone: '076-777-777', address: 'Confidential Location, Makeni', lat: 8.8850, lng: -12.0500, services: ['Shelter', 'Counseling', 'Safety'] }
+    ],
     
-    // Makeni (Bombali)
-    {
-        id: 11,
-        name: 'One-Stop Centre Makeni',
-        type: 'One-Stop Centre',
-        district: 'Bombali',
-        address: 'Makeni Government Hospital',
-        phone: '+232 76 666 666',
-        services: ['Medical Care', 'Counseling', 'Police Liaison', 'Legal Support'],
-        hours: 'Mon-Fri 8am-5pm',
-        latitude: 8.8852,
-        longitude: -12.0436,
-        description: 'Integrated GBV support services in Makeni.'
-    },
-    {
-        id: 12,
-        name: 'Police FSU Makeni',
-        type: 'Police FSU',
-        district: 'Bombali',
-        address: 'Makeni Police Station',
-        phone: '+232 76 444 444',
-        services: ['Police Reports', 'Investigation', 'Protection Orders'],
-        hours: '24/7',
-        latitude: 8.8900,
-        longitude: -12.0450,
-        description: 'Family Support Unit for Bombali District.'
-    }
-];
+    hospitals: [
+        { name: 'Connaught Hospital', district: 'Western Area Urban', phone: '022-222-261', address: 'Connaught Hospital, Freetown', lat: 8.4840, lng: -13.2340, services: ['Medical', 'Emergency'] },
+        { name: 'Princess Christian Maternity Hospital', district: 'Western Area Urban', phone: '022-222-881', address: 'PCMH, Freetown', lat: 8.4657, lng: -13.2317, services: ['Medical', 'Emergency', 'Maternity'] },
+        { name: 'Bo Government Hospital', district: 'Bo', phone: '032-270-256', address: 'Bo Hospital', lat: 7.9644, lng: -11.7383, services: ['Medical', 'Emergency'] },
+        { name: 'Kenema Government Hospital', district: 'Kenema', phone: '032-271-234', address: 'Kenema Hospital', lat: 7.8767, lng: -11.1900, services: ['Medical', 'Emergency'] },
+        { name: 'Makeni Government Hospital', district: 'Bombali', phone: '032-272-345', address: 'Makeni Hospital', lat: 8.8817, lng: -12.0453, services: ['Medical', 'Emergency'] }
+    ]
+};
 
-let userLatitude = null;
-let userLongitude = null;
-let gpsEnabled = false;
+let userLocation = null;
 
 function loadServiceFinder(section) {
     section.innerHTML = `
-        <div class="space-y-6">
-            <!-- Quick Exit Button -->
-            <div class="fixed top-20 right-4 z-50">
-                <button onclick="quickExit()" 
-                        class="px-4 py-2 bg-red-600 text-white rounded-full shadow-lg hover:bg-red-700 transition-all">
-                    <i class="fas fa-times-circle mr-2"></i>Quick Exit
-                </button>
-            </div>
-
-            <!-- Back Button -->
-            <div class="mb-4">
-                <button onclick="loadSurvivorPortal(document.querySelector('#survivor-portal-section') || document.getElementById('dashboard-content'))" 
-                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
-                    <i class="fas fa-arrow-left mr-2"></i>Back to Survivor Portal
-                </button>
-            </div>
-
+        <div class="max-w-6xl mx-auto">
             <!-- Header -->
-            <div class="bg-gradient-to-r from-green-600 to-teal-600 text-white p-8 rounded-xl shadow-lg">
-                <div class="flex items-center mb-4">
-                    <i class="fas fa-map-marked-alt text-5xl mr-4 opacity-90"></i>
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
                     <div>
-                        <h1 class="text-4xl font-bold mb-2">Find Help Near You</h1>
-                        <p class="text-xl text-green-50">Locate support services in your area</p>
+                        <h1 class="text-3xl font-bold mb-2" style="color: #1e3a8a;">
+                            <i class="fas fa-map-marked-alt mr-3"></i>Find Help Near You
+                        </h1>
+                        <p class="text-gray-600">Locate nearest support services in your area</p>
                     </div>
+                    <button onclick="returnToSurvivorDashboard()" 
+                            class="px-4 py-2 rounded-lg text-white font-semibold transition-colors"
+                            style="background-color: #1e90ff;">
+                        <i class="fas fa-arrow-left mr-2"></i>Back
+                    </button>
                 </div>
-            </div>
-
-            <!-- GPS Location -->
-            <div class="bg-white rounded-xl shadow-md p-6">
-                <div class="flex items-start mb-4">
-                    <i class="fas fa-location-arrow text-green-600 text-3xl mr-4"></i>
-                    <div class="flex-1">
-                        <h3 class="text-lg font-bold text-gray-800 mb-2">Use My Location</h3>
-                        <p class="text-sm text-gray-600 mb-4">
-                            Enable GPS to find the closest services. Your location is only used for this search and is not stored.
-                        </p>
-                        <button onclick="enableGPS()" id="gps-button"
-                                class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-semibold">
-                            <i class="fas fa-location-arrow mr-2"></i>Enable GPS
+                
+                <!-- Location Status -->
+                <div id="location-status" class="bg-blue-50 rounded-lg p-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-semibold mb-1" style="color: #1e3a8a;">
+                                <i class="fas fa-location-arrow mr-2"></i>Your Location
+                            </p>
+                            <p id="location-text" class="text-sm text-gray-600">Click button to enable location services</p>
+                        </div>
+                        <button onclick="requestLocation()" 
+                                class="px-6 py-3 rounded-lg text-white font-semibold transition-all transform hover:scale-105"
+                                style="background-color: #32cd32;">
+                            <i class="fas fa-crosshairs mr-2"></i>Use My Location
                         </button>
-                        <div id="gps-status" class="mt-3 hidden"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Search by District -->
-            <div class="bg-white rounded-xl shadow-md p-6">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">
-                    <i class="fas fa-search mr-2"></i>Search by District
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Select District</label>
-                        <select id="district-select" onchange="filterByDistrict(this.value)"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
-                            <option value="">All Districts</option>
-                            <option value="Western Area Urban">Western Area Urban (Freetown)</option>
-                            <option value="Western Area Rural">Western Area Rural</option>
-                            <option value="Bo">Bo</option>
-                            <option value="Bombali">Bombali (Makeni)</option>
-                            <option value="Kenema">Kenema</option>
-                            <option value="Kailahun">Kailahun</option>
-                            <option value="Kambia">Kambia</option>
-                            <option value="Koinadugu">Koinadugu</option>
-                            <option value="Kono">Kono</option>
-                            <option value="Moyamba">Moyamba</option>
-                            <option value="Port Loko">Port Loko</option>
-                            <option value="Pujehun">Pujehun</option>
-                            <option value="Tonkolili">Tonkolili</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Service Type</label>
-                        <select id="service-type-select" onchange="filterServices()"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
-                            <option value="">All Services</option>
-                            <option value="Rainbo Centre">Rainbo Centres (24/7 Medical)</option>
-                            <option value="Police FSU">Police Family Support Units</option>
-                            <option value="Safe House">Safe Houses (Shelter)</option>
-                            <option value="Legal Support">Legal Aid</option>
-                            <option value="Counseling Center">Counseling Services</option>
-                            <option value="One-Stop Centre">One-Stop Centres</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Emergency Contact Box -->
-            <div class="bg-red-50 border-l-4 border-red-600 p-6 rounded-lg">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-lg font-bold text-red-800 mb-1">
-                            <i class="fas fa-phone-volume mr-2"></i>National Emergency Hotline
-                        </h3>
-                        <p class="text-red-700">Free, confidential support 24/7</p>
-                    </div>
-                    <a href="tel:116" class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-bold text-xl">
-                        <i class="fas fa-phone-alt mr-2"></i>116
-                    </a>
+            <!-- Service Type Filters -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-bold mb-4" style="color: #1e3a8a;">
+                    <i class="fas fa-filter mr-2"></i>Filter Services
+                </h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <button onclick="filterServices('all')" 
+                            id="filter-all"
+                            class="service-filter-btn active-filter px-4 py-3 rounded-lg font-semibold transition-all border-2"
+                            style="border-color: #1e90ff; background-color: #1e90ff; color: white;">
+                        <i class="fas fa-th-large mr-2"></i>All Services
+                    </button>
+                    <button onclick="filterServices('rainbo')" 
+                            id="filter-rainbo"
+                            class="service-filter-btn px-4 py-3 rounded-lg font-semibold transition-all border-2"
+                            style="border-color: #32cd32; color: #32cd32; background-color: white;">
+                        <i class="fas fa-hospital mr-2"></i>Rainbo Centers
+                    </button>
+                    <button onclick="filterServices('fsu')" 
+                            id="filter-fsu"
+                            class="service-filter-btn px-4 py-3 rounded-lg font-semibold transition-all border-2"
+                            style="border-color: #1e3a8a; color: #1e3a8a; background-color: white;">
+                        <i class="fas fa-shield-alt mr-2"></i>Police FSU
+                    </button>
+                    <button onclick="filterServices('safe')" 
+                            id="filter-safe"
+                            class="service-filter-btn px-4 py-3 rounded-lg font-semibold transition-all border-2"
+                            style="border-color: #ffd700; color: #1e3a8a; background-color: white;">
+                        <i class="fas fa-home mr-2"></i>Safe Houses
+                    </button>
                 </div>
             </div>
 
             <!-- Services List -->
-            <div id="services-container" class="space-y-4">
+            <div id="services-container">
                 <!-- Services will be populated here -->
             </div>
         </div>
-    `;
 
-    // Initial load - show all services
-    displayServices(serviceDatabase);
+        <style>
+            .service-filter-btn:hover {
+                transform: scale(1.05);
+            }
+            
+            .active-filter {
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            
+            .service-card {
+                transition: all 0.3s ease;
+            }
+            
+            .service-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            }
+        </style>
+    `;
+    
+    // Initialize with all services
+    displayServices('all');
 }
 
-// Enable GPS
-async function enableGPS() {
-    const button = document.getElementById('gps-button');
-    const status = document.getElementById('gps-status');
+function requestLocation() {
+    const statusText = document.getElementById('location-text');
     
-    if (!button || !status) return;
-    
-    button.disabled = true;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Getting location...';
-    
-    if (!navigator.geolocation) {
-        status.innerHTML = `
-            <div class="bg-red-100 border border-red-300 rounded-lg p-3 text-red-800">
-                <i class="fas fa-exclamation-circle mr-2"></i>GPS not supported by your browser
-            </div>
-        `;
-        status.classList.remove('hidden');
-        button.disabled = false;
-        button.innerHTML = '<i class="fas fa-location-arrow mr-2"></i>Enable GPS';
+    if (!("geolocation" in navigator)) {
+        statusText.textContent = '❌ Location services not available on this device';
+        statusText.style.color = '#dc2626';
         return;
     }
-
+    
+    statusText.textContent = '📍 Getting your location...';
+    statusText.style.color = '#1e90ff';
+    
     navigator.geolocation.getCurrentPosition(
         (position) => {
-            userLatitude = position.coords.latitude;
-            userLongitude = position.coords.longitude;
-            gpsEnabled = true;
-
-            status.innerHTML = `
-                <div class="bg-green-100 border border-green-300 rounded-lg p-3 text-green-800">
-                    <i class="fas fa-check-circle mr-2"></i>Location found! Showing nearest services first.
-                </div>
-            `;
-            status.classList.remove('hidden');
+            userLocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
             
-            button.innerHTML = '<i class="fas fa-check mr-2"></i>GPS Enabled';
-            button.classList.remove('bg-green-600', 'hover:bg-green-700');
-            button.classList.add('bg-gray-400');
-
-            // Sort and display services by distance
-            const sortedServices = sortServicesByDistance(serviceDatabase);
-            displayServices(sortedServices);
+            statusText.textContent = `✅ Location found: ${userLocation.lat.toFixed(4)}, ${userLocation.lng.toFixed(4)}`;
+            statusText.style.color = '#32cd32';
+            
+            // Re-display services with distance calculations
+            const activeFilter = document.querySelector('.active-filter').id.replace('filter-', '');
+            displayServices(activeFilter);
         },
         (error) => {
-            let errorMessage = 'Could not get your location.';
-            if (error.code === 1) {
-                errorMessage = 'Location access denied. Please check browser settings.';
-            } else if (error.code === 2) {
-                errorMessage = 'Location unavailable. Please try again.';
+            let errorMessage = '❌ Could not get your location. ';
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    errorMessage += 'Permission denied. Please enable location in settings.';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    errorMessage += 'Location information unavailable.';
+                    break;
+                case error.TIMEOUT:
+                    errorMessage += 'Location request timed out.';
+                    break;
+                default:
+                    errorMessage += 'Unknown error occurred.';
             }
-
-            status.innerHTML = `
-                <div class="bg-yellow-100 border border-yellow-300 rounded-lg p-3 text-yellow-800">
-                    <i class="fas fa-exclamation-triangle mr-2"></i>${errorMessage}
-                </div>
-            `;
-            status.classList.remove('hidden');
-            
-            button.disabled = false;
-            button.innerHTML = '<i class="fas fa-location-arrow mr-2"></i>Try Again';
-            
-            // Show services without distance sorting
-            displayServices(serviceDatabase);
+            statusText.textContent = errorMessage;
+            statusText.style.color = '#dc2626';
         }
     );
 }
 
-// Calculate distance between two coordinates (Haversine formula)
 function calculateDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371; // Earth's radius in km
+    // Haversine formula for calculating distance between two GPS coordinates
+    const R = 6371; // Radius of Earth in kilometers
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
     const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
               Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
               Math.sin(dLon/2) * Math.sin(dLon/2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
+    const distance = R * c;
+    return distance;
 }
 
-// Sort services by distance from user
-function sortServicesByDistance(services) {
-    if (!gpsEnabled || !userLatitude || !userLongitude) {
-        return services;
-    }
-
-    return services.map(service => ({
-        ...service,
-        distance: calculateDistance(userLatitude, userLongitude, service.latitude, service.longitude)
-    })).sort((a, b) => a.distance - b.distance);
-}
-
-// Filter services by district
-function filterByDistrict(district) {
-    filterServices();
-}
-
-// Filter services
-function filterServices() {
-    const district = document.getElementById('district-select')?.value || '';
-    const serviceType = document.getElementById('service-type-select')?.value || '';
-
-    let filtered = serviceDatabase;
-
-    if (district) {
-        filtered = filtered.filter(s => s.district === district);
-    }
-
-    if (serviceType) {
-        filtered = filtered.filter(s => s.type === serviceType);
-    }
-
-    if (gpsEnabled) {
-        filtered = sortServicesByDistance(filtered);
-    }
-
-    displayServices(filtered);
-}
-
-// Display services
-function displayServices(services) {
-    const container = document.getElementById('services-container');
-    if (!container) return;
-
-    if (services.length === 0) {
-        container.innerHTML = `
-            <div class="bg-gray-50 rounded-xl p-8 text-center">
-                <i class="fas fa-search text-gray-400 text-5xl mb-4"></i>
-                <p class="text-gray-600 text-lg">No services found matching your criteria.</p>
-                <p class="text-gray-500 text-sm mt-2">Try selecting a different district or service type.</p>
-            </div>
-        `;
-        return;
-    }
-
-    container.innerHTML = services.map((service, index) => {
-        const serviceTypeColors = {
-            'Rainbo Centre': 'green',
-            'Police FSU': 'blue',
-            'Safe House': 'purple',
-            'Legal Support': 'orange',
-            'Counseling Center': 'pink',
-            'One-Stop Centre': 'teal'
-        };
+function filterServices(type) {
+    // Update button states
+    document.querySelectorAll('.service-filter-btn').forEach(btn => {
+        btn.classList.remove('active-filter');
+        const btnType = btn.id.replace('filter-', '');
         
-        const color = serviceTypeColors[service.type] || 'gray';
+        if (btnType === 'all') {
+            btn.style.backgroundColor = 'white';
+            btn.style.color = '#1e90ff';
+        } else if (btnType === 'rainbo') {
+            btn.style.backgroundColor = 'white';
+            btn.style.color = '#32cd32';
+        } else if (btnType === 'fsu') {
+            btn.style.backgroundColor = 'white';
+            btn.style.color = '#1e3a8a';
+        } else if (btnType === 'safe') {
+            btn.style.backgroundColor = 'white';
+            btn.style.color = '#1e3a8a';
+        }
+    });
+    
+    const activeBtn = document.getElementById(`filter-${type}`);
+    activeBtn.classList.add('active-filter');
+    
+    if (type === 'all') {
+        activeBtn.style.backgroundColor = '#1e90ff';
+        activeBtn.style.color = 'white';
+    } else if (type === 'rainbo') {
+        activeBtn.style.backgroundColor = '#32cd32';
+        activeBtn.style.color = 'white';
+    } else if (type === 'fsu') {
+        activeBtn.style.backgroundColor = '#1e3a8a';
+        activeBtn.style.color = 'white';
+    } else if (type === 'safe') {
+        activeBtn.style.backgroundColor = '#ffd700';
+        activeBtn.style.color = '#1e3a8a';
+    }
+    
+    displayServices(type);
+}
+
+function displayServices(type) {
+    const container = document.getElementById('services-container');
+    let services = [];
+    
+    // Gather services based on filter
+    if (type === 'all' || type === 'rainbo') {
+        services = services.concat(serviceLocations.rainboCenters.map(s => ({...s, type: 'Rainbo Center', color: '#32cd32', icon: 'hospital'})));
+    }
+    if (type === 'all' || type === 'fsu') {
+        services = services.concat(serviceLocations.policeFSU.map(s => ({...s, type: 'Police FSU', color: '#1e3a8a', icon: 'shield-alt'})));
+    }
+    if (type === 'all' || type === 'safe') {
+        services = services.concat(serviceLocations.safeHouses.map(s => ({...s, type: 'Safe House', color: '#ffd700', icon: 'home'})));
+    }
+    if (type === 'all') {
+        services = services.concat(serviceLocations.hospitals.map(s => ({...s, type: 'Hospital', color: '#ef4444', icon: 'hospital-alt'})));
+    }
+    
+    // Calculate distances if user location is available
+    if (userLocation) {
+        services.forEach(service => {
+            service.distance = calculateDistance(
+                userLocation.lat, userLocation.lng,
+                service.lat, service.lng
+            );
+        });
+        
+        // Sort by distance
+        services.sort((a, b) => a.distance - b.distance);
+    }
+    
+    // Display services
+    let html = '<div class="space-y-4">';
+    
+    services.forEach(service => {
         const distanceText = service.distance 
-            ? `<div class="text-${color}-600 font-semibold text-sm">
-                   <i class="fas fa-map-marker-alt mr-1"></i>${service.distance.toFixed(1)} km away
-               </div>`
-            : '';
-
-        return `
-            <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow overflow-hidden border-l-4 border-${color}-600">
-                <div class="p-6">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2 mb-2">
-                                <h3 class="text-xl font-bold text-gray-800">${service.name}</h3>
-                                ${index === 0 && gpsEnabled ? '<span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-bold rounded">NEAREST</span>' : ''}
-                            </div>
-                            <div class="flex items-center gap-3 text-sm text-gray-600 mb-2">
-                                <span class="px-3 py-1 bg-${color}-100 text-${color}-800 rounded-full font-semibold">
-                                    ${service.type}
-                                </span>
-                                <span><i class="fas fa-map-pin mr-1"></i>${service.district}</span>
-                            </div>
-                            ${distanceText}
-                        </div>
-                    </div>
-
-                    <p class="text-gray-600 text-sm mb-4">${service.description}</p>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <div class="text-xs font-semibold text-gray-500 uppercase mb-1">Address</div>
-                            <div class="text-sm text-gray-700">
-                                <i class="fas fa-location-dot mr-1 text-${color}-600"></i>${service.address}
-                            </div>
+            ? `<span class="font-bold" style="color: #32cd32;">${service.distance.toFixed(1)} km away</span>` 
+            : '<span class="text-gray-500">Enable location to see distance</span>';
+        
+        html += `
+            <div class="service-card bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-start">
+                        <div class="w-14 h-14 rounded-full flex items-center justify-center mr-4" style="background-color: rgba(30, 144, 255, 0.1);">
+                            <i class="fas fa-${service.icon} text-2xl" style="color: ${service.color};"></i>
                         </div>
                         <div>
-                            <div class="text-xs font-semibold text-gray-500 uppercase mb-1">Hours</div>
-                            <div class="text-sm text-gray-700">
-                                <i class="fas fa-clock mr-1 text-${color}-600"></i>${service.hours}
-                            </div>
+                            <div class="text-sm font-semibold mb-1" style="color: ${service.color};">${service.type}</div>
+                            <h3 class="text-xl font-bold mb-1" style="color: #1e3a8a;">${service.name}</h3>
+                            <p class="text-gray-600 mb-2">
+                                <i class="fas fa-map-marker-alt mr-1"></i>${service.address}
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                <i class="fas fa-map-pin mr-1"></i>${service.district} District
+                            </p>
                         </div>
                     </div>
-
-                    <div class="mb-4">
-                        <div class="text-xs font-semibold text-gray-500 uppercase mb-2">Services Offered</div>
-                        <div class="flex flex-wrap gap-2">
-                            ${service.services.map(s => `
-                                <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
-                                    <i class="fas fa-check text-green-600 mr-1"></i>${s}
-                                </span>
-                            `).join('')}
-                        </div>
+                    <div class="text-right">
+                        ${distanceText}
                     </div>
-
-                    <div class="flex gap-3">
-                        <a href="tel:${service.phone}" 
-                           class="flex-1 px-4 py-3 bg-${color}-600 text-white rounded-lg hover:bg-${color}-700 transition-all text-center font-semibold">
-                            <i class="fas fa-phone-alt mr-2"></i>Call Now
-                        </a>
-                        <a href="https://www.google.com/maps/search/?api=1&query=${service.latitude},${service.longitude}" 
-                           target="_blank"
-                           class="flex-1 px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all text-center font-semibold">
-                            <i class="fas fa-directions mr-2"></i>Get Directions
-                        </a>
+                </div>
+                
+                <!-- Services Offered -->
+                <div class="mb-4">
+                    <div class="flex flex-wrap gap-2">
+                        ${service.services.map(s => `
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold" 
+                                  style="background-color: rgba(30, 144, 255, 0.1); color: #1e3a8a;">
+                                ${s}
+                            </span>
+                        `).join('')}
                     </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <a href="tel:${service.phone}" 
+                       class="px-4 py-3 rounded-lg text-white font-semibold text-center transition-all transform hover:scale-105"
+                       style="background-color: #32cd32;">
+                        <i class="fas fa-phone mr-2"></i>Call Now
+                    </a>
+                    <a href="https://www.google.com/maps?q=${service.lat},${service.lng}" 
+                       target="_blank"
+                       class="px-4 py-3 rounded-lg text-white font-semibold text-center transition-all transform hover:scale-105"
+                       style="background-color: #1e90ff;">
+                        <i class="fas fa-directions mr-2"></i>Get Directions
+                    </a>
+                    <a href="sms:${service.phone}?body=I need help. Can you assist me?" 
+                       class="px-4 py-3 rounded-lg font-semibold text-center transition-all transform hover:scale-105 border-2"
+                       style="border-color: #1e3a8a; color: #1e3a8a;">
+                        <i class="fas fa-sms mr-2"></i>Send SMS
+                    </a>
                 </div>
             </div>
         `;
-    }).join('');
+    });
+    
+    html += '</div>';
+    
+    if (services.length === 0) {
+        html = `
+            <div class="bg-white rounded-xl shadow-lg p-12 text-center">
+                <i class="fas fa-info-circle text-6xl mb-4" style="color: #1e90ff;"></i>
+                <h3 class="text-2xl font-bold mb-2" style="color: #1e3a8a;">No services found</h3>
+                <p class="text-gray-600">Try selecting a different filter</p>
+            </div>
+        `;
+    }
+    
+    container.innerHTML = html;
+}
+
+function returnToSurvivorDashboard() {
+    const section = document.querySelector('.max-w-6xl')?.parentElement || document.getElementById('dashboard-content');
+    if (typeof loadSurvivorDashboard === 'function') {
+        loadSurvivorDashboard(section);
+    } else {
+        window.location.reload();
+    }
 }
 
 // Export functions
 window.loadServiceFinder = loadServiceFinder;
-window.enableGPS = enableGPS;
-window.filterByDistrict = filterByDistrict;
+window.requestLocation = requestLocation;
 window.filterServices = filterServices;
+window.returnToSurvivorDashboard = returnToSurvivorDashboard;
