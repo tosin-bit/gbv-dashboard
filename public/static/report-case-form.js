@@ -361,10 +361,11 @@ function loadReportCaseForm(section, source = 'ministry') {
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Reported By <span class="text-red-500">*</span>
                             </label>
-                            <select name="reported_by" required
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2">
+                            <select name="reported_by" id="reported_by" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2"
+                                    style="background-color: white;">
                                 <option value="">Select Reporter</option>
-                                <option value="Survivor">Survivor (Self-Report)</option>
+                                <option value="Survivor" ${source === 'survivor' ? 'selected' : ''}>Survivor (Self-Report)</option>
                                 <option value="Family Member">Family Member</option>
                                 <option value="Community Member">Community Member</option>
                                 <option value="Health Worker">Health Worker</option>
@@ -390,15 +391,16 @@ function loadReportCaseForm(section, source = 'ministry') {
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Reporting Channel <span class="text-red-500">*</span>
                             </label>
-                            <select name="reporting_channel" required
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2">
+                            <select name="reporting_channel" id="reporting_channel" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2"
+                                    style="background-color: white;">
                                 <option value="">Select Channel</option>
                                 <option value="Direct">Direct (In-Person)</option>
                                 <option value="Phone">Phone Call</option>
                                 <option value="116 Hotline">116 Hotline</option>
                                 <option value="SMS">SMS/Text Message</option>
                                 <option value="WhatsApp">WhatsApp</option>
-                                <option value="Online Form">Online Form</option>
+                                <option value="Online Form" ${source === 'survivor' ? 'selected' : ''}>Online Form</option>
                                 <option value="Police Station">Police Station</option>
                                 <option value="Health Facility">Health Facility</option>
                                 <option value="Community Leader">Community Leader</option>
