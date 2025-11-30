@@ -75,6 +75,19 @@ The GBV Dashboard is a comprehensive system for managing gender-based violence c
 - **Find Help**: Directory of 24/7 support services (Rainbo, Police FSU, 116 Hotline)
 - **District Mapping**: Interactive map showing case distribution and high-risk areas
 
+### For Survivors (NEW ✨)
+- **🚨 Mobile Emergency SOS**: Red flashing screen with 3-second countdown, auto-dials 116 on mobile
+- **📍 GPS Service Finder**: Find nearest Rainbo Centers, Police FSU, Safe Houses by distance (40+ locations)
+- **🛡️ Personal Safety Planning**: Comprehensive 6-part safety guide with print/share options
+  - Warning signs recognition
+  - Safe places identification
+  - Emergency bag preparation
+  - Code word systems
+  - Children safety education
+  - Post-separation safety measures
+- **🔐 Secure Portal Access**: Login with case number and PIN to track progress
+- **📞 One-Tap Emergency**: Direct call, SMS, and Google Maps navigation to help services
+
 ### For Medical Staff (Rainbo Initiative)
 - **Case Management**: Track medical examinations and treatment
 - **Documentation**: Record forensic evidence, PEP, STI testing
@@ -154,6 +167,10 @@ gbv-dashboard/
 │       ├── district-map.js      # Interactive district map
 │       ├── rainbo-dashboard.js  # Medical staff portal
 │       ├── police-dashboard.js  # Police FSU portal
+│       ├── survivor-portal.js   # 🆕 Survivor support portal
+│       ├── emergency-sos.js     # 🆕 Mobile emergency SOS system
+│       ├── service-finder.js    # 🆕 GPS-based service locator
+│       ├── safety-planning.js   # 🆕 Personal safety planning guide
 │       ├── portal-systems.js    # Authentication logic
 │       └── style.css            # Custom styles
 │
