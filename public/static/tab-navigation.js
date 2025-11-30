@@ -570,37 +570,100 @@ function loadVoiceReport(container) {
     container.innerHTML = `
         <div class="bg-white rounded-lg shadow-lg p-8">
             <h2 class="text-2xl font-bold mb-6" style="color: #1e3a8a;">
-                <i class="fas fa-microphone mr-3"></i>Voice Recording - Report by Audio
+                <i class="fas fa-microphone mr-3"></i>Voice Reporting System
             </h2>
             
-            <div class="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6">
+            <!-- Interactive Interview Option (NEW) -->
+            <div class="bg-gradient-to-r from-green-100 to-blue-100 border-2 border-green-400 rounded-lg p-8 mb-6">
                 <div class="flex items-start">
-                    <i class="fas fa-info-circle text-blue-600 text-2xl mr-4 mt-1"></i>
-                    <div>
-                        <h3 class="text-lg font-semibold text-blue-900 mb-2">How Voice Reporting Works</h3>
-                        <ul class="text-sm text-blue-800 space-y-2">
-                            <li><i class="fas fa-check text-green-600 mr-2"></i>Click the microphone button to start recording</li>
-                            <li><i class="fas fa-check text-green-600 mr-2"></i>Describe the incident in your preferred language (Krio, English, Mende, or Temne)</li>
-                            <li><i class="fas fa-check text-green-600 mr-2"></i>Your recording will be transcribed and saved securely</li>
-                            <li><i class="fas fa-check text-green-600 mr-2"></i>A case number will be generated for follow-up</li>
-                        </ul>
+                    <div class="flex-shrink-0 mr-6">
+                        <div class="w-20 h-20 rounded-full flex items-center justify-center" 
+                             style="background: linear-gradient(135deg, #32cd32, #1e3a8a);">
+                            <i class="fas fa-comments text-3xl text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-bold mb-2" style="color: #1e3a8a;">
+                            <span class="bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded uppercase mr-2">Recommended</span>
+                            Interactive Voice Interview
+                        </h3>
+                        <p class="text-gray-700 mb-4">
+                            I'll guide you through simple questions to collect all needed information. 
+                            Just answer with your voice, and I'll fill out the report for you automatically!
+                        </p>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 text-sm">
+                            <div class="flex items-center text-green-700">
+                                <i class="fas fa-check-circle mr-2"></i>Guided questions
+                            </div>
+                            <div class="flex items-center text-green-700">
+                                <i class="fas fa-check-circle mr-2"></i>Auto-fill form
+                            </div>
+                            <div class="flex items-center text-green-700">
+                                <i class="fas fa-check-circle mr-2"></i>Attach resources
+                            </div>
+                            <div class="flex items-center text-green-700">
+                                <i class="fas fa-check-circle mr-2"></i>Easy & fast
+                            </div>
+                        </div>
+                        <button onclick="startVoiceInterview()" 
+                                class="px-8 py-4 rounded-lg text-white text-lg font-semibold shadow-lg hover:opacity-90 transition-opacity"
+                                style="background-color: #32cd32;">
+                            <i class="fas fa-play-circle mr-2"></i>Start Interactive Interview
+                        </button>
                     </div>
                 </div>
             </div>
             
-            <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-12 text-center border-2 border-dashed" style="border-color: #32cd32;">
-                <div id="voice-recording-status" class="mb-6">
-                    <i class="fas fa-microphone text-6xl mb-4" style="color: #32cd32;"></i>
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">Ready to Record</h3>
-                    <p class="text-gray-600">Press the button below to start recording your report</p>
+            <!-- Divider -->
+            <div class="relative my-8">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-300"></div>
                 </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-4 bg-white text-gray-500">OR</span>
+                </div>
+            </div>
+            
+            <!-- Traditional Recording Option -->
+            <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                <h3 class="text-lg font-bold mb-4 text-gray-800">
+                    <i class="fas fa-microphone mr-2"></i>Traditional Voice Recording
+                </h3>
+                <p class="text-gray-600 mb-4">Record a free-form audio message describing the incident</p>
                 
-                <button id="start-recording-btn" class="px-8 py-4 rounded-lg text-white text-lg font-semibold hover:opacity-90 transition-opacity" style="background-color: #32cd32;">
-                    <i class="fas fa-microphone mr-2"></i>Start Recording
-                </button>
-                
-                <div class="mt-6 text-sm text-gray-500">
-                    <i class="fas fa-lock mr-1"></i>All recordings are encrypted and confidential
+                <div class="bg-white rounded-lg p-6 text-center border-2 border-dashed border-gray-300">
+                    <i class="fas fa-microphone text-5xl mb-4 text-gray-400"></i>
+                    <h4 class="text-lg font-semibold text-gray-700 mb-2">Ready to Record</h4>
+                    <p class="text-sm text-gray-600 mb-4">Press the button below to start recording</p>
+                    
+                    <button id="start-recording-btn" 
+                            class="px-8 py-3 rounded-lg bg-gray-600 text-white font-semibold hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-microphone mr-2"></i>Start Free Recording
+                    </button>
+                    
+                    <div class="mt-4 text-xs text-gray-500">
+                        <i class="fas fa-lock mr-1"></i>All recordings are encrypted and confidential
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Help Information -->
+            <div class="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6">
+                <div class="flex items-start">
+                    <i class="fas fa-info-circle text-blue-600 text-2xl mr-4 mt-1"></i>
+                    <div>
+                        <h4 class="text-lg font-semibold text-blue-900 mb-2">Choose Your Method:</h4>
+                        <ul class="text-sm text-blue-800 space-y-2">
+                            <li><i class="fas fa-star text-yellow-500 mr-2"></i><strong>Interactive Interview:</strong> Best for most users - guided questions with automatic form filling</li>
+                            <li><i class="fas fa-microphone text-gray-600 mr-2"></i><strong>Free Recording:</strong> Tell your story in your own words without guidance</li>
+                        </ul>
+                        <div class="mt-4 p-3 bg-white rounded border-l-2 border-green-500">
+                            <p class="text-xs text-gray-700">
+                                <i class="fas fa-language mr-2 text-green-600"></i>
+                                Both methods support: <strong>English, Krio, Mende, and Temne</strong>
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

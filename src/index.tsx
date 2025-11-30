@@ -2109,6 +2109,7 @@ app.get('/', (c) => {
       <script src="/static/healing-resources.js"></script>
       <script src="/static/portal-systems.js"></script>
       <script src="/static/voice-recording.js"></script>
+      <script src="/static/voice-interview.js"></script>
       <script src="/static/view-cases.js"></script>
       <script src="/static/case-notes.js"></script>
 
