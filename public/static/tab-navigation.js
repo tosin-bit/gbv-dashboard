@@ -46,9 +46,6 @@ function setupUnifiedTabNavigation() {
 }
 
 function handleTabNavigation(tabName) {
-    // Hide all sections first
-    hideAllDashboardSections();
-    
     // Get main content area
     const dashboardContent = document.getElementById('dashboard-content');
     if (!dashboardContent) {
@@ -56,18 +53,11 @@ function handleTabNavigation(tabName) {
         return;
     }
     
-    // Show loading state
+    // Make sure it's visible
     dashboardContent.style.display = 'block';
-    dashboardContent.innerHTML = `
-        <div class="text-center py-12">
-            <div class="inline-flex items-center">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mr-3"></div>
-                <span class="text-lg text-gray-600">Loading ${tabName}...</span>
-            </div>
-        </div>
-    `;
+    dashboardContent.classList.remove('hidden');
     
-    // Route based on tab name
+    // Route based on tab name - call the appropriate loader directly
     setTimeout(() => {
         switch(tabName) {
             case 'Overview':
@@ -128,7 +118,7 @@ function handleTabNavigation(tabName) {
                     </div>
                 `;
         }
-    }, 100);
+    }, 50);
 }
 
 function hideAllDashboardSections() {
@@ -159,15 +149,7 @@ function hideAllDashboardSections() {
 // Tab content loaders
 function loadOverview(container) {
     console.log('📊 Loading Overview...');
-    container.style.display = 'block';
-    
-    // Check if there's existing overview content
-    if (window.loadDashboardStats && typeof window.loadDashboardStats === 'function') {
-        window.loadDashboardStats();
-    } else {
-        // Reload page to get fresh overview data
-        window.location.reload();
-    }
+    window.location.reload(); // Reload to show overview dashboard
 }
 
 function loadReportCase(container) {
@@ -211,15 +193,10 @@ function loadDistrictMap(container) {
 
 function loadAnalytics(container) {
     console.log('📈 Loading Analytics...');
-    const section = document.getElementById('analytics-new-section');
-    if (section) {
-        section.style.display = 'block';
-        container.style.display = 'none';
-        
-        // Load enhanced analytics if available
-        if (window.loadEnhancedAnalyticsDashboard && typeof window.loadEnhancedAnalyticsDashboard === 'function') {
-            window.loadEnhancedAnalyticsDashboard(section);
-        }
+    
+    // Load enhanced analytics directly into container
+    if (window.loadEnhancedAnalyticsDashboard && typeof window.loadEnhancedAnalyticsDashboard === 'function') {
+        window.loadEnhancedAnalyticsDashboard(container);
     } else {
         container.innerHTML = `
             <div class="bg-white rounded-lg shadow-lg p-6">
@@ -257,15 +234,10 @@ function loadSpotlightInitiative(container) {
 
 function loadSurvivorPortal(container) {
     console.log('❤️ Loading Survivor Portal...');
-    const section = document.getElementById('survivor-portal-section');
-    if (section) {
-        section.style.display = 'block';
-        container.style.display = 'none';
-        
-        // Load survivor portal if available
-        if (window.loadSurvivorPortal && typeof window.loadSurvivorPortal === 'function') {
-            window.loadSurvivorPortal(section);
-        }
+    
+    // Load survivor portal directly into container
+    if (window.loadSurvivorPortal && typeof window.loadSurvivorPortal === 'function') {
+        window.loadSurvivorPortal(container);
     } else {
         container.innerHTML = `
             <div class="bg-white rounded-lg shadow-lg p-6">
