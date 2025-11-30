@@ -3,13 +3,19 @@
  * Comprehensive form for reporting new GBV incidents
  */
 
-function loadReportCaseForm(section) {
+function loadReportCaseForm(section, source = 'ministry') {
     section.innerHTML = `
         <div class="bg-white rounded-lg shadow-lg p-6">
             <!-- Form Header -->
             <div class="border-b pb-4 mb-6" style="border-bottom-color: #1e3a8a;">
                 <div class="flex items-center justify-between">
-                    <div>
+                    <div class="flex-1">
+                        ${source === 'survivor' ? `
+                        <button onclick="goBackToSurvivorPortal()" 
+                            class="mb-4 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-bold hover:bg-gray-300">
+                            <i class="fas fa-arrow-left mr-2"></i>Back to Portal
+                        </button>
+                        ` : ''}
                         <h2 class="text-2xl font-bold" style="color: #1e3a8a;">
                             <i class="fas fa-file-medical mr-2"></i>GBV Incident Report Form
                         </h2>
@@ -748,8 +754,18 @@ function updateGBVSubTypes(typeId) {
     }
 }
 
+function goBackToSurvivorPortal() {
+    const section = document.getElementById('dashboard-content');
+    if (section && typeof window.loadSurvivorPortal === 'function') {
+        window.loadSurvivorPortal(section);
+    } else {
+        location.reload();
+    }
+}
+
 // Export functions to window for use in other portals
 window.loadReportCaseForm = loadReportCaseForm;
+window.goBackToSurvivorPortal = goBackToSurvivorPortal;
 window.updateAgeGroup = updateAgeGroup;
 window.toggleMultiplePerps = toggleMultiplePerps;
 window.saveDraft = saveDraft;

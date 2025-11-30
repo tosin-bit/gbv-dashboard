@@ -275,20 +275,29 @@ function showSurvivorDashboard(section) {
 }
 
 function showSurvivorReportForm() {
+    console.log('🔵 showSurvivorReportForm called');
+    
     const section = document.getElementById('dashboard-content');
+    console.log('   Section found:', !!section);
+    
     if (!section) {
-        console.error('Cannot find dashboard-content section');
+        console.error('❌ Cannot find dashboard-content section');
+        alert('Error: Cannot find content section. Please refresh the page.');
         return;
     }
     
-    console.log('📝 Loading report form for survivor...');
+    console.log('   Checking for loadReportCaseForm...');
+    console.log('   Available:', typeof window.loadReportCaseForm);
     
     // Check if loadReportCaseForm is available
     if (typeof window.loadReportCaseForm === 'function') {
+        console.log('✅ Loading report form for survivor...');
         window.loadReportCaseForm(section, 'survivor');
+        console.log('✅ Report form loaded successfully');
     } else {
-        console.error('loadReportCaseForm not available');
-        alert('Report form is loading. Please try again in a moment.');
+        console.error('❌ loadReportCaseForm not available');
+        console.log('   Available window functions:', Object.keys(window).filter(k => k.includes('load')));
+        alert('Report form is not loaded yet. Please refresh the page and try again.');
     }
 }
 
