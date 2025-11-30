@@ -362,32 +362,45 @@ function loadDistrictMap(container) {
     console.log('🗺️ Loading District Map...');
     container.style.display = 'block';
     container.classList.remove('hidden');
-    container.innerHTML = `
-        <div class="bg-white rounded-lg shadow-lg p-8">
-            <h2 class="text-2xl font-bold mb-6" style="color: #1e3a8a;">
-                <i class="fas fa-map mr-3"></i>Sierra Leone Districts - GBV Case Distribution
-            </h2>
-            
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="district-map-grid">
-                <div class="p-4 bg-gray-100 rounded-lg text-center">
-                    <i class="fas fa-spinner fa-spin text-2xl text-blue-600 mb-2"></i>
-                    <div class="text-sm text-gray-600">Loading districts...</div>
+    
+    // Call the proper district map loader from district-map.js
+    if (window.loadDistrictMap && typeof window.loadDistrictMap === 'function') {
+        // There's a naming conflict - the function in district-map.js is also called loadDistrictMap
+        // Call it with the container
+        console.log('📍 Calling district-map.js loadDistrictMap function...');
+        // Create a temporary div to hold the district map content
+        container.innerHTML = '<div id="district-map-section"></div>';
+        const section = document.getElementById('district-map-section');
+        window.loadDistrictMap(section);
+    } else {
+        // Fallback: Show basic district grid
+        container.innerHTML = `
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-2xl font-bold mb-6" style="color: #1e3a8a;">
+                    <i class="fas fa-map mr-3"></i>Sierra Leone Districts - GBV Case Distribution
+                </h2>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="district-map-grid">
+                    <div class="p-4 bg-gray-100 rounded-lg text-center">
+                        <i class="fas fa-spinner fa-spin text-2xl text-blue-600 mb-2"></i>
+                        <div class="text-sm text-gray-600">Loading districts...</div>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-12 text-center border-2 border-dashed border-green-400">
+                    <i class="fas fa-map text-6xl mb-4" style="color: #32cd32;"></i>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Interactive Sierra Leone Map</h3>
+                    <p class="text-gray-600">Click on any district card above to view detailed statistics</p>
                 </div>
             </div>
-            
-            <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-12 text-center border-2 border-dashed border-green-400">
-                <i class="fas fa-map text-6xl mb-4" style="color: #32cd32;"></i>
-                <h3 class="text-xl font-bold text-gray-800 mb-2">Interactive Sierra Leone Map</h3>
-                <p class="text-gray-600">Click on any district card above to view detailed statistics</p>
-            </div>
-        </div>
-    `;
-    
-    // Load district data
-    setTimeout(() => {
-        if (window.loadDistrictData && typeof window.loadDistrictData === 'function') {
-            window.loadDistrictData();
-        }
+        `;
+        
+        // Try to load district data
+        setTimeout(() => {
+            if (window.loadDistrictData && typeof window.loadDistrictData === 'function') {
+                window.loadDistrictData();
+            }
+        }, 100);
     }, 100);
 }
 

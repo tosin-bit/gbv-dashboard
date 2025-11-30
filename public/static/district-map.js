@@ -826,6 +826,8 @@ function closeMapHighlightModal() {
     }
 }
 
-// Export new functions
+// Export functions
+window.loadDistrictMap = loadDistrictMap;
+window.loadDistrictsData = loadDistrictsData;
 window.closeDistrictReportModal = closeDistrictReportModal;
 window.closeMapHighlightModal = closeMapHighlightModal;
