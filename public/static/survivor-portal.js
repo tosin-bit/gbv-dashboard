@@ -10,6 +10,7 @@ function loadSurvivorPortal(section) {
     // Store section reference for login handler
     currentSurvivorSection = section;
     console.log('🔵 loadSurvivorPortal called, storing section reference:', section);
+    console.log('   Section ID:', section?.id, 'Section exists:', !!section);
     
     // Check if user is already logged in
     const survivorSession = sessionStorage.getItem('survivor_session');
@@ -699,38 +700,44 @@ function handleSurvivorCaseLogin(event) {
             // FIRST: Use the stored section reference from loadSurvivorPortal
             let section = currentSurvivorSection;
             console.log('Method 0 - Stored reference:', section ? 'Found ✅' : 'Not found');
+            if (section) {
+                console.log('   Stored section ID:', section.id, 'Still in DOM:', document.contains(section));
+            }
             
-            // Fallback methods if stored reference not available
-            if (!section) {
+            // Fallback methods if stored reference not available or if it's no longer in the DOM
+            if (!section || !document.contains(section)) {
+                console.log('   Stored reference invalid, trying fallback methods...');
+                
+                // Method 1: Try dashboard-content by ID
                 section = document.getElementById('dashboard-content');
-                console.log('Method 1 - getElementById:', section ? 'Found' : 'Not found');
-            }
-            
-            if (!section || section.classList.contains('hidden')) {
-                // Try finding by the login form's parent
-                const loginForm = document.getElementById('survivor-case-login-form');
-                if (loginForm) {
-                    section = loginForm.closest('.max-w-2xl')?.parentElement;
-                    console.log('Method 2 - Via login form:', section ? 'Found' : 'Not found');
-                }
-            }
-            
-            if (!section || section.classList.contains('hidden')) {
-                // Try finding the space-y-6 container
-                const containers = document.querySelectorAll('.space-y-6');
-                for (let container of containers) {
-                    if (container.querySelector('.bg-white.rounded-lg.shadow-2xl')) {
-                        section = container.parentElement;
-                        console.log('Method 3 - Via space-y-6:', section ? 'Found' : 'Not found');
-                        break;
+                console.log('Method 1 - getElementById(dashboard-content):', section ? 'Found ✅' : 'Not found ❌');
+                
+                // Method 2: Try finding by the login form's parent
+                if (!section) {
+                    const loginForm = document.getElementById('survivor-case-login-form');
+                    if (loginForm) {
+                        section = loginForm.closest('.space-y-6');
+                        console.log('Method 2 - Via login form:', section ? 'Found ✅' : 'Not found ❌');
                     }
                 }
-            }
-            
-            if (!section) {
-                // Last resort: find any main container
-                section = document.querySelector('main') || document.querySelector('.container') || document.body;
-                console.log('Method 4 - Last resort:', section ? 'Found' : 'Using body');
+                
+                // Method 3: Try finding the main content container
+                if (!section) {
+                    const containers = document.querySelectorAll('.space-y-6');
+                    for (let container of containers) {
+                        if (container.innerHTML.includes('Survivor Portal')) {
+                            section = container;
+                            console.log('Method 3 - Via Survivor Portal text:', section ? 'Found ✅' : 'Not found ❌');
+                            break;
+                        }
+                    }
+                }
+                
+                // Method 4: Last resort - use body
+                if (!section) {
+                    section = document.body;
+                    console.log('Method 4 - Last resort (using body):', section ? 'Found ✅' : 'Not found ❌');
+                }
             }
             
             // Make sure section is visible
