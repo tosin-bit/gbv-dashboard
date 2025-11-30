@@ -1828,10 +1828,7 @@ app.get('/', (c) => {
             <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'" data-translate="admin">
               <i className="fas fa-user-cog mr-2"></i>Admin
             </button>
-            <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap relative" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
-              <i className="fas fa-play-circle mr-2"></i>Interactive Demo
-              <span className="ml-1 px-1.5 py-0.5 text-xs rounded animate-pulse" style="background-color: #00ff00; color: #1e3a8a;">Live</span>
-            </button>
+
           </div>
         </div>
       </nav>
@@ -2132,6 +2129,7 @@ app.get('/', (c) => {
       <script src="/static/analytics-dashboard.js"></script>
       <script src="/static/spotlight-initiative.js"></script>
       <script src="/static/sdg-dashboard.js"></script>
+      <script src="/static/tab-navigation.js"></script>
       <script src="/static/donor-reports.js"></script>
       <script src="/static/public-dashboard.js"></script>
       <script src="/static/survivor-outcomes.js"></script>
