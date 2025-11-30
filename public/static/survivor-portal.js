@@ -654,24 +654,33 @@ function handleSurvivorCaseLogin(event) {
     console.log('📝 Login attempt:', { caseNumber, pin: pin ? '****' : '(empty)' });
     
     // Validation
+    console.log('✔️ Validating credentials...');
     if (!caseNumber || !pin) {
+        console.log('❌ Validation failed: Missing case number or PIN');
         alert('Please enter both case number and PIN');
         return;
     }
     
+    console.log('✔️ PIN length check:', pin.length, 'Is 4 digits:', /^\d{4}$/.test(pin));
     if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+        console.log('❌ Validation failed: PIN must be 4 digits');
         alert('PIN must be exactly 4 digits');
         return;
     }
     
+    console.log('✅ Validation passed!');
+    
     // Show loading state
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
+    console.log('🔄 Setting button to Verifying state...');
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Verifying...';
     submitBtn.disabled = true;
     
     // Simulate authentication (in production, this would call /api/auth/survivor)
+    console.log('⏰ Starting 1-second authentication timeout...');
     setTimeout(() => {
+        console.log('⏰ Timeout completed, processing login...');
         // For demo purposes, accept any case number with format GBV-YYYY-NNNN
         const casePattern = /^GBV-\d{4}-\d{4}$/;
         
