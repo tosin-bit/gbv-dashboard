@@ -8,17 +8,17 @@ function loadSpotlightInitiative(section) {
     section.innerHTML = `
         <div class="space-y-6">
             <!-- Main Header -->
-            <div class="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 text-white rounded-lg shadow-xl p-8">
+            <div class="text-white rounded-lg shadow-xl p-8" style="background: linear-gradient(135deg, #1e3a8a 0%, #1e90ff 50%, #32cd32 100%);">
                 <div class="flex items-center justify-between">
                     <div>
                         <div class="flex items-center mb-3">
                             <i class="fas fa-sun text-5xl mr-4 opacity-90"></i>
                             <div>
                                 <h1 class="text-4xl font-bold mb-1">UN Spotlight Initiative</h1>
-                                <p class="text-xl text-purple-100">Sierra Leone - Eliminating Violence Against Women & Girls</p>
+                                <p class="text-xl text-blue-100">Sierra Leone - Eliminating Violence Against Women & Girls</p>
                             </div>
                         </div>
-                        <p class="text-purple-100 max-w-3xl mt-4">
+                        <p class="text-blue-100 max-w-3xl mt-4">
                             A multi-year partnership between the European Union and United Nations to eliminate all forms 
                             of violence against women and girls. This hub provides tools for SDG tracking, donor reporting, 
                             and public transparency.
@@ -40,8 +40,8 @@ function loadSpotlightInitiative(section) {
 
             <!-- Phase 1 Label -->
             <div class="flex items-center mb-2">
-                <h2 class="text-2xl font-bold text-gray-800 mr-3">Phase 1: Data & Transparency</h2>
-                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                <h2 class="text-2xl font-bold mr-3" style="color: #1e3a8a;">Phase 1: Data & Transparency</h2>
+                <span class="px-3 py-1 rounded-full text-sm font-semibold" style="background-color: rgba(50, 205, 50, 0.1); color: #008000;">
                     <i class="fas fa-check-circle mr-1"></i>Completed
                 </span>
             </div>
@@ -51,34 +51,34 @@ function loadSpotlightInitiative(section) {
                 <!-- SDG Alignment Card -->
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer group" 
                      onclick="showSpotlightSection('sdg-dashboard')">
-                    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-6 text-white">
+                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #1e3a8a 0%, #1e90ff 100%);">
                         <div class="flex items-center justify-between mb-3">
                             <i class="fas fa-bullseye text-5xl opacity-80"></i>
                             <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">Dashboard</span>
                         </div>
                         <h3 class="text-2xl font-bold mb-2">SDG Alignment</h3>
-                        <p class="text-blue-100 text-sm">Track UN Sustainable Development Goals 5 & 16</p>
+                        <p class="text-sm" style="color: rgba(255, 255, 255, 0.9);">Track UN Sustainable Development Goals 5 & 16</p>
                     </div>
                     <div class="p-6">
                         <ul class="space-y-2 text-sm text-gray-700 mb-4">
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>SDG 5.2.1, 5.2.2 & 16.2.3 indicators</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>Progress timeline 2020-2030</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>District-level performance</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>CEDAW & Spotlight compliance</span>
                             </li>
                         </ul>
-                        <button class="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold group-hover:bg-blue-700">
+                        <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" style="background-color: #1e3a8a;" onmouseover="this.style.backgroundColor='#1e90ff'" onmouseout="this.style.backgroundColor='#1e3a8a'">
                             <i class="fas fa-arrow-right mr-2"></i>Open SDG Dashboard
                         </button>
                     </div>
@@ -87,34 +87,34 @@ function loadSpotlightInitiative(section) {
                 <!-- Donor Reports Card -->
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer group" 
                      onclick="showSpotlightSection('donor-reports')">
-                    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 text-white">
+                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #1e90ff 0%, #32cd32 100%);">
                         <div class="flex items-center justify-between mb-3">
                             <i class="fas fa-file-invoice text-5xl opacity-80"></i>
                             <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">Generator</span>
                         </div>
                         <h3 class="text-2xl font-bold mb-2">Donor Reports</h3>
-                        <p class="text-indigo-100 text-sm">Auto-generate professional quarterly reports</p>
+                        <p class="text-sm" style="color: rgba(255, 255, 255, 0.9);">Auto-generate professional quarterly reports</p>
                     </div>
                     <div class="p-6">
                         <ul class="space-y-2 text-sm text-gray-700 mb-4">
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>EU, UN, World Bank templates</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>Executive summary & metrics</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>Budget utilization tracking</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>One-click PDF export</span>
                             </li>
                         </ul>
-                        <button class="w-full px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold group-hover:bg-indigo-700">
+                        <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" style="background-color: #1e90ff;" onmouseover="this.style.backgroundColor='#32cd32'" onmouseout="this.style.backgroundColor='#1e90ff'">
                             <i class="fas fa-arrow-right mr-2"></i>Generate Reports
                         </button>
                     </div>
@@ -123,34 +123,34 @@ function loadSpotlightInitiative(section) {
                 <!-- Public Dashboard Card -->
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer group" 
                      onclick="showSpotlightSection('public-dashboard')">
-                    <div class="bg-gradient-to-r from-green-500 to-emerald-600 p-6 text-white">
+                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #32cd32 0%, #ffd700 100%);">
                         <div class="flex items-center justify-between mb-3">
                             <i class="fas fa-eye text-5xl opacity-80"></i>
                             <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">Public</span>
                         </div>
                         <h3 class="text-2xl font-bold mb-2">Public Dashboard</h3>
-                        <p class="text-green-100 text-sm">Anonymized transparency for accountability</p>
+                        <p class="text-sm" style="color: rgba(255, 255, 255, 0.9);">Anonymized transparency for accountability</p>
                     </div>
                     <div class="p-6">
                         <ul class="space-y-2 text-sm text-gray-700 mb-4">
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>Real-time statistics (privacy protected)</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>National trends & district heatmap</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>Service provider coverage</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>Shareable public link</span>
                             </li>
                         </ul>
-                        <button class="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold group-hover:bg-green-700">
+                        <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" style="background-color: #32cd32;" onmouseover="this.style.backgroundColor='#008000'" onmouseout="this.style.backgroundColor='#32cd32'">
                             <i class="fas fa-arrow-right mr-2"></i>View Public Dashboard
                         </button>
                     </div>
@@ -159,8 +159,8 @@ function loadSpotlightInitiative(section) {
 
             <!-- Phase 2 Label -->
             <div class="flex items-center mb-2 mt-8">
-                <h2 class="text-2xl font-bold text-gray-800 mr-3">Phase 2: Operational Excellence</h2>
-                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold animate-pulse">
+                <h2 class="text-2xl font-bold mr-3" style="color: #1e3a8a;">Phase 2: Operational Excellence</h2>
+                <span class="px-3 py-1 rounded-full text-sm font-semibold animate-pulse" style="background-color: rgba(30, 144, 255, 0.1); color: #1e90ff;">
                     <i class="fas fa-star mr-1"></i>New
                 </span>
             </div>
@@ -170,34 +170,34 @@ function loadSpotlightInitiative(section) {
                 <!-- Survivor Outcomes Card -->
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer group" 
                      onclick="showSpotlightSection('survivor-outcomes')">
-                    <div class="bg-gradient-to-r from-teal-500 to-green-600 p-6 text-white">
+                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #32cd32 0%, #008000 100%);">
                         <div class="flex items-center justify-between mb-3">
                             <i class="fas fa-heartbeat text-5xl opacity-80"></i>
                             <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">Phase 2</span>
                         </div>
                         <h3 class="text-2xl font-bold mb-2">Survivor Outcomes</h3>
-                        <p class="text-teal-100 text-sm">Track real wellbeing beyond case numbers</p>
+                        <p class="text-sm" style="color: rgba(255, 255, 255, 0.9);">Track real wellbeing beyond case numbers</p>
                     </div>
                     <div class="p-6">
                         <ul class="space-y-2 text-sm text-gray-700 mb-4">
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>30/90/180-day follow-up tracking</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>Safety, health, justice outcomes</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>International benchmarking</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>Impact stories (anonymized)</span>
                             </li>
                         </ul>
-                        <button class="w-full px-4 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-semibold group-hover:bg-teal-700">
+                        <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" style="background-color: #008000;" onmouseover="this.style.backgroundColor='#32cd32'" onmouseout="this.style.backgroundColor='#008000'">
                             <i class="fas fa-arrow-right mr-2"></i>View Outcomes
                         </button>
                     </div>
@@ -206,34 +206,34 @@ function loadSpotlightInitiative(section) {
                 <!-- Case Workflow Card -->
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer group" 
                      onclick="showSpotlightSection('case-workflow')">
-                    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 text-white">
+                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #1e3a8a 0%, #1e90ff 100%);">
                         <div class="flex items-center justify-between mb-3">
                             <i class="fas fa-project-diagram text-5xl opacity-80"></i>
                             <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">Phase 2</span>
                         </div>
                         <h3 class="text-2xl font-bold mb-2">Case Workflow</h3>
-                        <p class="text-indigo-100 text-sm">Multi-agency digital coordination</p>
+                        <p class="text-sm" style="color: rgba(255, 255, 255, 0.9);">Multi-agency digital coordination</p>
                     </div>
                     <div class="p-6">
                         <ul class="space-y-2 text-sm text-gray-700 mb-4">
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>Ministry → Rainbo → Police workflow</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>Real-time referral tracking</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>6.2 hour avg response time</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>94% coordination score</span>
                             </li>
                         </ul>
-                        <button class="w-full px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold group-hover:bg-indigo-700">
+                        <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" style="background-color: #1e3a8a;" onmouseover="this.style.backgroundColor='#1e90ff'" onmouseout="this.style.backgroundColor='#1e3a8a'">
                             <i class="fas fa-arrow-right mr-2"></i>Manage Workflow
                         </button>
                     </div>
@@ -242,34 +242,34 @@ function loadSpotlightInitiative(section) {
                 <!-- Alert System Card -->
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer group" 
                      onclick="showSpotlightSection('alert-system')">
-                    <div class="bg-gradient-to-r from-red-500 to-orange-600 p-6 text-white">
+                    <div class="p-6 text-white" style="background: linear-gradient(135deg, #ffd700 0%, #1e3a8a 100%);">
                         <div class="flex items-center justify-between mb-3">
                             <i class="fas fa-exclamation-triangle text-5xl opacity-80"></i>
                             <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">Phase 2</span>
                         </div>
                         <h3 class="text-2xl font-bold mb-2">Alert System</h3>
-                        <p class="text-red-100 text-sm">Proactive monitoring & early warning</p>
+                        <p class="text-sm" style="color: rgba(255, 255, 255, 0.9);">Proactive monitoring & early warning</p>
                     </div>
                     <div class="p-6">
                         <ul class="space-y-2 text-sm text-gray-700 mb-4">
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>Real-time critical alerts</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>District spike detection</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>Service gap warnings</span>
                             </li>
                             <li class="flex items-start">
-                                <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                <i class="fas fa-check-circle mr-2 mt-0.5" style="color: #32cd32;"></i>
                                 <span>Automated notifications</span>
                             </li>
                         </ul>
-                        <button class="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-semibold group-hover:bg-red-700">
+                        <button class="w-full px-4 py-3 text-white rounded-lg transition-colors font-semibold" style="background-color: #ffd700; color: #1e3a8a;" onmouseover="this.style.backgroundColor='#1e90ff'; this.style.color='white'" onmouseout="this.style.backgroundColor='#ffd700'; this.style.color='#1e3a8a'">
                             <i class="fas fa-arrow-right mr-2"></i>View Alerts
                         </button>
                     </div>
