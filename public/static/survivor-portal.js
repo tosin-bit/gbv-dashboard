@@ -4,24 +4,161 @@
  */
 
 function loadSurvivorPortal(section) {
+    // Check if user is already logged in
+    const survivorSession = sessionStorage.getItem('survivor_session');
+    if (survivorSession) {
+        loadSurvivorDashboard(section);
+        return;
+    }
+    
+    // Show login screen
+    section.innerHTML = `
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-white rounded-lg shadow-2xl overflow-hidden">
+                <!-- Header -->
+                <div class="p-8 text-center" style="background: linear-gradient(135deg, #1e3a8a 0%, #1e90ff 50%, #32cd32 100%);">
+                    <div class="w-24 h-24 mx-auto mb-4 bg-white rounded-full flex items-center justify-center">
+                        <i class="fas fa-heart text-5xl" style="color: #1e3a8a;"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-white mb-2">Survivor Support Portal</h2>
+                    <p class="text-white text-opacity-90">Safe, Confidential Access to Your Case</p>
+                </div>
+
+                <!-- Login Options -->
+                <div class="p-8">
+                    <div class="space-y-6">
+                        <!-- Option 1: Access with Case Number -->
+                        <div class="border-2 rounded-xl p-6" style="border-color: #1e90ff;">
+                            <h3 class="text-lg font-bold mb-3" style="color: #1e3a8a;">
+                                <i class="fas fa-file-medical mr-2"></i>Access My Case
+                            </h3>
+                            <p class="text-sm text-gray-600 mb-4">
+                                If you've already reported an incident, enter your case number to track progress and access support
+                            </p>
+                            <form id="survivor-case-login-form" onsubmit="handleSurvivorCaseLogin(event)">
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            <i class="fas fa-hashtag mr-2"></i>Case Number
+                                        </label>
+                                        <input type="text" name="caseNumber" required
+                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                               placeholder="e.g., GBV-2025-0001">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            <i class="fas fa-key mr-2"></i>Security PIN (Last 4 digits of phone)
+                                        </label>
+                                        <input type="password" name="pin" required maxlength="4" pattern="[0-9]{4}"
+                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                               placeholder="Enter 4-digit PIN">
+                                        <p class="text-xs text-gray-500 mt-1">This is the last 4 digits of the phone number you provided when reporting</p>
+                                    </div>
+                                    <button type="submit"
+                                            class="w-full py-3 px-4 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity"
+                                            style="background-color: #1e90ff;">
+                                        <i class="fas fa-sign-in-alt mr-2"></i>Access My Case
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Divider -->
+                        <div class="relative">
+                            <div class="absolute inset-0 flex items-center">
+                                <div class="w-full border-t border-gray-300"></div>
+                            </div>
+                            <div class="relative flex justify-center text-sm">
+                                <span class="px-4 bg-white text-gray-500">OR</span>
+                            </div>
+                        </div>
+
+                        <!-- Option 2: Report New Incident -->
+                        <div class="border-2 rounded-xl p-6" style="border-color: #32cd32;">
+                            <h3 class="text-lg font-bold mb-3" style="color: #1e3a8a;">
+                                <i class="fas fa-file-alt mr-2"></i>Report New Incident
+                            </h3>
+                            <p class="text-sm text-gray-600 mb-4">
+                                First time reporting? Start here to file a confidential report and get connected to support services
+                            </p>
+                            <button onclick="showSurvivorCaseForm()"
+                                    class="w-full py-3 px-4 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity"
+                                    style="background-color: #32cd32;">
+                                <i class="fas fa-plus-circle mr-2"></i>Start New Report
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Help -->
+                    <div class="mt-6 pt-6 border-t">
+                        <div class="text-center p-4 rounded-lg" style="background-color: rgba(239, 68, 68, 0.05);">
+                            <p class="text-sm font-semibold mb-2" style="color: #dc2626;">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>Need Help Now?
+                            </p>
+                            <div class="flex items-center justify-center space-x-4 text-sm">
+                                <a href="tel:116" class="font-bold" style="color: #1e90ff;">
+                                    <i class="fas fa-phone mr-1"></i>Call 116
+                                </a>
+                                <span class="text-gray-400">|</span>
+                                <button onclick="showEmergencySOS()" class="font-bold" style="color: #ef4444;">
+                                    <i class="fas fa-ambulance mr-1"></i>Emergency SOS
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features Info -->
+                <div class="bg-gray-50 p-6">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-3">What You Can Do:</h3>
+                    <div class="grid grid-cols-2 gap-3 text-sm text-gray-600">
+                        <div><i class="fas fa-check-circle mr-2" style="color: #32cd32;"></i>Track case progress</div>
+                        <div><i class="fas fa-check-circle mr-2" style="color: #32cd32;"></i>View appointments</div>
+                        <div><i class="fas fa-check-circle mr-2" style="color: #32cd32;"></i>Message your counselor</div>
+                        <div><i class="fas fa-check-circle mr-2" style="color: #32cd32;"></i>Access resources</div>
+                        <div><i class="fas fa-check-circle mr-2" style="color: #32cd32;"></i>Find help near you</div>
+                        <div><i class="fas fa-check-circle mr-2" style="color: #32cd32;"></i>Know your rights</div>
+                    </div>
+                    <div class="mt-4 text-xs text-center text-gray-500">
+                        <i class="fas fa-lock mr-1"></i>All information is confidential and secure
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Load survivor dashboard after successful login
+function loadSurvivorDashboard(section) {
+    const sessionData = JSON.parse(sessionStorage.getItem('survivor_session') || '{}');
+    
     section.innerHTML = `
         <div class="space-y-6">
             <!-- Warm Welcome Header -->
             <div class="text-white p-8 rounded-xl shadow-lg" style="background: linear-gradient(135deg, #1e3a8a 0%, #1e90ff 50%, #32cd32 100%);">
-                <div class="max-w-4xl mx-auto text-center">
-                    <div class="mb-4">
-                        <i class="fas fa-heart text-6xl opacity-90"></i>
+                <div class="max-w-4xl mx-auto">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-heart text-5xl opacity-90 mr-4"></i>
+                            <div>
+                                <h1 class="text-3xl font-bold mb-1">Welcome Back</h1>
+                                <p class="text-blue-50">Case: ${sessionData.caseNumber || 'Not Available'}</p>
+                            </div>
+                        </div>
+                        <button onclick="handleSurvivorLogout()" 
+                                class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-white font-semibold transition-colors">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </button>
                     </div>
-                    <h1 class="text-4xl font-bold mb-3">Survivor Support Portal</h1>
-                    <p class="text-xl text-blue-50 mb-4">
-                        You are not alone. This is a safe, confidential space to report incidents, access support, and track your case journey.
-                    </p>
-                    <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4 inline-block">
+                    <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4">
                         <p class="text-lg font-semibold mb-1">24/7 Emergency Hotline (Free & Confidential)</p>
-                        <a href="tel:116" class="text-3xl font-bold hover:underline">
+                        <a href="tel:116" class="text-2xl font-bold hover:underline">
                             <i class="fas fa-phone-alt mr-2"></i>116
                         </a>
-                        <p class="text-sm text-blue-50 mt-1">Available in Krio, English, Mende & Temne</p>
+                        <span class="mx-3">|</span>
+                        <a href="tel:999" class="text-2xl font-bold hover:underline">
+                            <i class="fas fa-ambulance mr-2"></i>999
+                        </a>
                     </div>
                 </div>
             </div>
@@ -489,8 +626,77 @@ function showHealingResources() {
     }
 }
 
+// Login handler for survivor case access
+function handleSurvivorCaseLogin(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const caseNumber = form.caseNumber.value.trim().toUpperCase();
+    const pin = form.pin.value;
+    
+    // Validation
+    if (!caseNumber || !pin) {
+        alert('Please enter both case number and PIN');
+        return;
+    }
+    
+    if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+        alert('PIN must be exactly 4 digits');
+        return;
+    }
+    
+    // Show loading state
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Verifying...';
+    submitBtn.disabled = true;
+    
+    // Simulate authentication (in production, this would call /api/auth/survivor)
+    setTimeout(() => {
+        // For demo purposes, accept any case number with format GBV-YYYY-NNNN
+        const casePattern = /^GBV-\d{4}-\d{4}$/;
+        
+        if (casePattern.test(caseNumber)) {
+            // Create session
+            const sessionData = {
+                caseNumber: caseNumber,
+                loginTime: new Date().toISOString(),
+                accessLevel: 'survivor'
+            };
+            
+            sessionStorage.setItem('survivor_session', JSON.stringify(sessionData));
+            
+            // Reload portal to show dashboard
+            const section = document.querySelector('.space-y-6')?.parentElement || document.getElementById('dashboard-content');
+            loadSurvivorPortal(section);
+            
+            console.log('✅ Survivor logged in:', caseNumber);
+        } else {
+            alert('Invalid case number format. Please use format: GBV-YYYY-NNNN\\n\\nExample: GBV-2025-0001');
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    }, 1000);
+}
+
+// Logout handler
+function handleSurvivorLogout() {
+    if (confirm('Are you sure you want to logout?')) {
+        sessionStorage.removeItem('survivor_session');
+        
+        // Reload portal to show login screen
+        const section = document.querySelector('.space-y-6')?.parentElement || document.getElementById('dashboard-content');
+        loadSurvivorPortal(section);
+        
+        console.log('✅ Survivor logged out');
+    }
+}
+
 // Export functions
 window.loadSurvivorPortal = loadSurvivorPortal;
+window.loadSurvivorDashboard = loadSurvivorDashboard;
+window.handleSurvivorCaseLogin = handleSurvivorCaseLogin;
+window.handleSurvivorLogout = handleSurvivorLogout;
 window.showSurvivorCaseForm = showSurvivorCaseForm;
 window.showEmergencySOS = showEmergencySOS;
 window.showAnonymousReport = showAnonymousReport;
