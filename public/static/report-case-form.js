@@ -3,6 +3,26 @@
  * Comprehensive form for reporting new GBV incidents
  */
 
+// District ID to Name Mapping - MUST match across all systems
+const DISTRICT_MAP = {
+    '1': 'Western Area Urban',
+    '2': 'Western Area Rural',
+    '3': 'Bo',
+    '4': 'Bonthe',
+    '5': 'Moyamba',
+    '6': 'Pujehun',
+    '7': 'Kenema',
+    '8': 'Kailahun',
+    '9': 'Kono',
+    '10': 'Bombali',
+    '11': 'Kambia',
+    '12': 'Koinadugu',
+    '13': 'Port Loko',
+    '14': 'Tonkolili',
+    '15': 'Karene',
+    '16': 'Falaba'
+};
+
 function loadReportCaseForm(section, source = 'ministry') {
     section.innerHTML = `
         <div class="bg-white rounded-lg shadow-lg p-6">
@@ -42,9 +62,10 @@ function loadReportCaseForm(section, source = 'ministry') {
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Date of Incident <span class="text-red-500">*</span>
                             </label>
-                            <input type="date" name="incident_date" required
+                            <input type="date" name="incident_date" id="incident_date" required
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-opacity-50"
                                    style="focus:ring-color: #1e3a8a;"
+                                   value="${new Date().toISOString().split('T')[0]}"
                                    max="${new Date().toISOString().split('T')[0]}">
                         </div>
                         
@@ -622,6 +643,17 @@ async function handleFormSubmit(e) {
         }
     }
     
+    // Add district name based on district_id
+    if (data.district_id && DISTRICT_MAP[data.district_id]) {
+        data.district = DISTRICT_MAP[data.district_id];
+    }
+    
+    // Add GBV type name based on gbv_type_id (for display purposes)
+    const gbvTypeSelect = document.querySelector('select[name="gbv_type_id"]');
+    if (gbvTypeSelect && gbvTypeSelect.selectedIndex > 0) {
+        data.gbv_type = gbvTypeSelect.options[gbvTypeSelect.selectedIndex].text;
+    }
+    
     console.log('Submitting case data:', data);
     
     // Show loading
@@ -765,7 +797,8 @@ function goBackToSurvivorPortal() {
     }
 }
 
-// Export functions to window for use in other portals
+// Export functions and constants to window for use in other portals
+window.DISTRICT_MAP = DISTRICT_MAP;
 window.loadReportCaseForm = loadReportCaseForm;
 window.goBackToSurvivorPortal = goBackToSurvivorPortal;
 window.updateAgeGroup = updateAgeGroup;
@@ -774,3 +807,5 @@ window.saveDraft = saveDraft;
 window.clearForm = clearForm;
 window.loadChiefdoms = loadChiefdoms;
 window.updateGBVSubTypes = updateGBVSubTypes;
+
+console.log('✅ Report Case Form with District Mapping - Ready!');
