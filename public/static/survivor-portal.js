@@ -154,6 +154,18 @@ function showSurvivorDashboard(section) {
                 </div>
             </div>
 
+            <!-- EMERGENCY SOS BUTTON -->
+            <button onclick="activateEmergencySOS()" 
+                class="w-full py-8 bg-red-600 text-white rounded-xl shadow-2xl hover:bg-red-700 transform hover:scale-105 transition-all animate-pulse">
+                <div class="flex items-center justify-center space-x-4">
+                    <i class="fas fa-exclamation-triangle text-6xl"></i>
+                    <div class="text-left">
+                        <div class="text-4xl font-bold">EMERGENCY SOS</div>
+                        <div class="text-xl">Get Help NOW - Calls Police + Shares Location</div>
+                    </div>
+                </div>
+            </button>
+
             <!-- Emergency Hotlines -->
             <div class="bg-red-50 border-2 border-red-200 rounded-xl p-6">
                 <h3 class="text-lg font-bold mb-3 text-red-800">
@@ -210,18 +222,33 @@ function showSurvivorDashboard(section) {
 
             <!-- Quick Actions -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Report New Incident -->
+                <!-- Report New Incident (Form) -->
                 <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition cursor-pointer" 
                     onclick="showSurvivorReportForm()">
                     <div class="flex items-center mb-4">
                         <div class="w-12 h-12 rounded-full flex items-center justify-center mr-4" 
                             style="background: linear-gradient(135deg, #32cd32 0%, #228b22 100%);">
-                            <i class="fas fa-plus text-white text-xl"></i>
+                            <i class="fas fa-file-alt text-white text-xl"></i>
                         </div>
-                        <h4 class="text-lg font-bold">Report New Incident</h4>
+                        <h4 class="text-lg font-bold">Report with Form</h4>
                     </div>
                     <p class="text-sm text-gray-600">
-                        Confidential reporting - your information is safe
+                        Fill out a written report form
+                    </p>
+                </div>
+
+                <!-- Voice Reporting -->
+                <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition cursor-pointer" 
+                    onclick="startVoiceReporting()">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center mr-4" 
+                            style="background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);">
+                            <i class="fas fa-microphone text-white text-xl"></i>
+                        </div>
+                        <h4 class="text-lg font-bold">Voice Reporting</h4>
+                    </div>
+                    <p class="text-sm text-gray-600">
+                        Report verbally with guided questions
                     </p>
                 </div>
 

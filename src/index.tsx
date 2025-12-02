@@ -1481,6 +1481,7 @@ app.get('/rainbo-dashboard', (c) => {
         <div id="rainbo-dashboard-root"></div>
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="/static/chart-lazy-loader.js"></script>
         <script src="/static/report-case-form.js"></script>
         <script src="/static/rainbo-dashboard-enhanced.js"></script>
       </body>
@@ -1503,6 +1504,7 @@ app.get('/police-dashboard', (c) => {
         <div id="police-dashboard-root"></div>
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="/static/chart-lazy-loader.js"></script>
         <script src="/static/report-case-form.js"></script>
         <script src="/static/police-dashboard-enhanced.js"></script>
       </body>
@@ -2080,6 +2082,7 @@ app.get('/', (c) => {
       {/* Load JavaScript */}
       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+      <script src="/static/chart-lazy-loader.js"></script>
       <script src="/static/language-switch.js"></script>
       <script src="/static/app-simplified.js"></script>
       <script src="/static/unified-case-system.js"></script>
@@ -2103,6 +2106,7 @@ app.get('/', (c) => {
       <script src="/static/trend-intelligence.js"></script>
       <script src="/static/survivor-portal.js"></script>
       <script src="/static/emergency-sos.js"></script>
+      <script src="/static/voice-reporting.js"></script>
       <script src="/static/anonymous-report.js"></script>
       <script src="/static/service-finder.js"></script>
       <script src="/static/safety-planning.js"></script>
