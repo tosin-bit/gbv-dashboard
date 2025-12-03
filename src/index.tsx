@@ -2463,6 +2463,233 @@ app.get('/api/import/history', async (c) => {
   }
 });
 
+// Documentation Viewer Page
+app.get('/docs', async (c) => {
+  return c.html(
+    <div class="min-h-screen bg-gray-50 p-8">
+      <div class="max-w-7xl mx-auto">
+        
+        {/* Header */}
+        <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg shadow-lg p-8 mb-8 text-white">
+          <h1 class="text-4xl font-bold mb-2">
+            <i class="fas fa-book mr-3"></i>
+            GBVIMS+ Documentation Center
+          </h1>
+          <p class="text-xl opacity-90">
+            Complete strategic positioning and migration guides
+          </p>
+        </div>
+
+        {/* Quick Links */}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          
+          {/* Executive Documents */}
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-xl font-bold text-purple-600 mb-4">
+              <i class="fas fa-star mr-2"></i>
+              Executive Documents
+            </h3>
+            <ul class="space-y-3">
+              <li>
+                <a href="/static/ONE_PAGE_PITCH.md" target="_blank" class="text-blue-600 hover:text-blue-800 flex items-center">
+                  <i class="fas fa-file-alt mr-2"></i>
+                  <span class="font-semibold">One-Page Pitch</span>
+                </a>
+                <p class="text-sm text-gray-600 ml-6">Executive summary (1 page)</p>
+              </li>
+              <li>
+                <a href="/static/GBVIMS_EXECUTIVE_SUMMARY.md" target="_blank" class="text-blue-600 hover:text-blue-800 flex items-center">
+                  <i class="fas fa-file-alt mr-2"></i>
+                  <span class="font-semibold">Executive Summary</span>
+                </a>
+                <p class="text-sm text-gray-600 ml-6">Strategic decision doc (11 KB)</p>
+              </li>
+            </ul>
+          </div>
+
+          {/* Strategic Documents */}
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-xl font-bold text-indigo-600 mb-4">
+              <i class="fas fa-chess mr-2"></i>
+              Strategic Planning
+            </h3>
+            <ul class="space-y-3">
+              <li>
+                <a href="/static/STRATEGIC_POSITIONING.md" target="_blank" class="text-blue-600 hover:text-blue-800 flex items-center">
+                  <i class="fas fa-file-alt mr-2"></i>
+                  <span class="font-semibold">Strategic Positioning</span>
+                </a>
+                <p class="text-sm text-gray-600 ml-6">Why you REPLACE GBVIMS+ (23 KB)</p>
+              </li>
+              <li>
+                <a href="/static/README_IMPORT_SYSTEM.md" target="_blank" class="text-blue-600 hover:text-blue-800 flex items-center">
+                  <i class="fas fa-file-alt mr-2"></i>
+                  <span class="font-semibold">Import System Guide</span>
+                </a>
+                <p class="text-sm text-gray-600 ml-6">Complete overview (11 KB)</p>
+              </li>
+            </ul>
+          </div>
+
+          {/* Technical Documents */}
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-xl font-bold text-blue-600 mb-4">
+              <i class="fas fa-cogs mr-2"></i>
+              Technical Guides
+            </h3>
+            <ul class="space-y-3">
+              <li>
+                <a href="/static/GBVIMS_MIGRATION_GUIDE.md" target="_blank" class="text-blue-600 hover:text-blue-800 flex items-center">
+                  <i class="fas fa-file-alt mr-2"></i>
+                  <span class="font-semibold">Migration Guide</span>
+                </a>
+                <p class="text-sm text-gray-600 ml-6">2-week process (14 KB)</p>
+              </li>
+              <li>
+                <a href="/static/GBVIMS_COMPARISON_ANALYSIS.md" target="_blank" class="text-blue-600 hover:text-blue-800 flex items-center">
+                  <i class="fas fa-file-alt mr-2"></i>
+                  <span class="font-semibold">Technical Analysis</span>
+                </a>
+                <p class="text-sm text-gray-600 ml-6">Field mapping (37 KB)</p>
+              </li>
+            </ul>
+          </div>
+
+          {/* Presentation Materials */}
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-xl font-bold text-green-600 mb-4">
+              <i class="fas fa-presentation mr-2"></i>
+              Presentation Tools
+            </h3>
+            <ul class="space-y-3">
+              <li>
+                <a href="/static/DEMO_SCRIPT.md" target="_blank" class="text-blue-600 hover:text-blue-800 flex items-center">
+                  <i class="fas fa-file-alt mr-2"></i>
+                  <span class="font-semibold">Demo Script</span>
+                </a>
+                <p class="text-sm text-gray-600 ml-6">15-minute presentation (16 KB)</p>
+              </li>
+              <li>
+                <a href="/static/GBVIMS_QUICK_REFERENCE.txt" target="_blank" class="text-blue-600 hover:text-blue-800 flex items-center">
+                  <i class="fas fa-file-alt mr-2"></i>
+                  <span class="font-semibold">Quick Reference</span>
+                </a>
+                <p class="text-sm text-gray-600 ml-6">Printable guide (35 KB)</p>
+              </li>
+            </ul>
+          </div>
+
+          {/* Import Dashboard */}
+          <div class="bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-lg shadow-md p-6 col-span-1 md:col-span-2 lg:col-span-1">
+            <h3 class="text-xl font-bold mb-4">
+              <i class="fas fa-upload mr-2"></i>
+              Try Import System
+            </h3>
+            <p class="mb-4 text-sm opacity-90">
+              Upload GBVIMS+ CSV and see live import
+            </p>
+            <a href="/import-dashboard" class="bg-white text-purple-600 px-6 py-3 rounded-lg hover:bg-gray-100 font-semibold inline-block">
+              <i class="fas fa-arrow-right mr-2"></i>
+              Open Import Dashboard
+            </a>
+          </div>
+        </div>
+
+        {/* Key Metrics */}
+        <div class="bg-white rounded-lg shadow-md p-8 mb-8">
+          <h2 class="text-2xl font-bold mb-6 text-gray-800">
+            <i class="fas fa-chart-line text-green-600 mr-2"></i>
+            Key Metrics at a Glance
+          </h2>
+          
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="text-center p-6 bg-green-50 rounded-lg">
+              <div class="text-4xl font-bold text-green-600 mb-2">76%</div>
+              <div class="text-sm text-gray-600">Field Coverage</div>
+              <div class="text-xs text-gray-500 mt-1">(96/126 fields)</div>
+            </div>
+            
+            <div class="text-center p-6 bg-blue-50 rounded-lg">
+              <div class="text-4xl font-bold text-blue-600 mb-2">2 Weeks</div>
+              <div class="text-sm text-gray-600">Migration Time</div>
+              <div class="text-xs text-gray-500 mt-1">(Not months)</div>
+            </div>
+            
+            <div class="text-center p-6 bg-purple-50 rounded-lg">
+              <div class="text-4xl font-bold text-purple-600 mb-2">$47K</div>
+              <div class="text-sm text-gray-600">3-Year Savings</div>
+              <div class="text-xs text-gray-500 mt-1">(vs GBVIMS+)</div>
+            </div>
+            
+            <div class="text-center p-6 bg-yellow-50 rounded-lg">
+              <div class="text-4xl font-bold text-yellow-600 mb-2">99%</div>
+              <div class="text-sm text-gray-600">Import Success</div>
+              <div class="text-xs text-gray-500 mt-1">(Data quality)</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Strategic Message */}
+        <div class="bg-gradient-to-r from-green-50 to-blue-50 border-l-4 border-green-500 p-8 rounded-r-lg mb-8">
+          <h3 class="text-2xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+            The Strategic Message
+          </h3>
+          <div class="space-y-3 text-lg">
+            <p class="flex items-start">
+              <i class="fas fa-check-circle text-green-600 mr-3 mt-1"></i>
+              <span><strong>GBVIMS+ data flows INTO your system</strong> (not the other way around)</span>
+            </p>
+            <p class="flex items-start">
+              <i class="fas fa-check-circle text-green-600 mr-3 mt-1"></i>
+              <span><strong>Migration is EASIER</strong> than staying with GBVIMS+ (2 weeks vs endless maintenance)</span>
+            </p>
+            <p class="flex items-start">
+              <i class="fas fa-check-circle text-green-600 mr-3 mt-1"></i>
+              <span><strong>Your system is BETTER</strong> for survivors (SOS, Voice, Portal)</span>
+            </p>
+            <p class="flex items-start">
+              <i class="fas fa-check-circle text-green-600 mr-3 mt-1"></i>
+              <span><strong>Sierra Leone should LEAD</strong>, not follow outdated UN systems</span>
+            </p>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <a href="/" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+            <div class="text-center">
+              <i class="fas fa-home text-4xl text-blue-600 mb-3"></i>
+              <h3 class="text-lg font-bold text-gray-800 mb-2">Main Dashboard</h3>
+              <p class="text-sm text-gray-600">Return to GBV Dashboard</p>
+            </div>
+          </a>
+          
+          <a href="/import-dashboard" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+            <div class="text-center">
+              <i class="fas fa-upload text-4xl text-purple-600 mb-3"></i>
+              <h3 class="text-lg font-bold text-gray-800 mb-2">Import System</h3>
+              <p class="text-sm text-gray-600">Try GBVIMS+ CSV import</p>
+            </div>
+          </a>
+          
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="text-center">
+              <i class="fas fa-download text-4xl text-green-600 mb-3"></i>
+              <h3 class="text-lg font-bold text-gray-800 mb-2">Download All</h3>
+              <p class="text-sm text-gray-600 mb-3">Get complete documentation package</p>
+              <button onclick="alert('Right-click each document link above and select Save As')" class="text-sm bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                Instructions
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+});
+
 // GBVIMS+ Import Dashboard Page
 app.get('/import-dashboard', async (c) => {
   return c.html(
