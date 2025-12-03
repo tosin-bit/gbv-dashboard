@@ -63,10 +63,8 @@ function loadReportCaseForm(section, source = 'ministry') {
                                 Date of Incident <span class="text-red-500">*</span>
                             </label>
                             <input type="date" name="incident_date" id="incident_date" required
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-opacity-50"
-                                   style="focus:ring-color: #1e3a8a;"
-                                   value="${new Date().toISOString().split('T')[0]}"
-                                   max="${new Date().toISOString().split('T')[0]}">
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                   style="background-color: white;">
                         </div>
                         
                         <div>
@@ -614,6 +612,37 @@ function loadReportCaseForm(section, source = 'ministry') {
 function setupFormHandlers() {
     const form = document.getElementById('gbv-report-form');
     if (!form) return;
+    
+    // Set date field to today by default
+    const incidentDateField = document.getElementById('incident_date');
+    if (incidentDateField) {
+        const today = new Date().toISOString().split('T')[0];
+        incidentDateField.value = today;
+        incidentDateField.max = today;
+        
+        // Ensure it's clickable and works
+        incidentDateField.addEventListener('focus', function() {
+            this.showPicker?.(); // Modern browsers
+        });
+        
+        // Ensure date stays valid
+        incidentDateField.addEventListener('change', function() {
+            if (this.value > today) {
+                this.value = today;
+                alert('Incident date cannot be in the future');
+            }
+        });
+        
+        console.log('✅ Date field set to:', today);
+    }
+    
+    // Set reported date to today
+    const reportedDateField = document.querySelector('input[name="reported_date"]');
+    if (reportedDateField) {
+        const today = new Date().toISOString().split('T')[0];
+        reportedDateField.value = today;
+        reportedDateField.max = today;
+    }
     
     form.addEventListener('submit', handleFormSubmit);
 }
