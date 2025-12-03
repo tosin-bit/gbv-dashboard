@@ -2079,7 +2079,8 @@ app.get('/', (c) => {
         </div>
       </footer>
 
-      {/* Load JavaScript */}
+      {/* Load JavaScript - Optimized Loading */}
+      <script src="/static/performance-optimizer.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
       <script src="/static/chart-lazy-loader.js"></script>
@@ -2116,13 +2117,12 @@ app.get('/', (c) => {
       <script src="/static/case-status.js"></script>
       <script src="/static/healing-resources.js"></script>
       <script src="/static/portal-systems.js"></script>
-      <script src="/static/voice-recording.js"></script>
-      <script src="/static/voice-interview.js"></script>
+
       <script src="/static/view-cases.js"></script>
       <script src="/static/case-notes.js"></script>
 
       <script src="/static/notifications.js"></script>
-      <script src="/static/ai-chatbot.js"></script>
+
       <script src="/static/risk-assessment.js"></script>
       <script src="/static/advanced-analytics.js"></script>
       <script src="/static/panic-button.js"></script>
@@ -2131,12 +2131,11 @@ app.get('/', (c) => {
       <script src="/static/survivor-portal.js"></script>
 
       <script src="/static/custom-report-builder.js"></script>
-      <script src="/static/video-resources.js"></script>
 
-      <script src="/static/quick-stats-widget.js"></script>
+
+
       <script src="/static/export-system.js"></script>
-      <script src="/static/accessibility-voice-navigation.js"></script>
-      <script src="/static/accessibility-picture-reporting.js"></script>
+
 
     </div>
   );

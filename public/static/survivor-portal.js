@@ -486,8 +486,194 @@ function formatDate(dateString) {
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
-function viewCaseDetails(caseNumber) {
-    alert(`Case Details: ${caseNumber}\\n\\nFull case details view coming soon...\\n\\nYou can contact support for updates on this case.`);
+async function viewCaseDetails(caseNumber) {
+    const section = document.getElementById('dashboard-content');
+    if (!section) return;
+    
+    console.log('📂 Loading case details:', caseNumber);
+    
+    // Show loading
+    section.innerHTML = `
+        <div class="max-w-4xl mx-auto space-y-6">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        <i class="fas fa-folder-open mr-2"></i>Case Details
+                    </h2>
+                    <button onclick="showSurvivorCases()" 
+                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Cases
+                    </button>
+                </div>
+                <div class="text-center py-8">
+                    <i class="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
+                    <p class="mt-4 text-gray-600">Loading case details...</p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    try {
+        // Fetch case details
+        const response = await fetch(`/api/cases/${caseNumber}`);
+        const caseData = await response.json();
+        
+        if (!caseData) {
+            throw new Error('Case not found');
+        }
+        
+        // Display case details
+        section.innerHTML = `
+            <div class="max-w-4xl mx-auto space-y-6">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">
+                                <i class="fas fa-folder-open mr-2"></i>${caseNumber}
+                            </h2>
+                            <p class="text-sm text-gray-600 mt-1">Case Details & Timeline</p>
+                        </div>
+                        <button onclick="showSurvivorCases()" 
+                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+                            <i class="fas fa-arrow-left mr-2"></i>Back to Cases
+                        </button>
+                    </div>
+                    
+                    <!-- Status Badge -->
+                    <div class="mb-6">
+                        <span class="px-4 py-2 rounded-full text-sm font-bold" 
+                            style="background: ${getStatusColor(caseData.status).bg}; color: ${getStatusColor(caseData.status).text};">
+                            ${caseData.status || 'Pending'}
+                        </span>
+                        ${caseData.priority ? getPriorityBadge(caseData.priority) : ''}
+                    </div>
+                    
+                    <!-- Case Information Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h3 class="font-bold text-gray-700 mb-3">
+                                <i class="fas fa-info-circle mr-2"></i>Incident Information
+                            </h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Date:</span>
+                                    <span class="font-semibold">${formatDate(caseData.incident_date)}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">District:</span>
+                                    <span class="font-semibold">${caseData.district || 'N/A'}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Location:</span>
+                                    <span class="font-semibold">${caseData.location_details || 'N/A'}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Type:</span>
+                                    <span class="font-semibold">${caseData.gbv_type || 'N/A'}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h3 class="font-bold text-gray-700 mb-3">
+                                <i class="fas fa-user-shield mr-2"></i>Support Status
+                            </h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Reported:</span>
+                                    <span class="font-semibold">${formatDate(caseData.created_at)}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Case Worker:</span>
+                                    <span class="font-semibold">${caseData.assigned_to || 'Pending'}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Medical:</span>
+                                    <span class="font-semibold">${caseData.medical_attention || 'Not required'}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Legal Aid:</span>
+                                    <span class="font-semibold">${caseData.legal_aid || 'Pending'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Description -->
+                    ${caseData.incident_description ? `
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+                        <h3 class="font-bold text-blue-800 mb-2">
+                            <i class="fas fa-file-alt mr-2"></i>Incident Description
+                        </h3>
+                        <p class="text-blue-700 text-sm">${caseData.incident_description}</p>
+                    </div>
+                    ` : ''}
+                    
+                    <!-- Services Provided -->
+                    <div class="bg-green-50 rounded-lg p-4 mb-6">
+                        <h3 class="font-bold text-green-800 mb-3">
+                            <i class="fas fa-hands-helping mr-2"></i>Services Available
+                        </h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <div class="text-center p-3 bg-white rounded">
+                                <i class="fas fa-heartbeat text-red-600 text-2xl mb-2"></i>
+                                <p class="text-xs font-semibold">Medical Care</p>
+                            </div>
+                            <div class="text-center p-3 bg-white rounded">
+                                <i class="fas fa-balance-scale text-blue-600 text-2xl mb-2"></i>
+                                <p class="text-xs font-semibold">Legal Support</p>
+                            </div>
+                            <div class="text-center p-3 bg-white rounded">
+                                <i class="fas fa-user-friends text-purple-600 text-2xl mb-2"></i>
+                                <p class="text-xs font-semibold">Counseling</p>
+                            </div>
+                            <div class="text-center p-3 bg-white rounded">
+                                <i class="fas fa-home text-green-600 text-2xl mb-2"></i>
+                                <p class="text-xs font-semibold">Safe House</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Emergency Contacts -->
+                    <div class="bg-red-50 border-2 border-red-200 rounded-lg p-4">
+                        <h3 class="font-bold text-red-800 mb-3">
+                            <i class="fas fa-phone-volume mr-2"></i>Need Immediate Help?
+                        </h3>
+                        <div class="grid grid-cols-3 gap-3">
+                            <a href="tel:116" class="block text-center p-3 bg-red-600 text-white rounded hover:bg-red-700">
+                                <div class="text-2xl font-bold">116</div>
+                                <div class="text-xs">Helpline</div>
+                            </a>
+                            <a href="tel:999" class="block text-center p-3 bg-red-600 text-white rounded hover:bg-red-700">
+                                <div class="text-2xl font-bold">999</div>
+                                <div class="text-xs">Medical</div>
+                            </a>
+                            <a href="tel:019" class="block text-center p-3 bg-red-600 text-white rounded hover:bg-red-700">
+                                <div class="text-2xl font-bold">019</div>
+                                <div class="text-xs">Police</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+    } catch (error) {
+        console.error('❌ Error loading case:', error);
+        section.innerHTML = `
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-red-50 border-2 border-red-200 rounded-lg p-8 text-center">
+                    <i class="fas fa-exclamation-triangle text-red-600 text-5xl mb-4"></i>
+                    <h3 class="text-xl font-bold text-red-800 mb-2">Unable to Load Case</h3>
+                    <p class="text-red-700 mb-6">Case ${caseNumber} could not be found or loaded.</p>
+                    <button onclick="showSurvivorCases()" 
+                        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to My Cases
+                    </button>
+                </div>
+            </div>
+        `;
+    }
 }
 
 function showNewIncidentForm() {
