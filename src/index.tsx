@@ -2260,6 +2260,7 @@ app.get('/', (c) => {
       
       {/* Voice Report - Load early */}
       <script src="/static/voice-recording.js"></script>
+      <script src="/static/VOICE_REPORT_FIX.js"></script>
       
       {/* Analytics - Load in correct order */}
       <script src="/static/chart-lazy-loader.js"></script>
@@ -2275,6 +2276,9 @@ app.get('/', (c) => {
       
       {/* Analytics Main Dashboard - calls the above functions */}
       <script src="/static/analytics-dashboard.js"></script>
+      
+      {/* Analytics Navigation Fix - Back button */}
+      <script src="/static/ANALYTICS_NAVIGATION_FIX.js"></script>
       
       {/* Fix for showAnalyticsSection - IMMEDIATE no delay */}
       <script src="/static/ANALYTICS_FIX_IMMEDIATE.js"></script>
