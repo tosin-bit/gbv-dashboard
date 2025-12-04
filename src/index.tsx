@@ -2236,6 +2236,12 @@ app.get('/', (c) => {
       
       {/* Essential Core Scripts */}
       <script src="/static/language-switch.js"></script>
+      
+      {/* Voice Report - MUST load before tab-system.js */}
+      <script src="/static/voice-recording.js"></script>
+      <script src="/static/VOICE_REPORT_FIX.js"></script>
+      <script src="/static/VOICE_REPORT_DEBUG.js"></script>
+      
       <script src="/static/tab-system.js"></script>
       <script src="/static/app-simplified.js"></script>
       
@@ -2257,11 +2263,6 @@ app.get('/', (c) => {
       {/* District Map & Spotlight Initiative */}
       <script src="/static/district-map.js"></script>
       <script src="/static/spotlight-initiative.js"></script>
-      
-      {/* Voice Report - Load early */}
-      <script src="/static/voice-recording.js"></script>
-      <script src="/static/VOICE_REPORT_FIX.js"></script>
-      <script src="/static/VOICE_REPORT_DEBUG.js"></script>
       
       {/* Analytics - Load in correct order */}
       <script src="/static/chart-lazy-loader.js"></script>
