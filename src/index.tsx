@@ -20,6 +20,149 @@ app.use(renderer)
 
 // API Routes for GBV Dashboard
 
+// ========================================
+// AUTHENTICATION API ENDPOINTS
+// ========================================
+
+// Helper function to verify password (simple comparison for demo)
+// In production, use bcrypt to hash and compare passwords
+async function verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
+  // For demo purposes, we're using plaintext passwords stored in the database
+  // In production, you should use bcrypt.compare(plainPassword, hashedPassword)
+  return plainPassword === hashedPassword;
+}
+
+// Helper function to generate session ID
+function generateSessionId(): string {
+  return 'session_' + Date.now() + '_' + Math.random().toString(36).substring(7);
+}
+
+// Login endpoint
+app.post('/api/auth/login', async (c) => {
+  const { env } = c;
+  
+  try {
+    const { username, password } = await c.req.json();
+    
+    if (!username || !password) {
+      return c.json({ success: false, error: 'Username and password required' }, 400);
+    }
+    
+    // Find user
+    const user = await env.DB.prepare(`
+      SELECT id, username, password_hash, name, role, center, email, phone, active, organization
+      FROM users
+      WHERE username = ? AND active = 1
+    `).bind(username).first();
+    
+    if (!user) {
+      return c.json({ success: false, error: 'Invalid credentials' }, 401);
+    }
+    
+    // Verify password
+    const passwordValid = await verifyPassword(password, user.password_hash as string);
+    
+    if (!passwordValid) {
+      return c.json({ success: false, error: 'Invalid credentials' }, 401);
+    }
+    
+    // Create session
+    const sessionId = generateSessionId();
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    
+    await env.DB.prepare(`
+      INSERT INTO sessions (id, user_id, expires_at)
+      VALUES (?, ?, ?)
+    `).bind(sessionId, user.id, expiresAt.toISOString()).run();
+    
+    // Return success with user data (exclude password_hash)
+    return c.json({
+      success: true,
+      session_id: sessionId,
+      user: {
+        id: user.id,
+        username: user.username,
+        name: user.name,
+        role: user.role,
+        center: user.center,
+        organization: user.organization,
+        email: user.email,
+        phone: user.phone
+      }
+    });
+    
+  } catch (error: any) {
+    console.error('Login error:', error);
+    return c.json({ success: false, error: 'Login failed' }, 500);
+  }
+});
+
+// Logout endpoint
+app.post('/api/auth/logout', async (c) => {
+  const { env } = c;
+  
+  try {
+    const { session_id } = await c.req.json();
+    
+    if (session_id) {
+      await env.DB.prepare(`
+        DELETE FROM sessions WHERE id = ?
+      `).bind(session_id).run();
+    }
+    
+    return c.json({ success: true });
+    
+  } catch (error: any) {
+    console.error('Logout error:', error);
+    return c.json({ success: false, error: 'Logout failed' }, 500);
+  }
+});
+
+// Verify session endpoint
+app.post('/api/auth/verify', async (c) => {
+  const { env } = c;
+  
+  try {
+    const { session_id } = await c.req.json();
+    
+    if (!session_id) {
+      return c.json({ valid: false }, 401);
+    }
+    
+    // Check if session exists and is not expired
+    const session = await env.DB.prepare(`
+      SELECT s.id, s.user_id, s.expires_at, u.username, u.name, u.role, u.center, u.organization
+      FROM sessions s
+      JOIN users u ON s.user_id = u.id
+      WHERE s.id = ? AND s.expires_at > datetime('now') AND u.active = 1
+    `).bind(session_id).first();
+    
+    if (!session) {
+      return c.json({ valid: false }, 401);
+    }
+    
+    return c.json({
+      valid: true,
+      user: {
+        id: session.user_id,
+        username: session.username,
+        name: session.name,
+        role: session.role,
+        center: session.center,
+        organization: session.organization
+      }
+    });
+    
+  } catch (error: any) {
+    console.error('Verify error:', error);
+    return c.json({ valid: false }, 500);
+  }
+});
+
+// ========================================
+// EXISTING API ENDPOINTS
+// ========================================
+
 // Get Dashboard Statistics
 app.get('/api/stats', async (c) => {
   const { env } = c;
