@@ -59,58 +59,136 @@ Object.defineProperty(window.location, 'href', {
     }
 });
 
-// Intercept fetch calls to /api/auth/login
+// Intercept fetch calls to /api/* endpoints
 const originalFetch = window.fetch;
-window.fetch = function(url, options) {
-    // Check if it's a login request
-    if (url.includes('/api/auth/login')) {
-        console.log('🔓 Intercepting login request...');
+window.fetch = function(url, options = {}) {
+    
+    // Check if it's an API request
+    if (url.includes('/api/')) {
+        console.log('🔓 Intercepting API request:', url);
         
-        // Parse the request body
-        try {
-            const body = JSON.parse(options.body);
-            const username = body.username;
-            const password = body.password;
+        // LOGIN REQUEST
+        if (url.includes('/api/auth/login')) {
+            console.log('🔓 Intercepting login request...');
             
-            console.log('Login attempt:', username);
-            
-            // Check demo credentials
-            if ((username === DEMO_CREDENTIALS.rainbo.username && password === DEMO_CREDENTIALS.rainbo.password) ||
-                (username === DEMO_CREDENTIALS.fsu.username && password === DEMO_CREDENTIALS.fsu.password)) {
+            try {
+                const body = JSON.parse(options.body);
+                const username = body.username;
+                const password = body.password;
                 
-                console.log('✅ Demo credentials accepted');
+                console.log('Login attempt:', username);
                 
-                // Return successful login response
-                return Promise.resolve({
-                    ok: true,
-                    json: () => Promise.resolve({
-                        success: true,
-                        session_id: 'demo-session-' + Date.now(),
-                        user: {
-                            id: 'demo-' + username,
-                            username: username,
-                            name: 'Demo User',
-                            role: username === 'demo' ? 'rainbo_staff' : 'fsu_officer',
-                            center: 'Demo Center',
-                            district: 'Demo District'
-                        }
-                    })
-                });
-            } else {
-                console.log('❌ Invalid demo credentials');
+                // Check demo credentials
+                if ((username === DEMO_CREDENTIALS.rainbo.username && password === DEMO_CREDENTIALS.rainbo.password) ||
+                    (username === DEMO_CREDENTIALS.fsu.username && password === DEMO_CREDENTIALS.fsu.password)) {
+                    
+                    console.log('✅ Demo credentials accepted');
+                    
+                    return Promise.resolve({
+                        ok: true,
+                        json: () => Promise.resolve({
+                            success: true,
+                            session_id: 'demo-session-' + Date.now(),
+                            user: {
+                                id: 'demo-' + username,
+                                username: username,
+                                name: 'Demo User',
+                                role: username === 'demo' ? 'rainbo_staff' : 'fsu_officer',
+                                center: 'Demo Center',
+                                district: 'Demo District'
+                            }
+                        })
+                    });
+                } else {
+                    console.log('❌ Invalid demo credentials');
+                    
+                    return Promise.resolve({
+                        ok: false,
+                        json: () => Promise.resolve({
+                            success: false,
+                            error: 'Invalid credentials. Use demo/demo123 for demo access.'
+                        })
+                    });
+                }
                 
-                // Return error for wrong credentials
-                return Promise.resolve({
-                    ok: false,
-                    json: () => Promise.resolve({
-                        success: false,
-                        error: 'Invalid credentials. Use demo/demo123 for demo access.'
-                    })
-                });
+            } catch (e) {
+                console.error('Error parsing login request:', e);
             }
+        }
+        
+        // INVESTIGATION UPDATE (POST)
+        if (url.includes('/api/cases/') && url.includes('/investigation') && options.method === 'POST') {
+            console.log('✅ Demo mode: Investigation update simulated');
             
-        } catch (e) {
-            console.error('Error parsing login request:', e);
+            return Promise.resolve({
+                ok: true,
+                status: 200,
+                json: () => Promise.resolve({
+                    success: true,
+                    message: 'Investigation update recorded (Demo Mode)',
+                    timestamp: new Date().toISOString()
+                })
+            });
+        }
+        
+        // CASE CREATION/UPDATE (POST/PUT)
+        if (url.includes('/api/cases') && (options.method === 'POST' || options.method === 'PUT')) {
+            console.log('✅ Demo mode: Case update simulated');
+            
+            return Promise.resolve({
+                ok: true,
+                status: 200,
+                json: () => Promise.resolve({
+                    success: true,
+                    message: 'Case updated successfully (Demo Mode)',
+                    case_id: 'demo-' + Date.now()
+                })
+            });
+        }
+        
+        // MEDICAL SERVICES (POST)
+        if (url.includes('/api/medical') && options.method === 'POST') {
+            console.log('✅ Demo mode: Medical service recorded');
+            
+            return Promise.resolve({
+                ok: true,
+                status: 200,
+                json: () => Promise.resolve({
+                    success: true,
+                    message: 'Medical service recorded (Demo Mode)',
+                    service_id: 'demo-' + Date.now()
+                })
+            });
+        }
+        
+        // ANY OTHER POST/PUT/DELETE REQUESTS
+        if (options.method === 'POST' || options.method === 'PUT' || options.method === 'DELETE') {
+            console.log('✅ Demo mode: API write operation simulated');
+            
+            return Promise.resolve({
+                ok: true,
+                status: 200,
+                json: () => Promise.resolve({
+                    success: true,
+                    message: 'Operation completed (Demo Mode)'
+                })
+            });
+        }
+        
+        // GET REQUESTS - Return empty data
+        if (!options.method || options.method === 'GET') {
+            console.log('✅ Demo mode: Returning empty data for GET request');
+            
+            return Promise.resolve({
+                ok: true,
+                status: 200,
+                json: () => Promise.resolve({
+                    success: true,
+                    data: [],
+                    cases: [],
+                    message: 'Demo mode - no data available'
+                })
+            });
         }
     }
     
