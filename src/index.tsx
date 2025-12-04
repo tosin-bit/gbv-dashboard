@@ -2079,16 +2079,13 @@ app.get('/', (c) => {
         </div>
       </footer>
 
-      {/* Load JavaScript - ULTRA OPTIMIZED FOR PERFORMANCE */}
-      
-      {/* 🚀 ULTRA PERFORMANCE FIX - MUST LOAD ABSOLUTELY FIRST */}
-      <script src="/static/ULTRA_PERFORMANCE_FIX.js"></script>
+      {/* Load JavaScript - OPTIMIZED FOR PERFORMANCE */}
       
       {/* Core Libraries (CDN) */}
       <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
       
-      {/* 🚨 EMERGENCY FIXES - Load Second */}
+      {/* 🚨 EMERGENCY FIXES - Load First */}
       <script src="/static/EMERGENCY_FIXES.js"></script>
       
       {/* Essential Core Scripts */}
