@@ -1,67 +1,133 @@
 /**
- * PORTAL DEMO MODE - Bypass login for portals on production
- * These portals will work in view-only/demo mode without backend authentication
+ * PORTAL DEMO MODE - Demo credentials for portals
+ * 
+ * DEMO CREDENTIALS:
+ * Rainbo Portal: username: demo / password: demo123
+ * Police FSU: username: demo / password: demo123
  */
 
 console.log('🔓 PORTAL DEMO MODE Loading...');
 
-// Override login handlers to bypass authentication
-window.addEventListener('DOMContentLoaded', function() {
-    
-    // Override Rainbo login
-    const originalRainboLogin = window.handleRainboLogin;
-    window.handleRainboLogin = async function(event) {
-        event.preventDefault();
-        console.log('🔓 Rainbo login bypassed - Demo mode');
+// Demo credentials
+const DEMO_CREDENTIALS = {
+    rainbo: { username: 'demo', password: 'demo123' },
+    fsu: { username: 'demo', password: 'demo123' }
+};
+
+// Intercept fetch calls to /api/auth/login
+const originalFetch = window.fetch;
+window.fetch = function(url, options) {
+    // Check if it's a login request
+    if (url.includes('/api/auth/login')) {
+        console.log('🔓 Intercepting login request...');
         
-        // Create demo session
-        const demoUser = {
-            id: 'demo-rainbo',
-            name: 'Demo Rainbo Staff',
-            role: 'rainbo_staff',
-            center: 'Demo Center'
-        };
-        
-        localStorage.setItem('gbv_session_id', 'demo-session-' + Date.now());
-        localStorage.setItem('gbv_user_data', JSON.stringify(demoUser));
-        
-        // Show success message
-        alert('✅ Demo Mode\n\nYou are viewing the Rainbo Portal in demo mode.\nThis is a demonstration version with sample data.');
-        
-        // Load Rainbo dashboard content in the current section
-        const rainboSection = document.getElementById('rainbo-portal-section');
-        if (rainboSection && typeof loadRainboDashboard === 'function') {
-            loadRainboDashboard(rainboSection);
+        // Parse the request body
+        try {
+            const body = JSON.parse(options.body);
+            const username = body.username;
+            const password = body.password;
+            
+            console.log('Login attempt:', username);
+            
+            // Check demo credentials
+            if ((username === DEMO_CREDENTIALS.rainbo.username && password === DEMO_CREDENTIALS.rainbo.password) ||
+                (username === DEMO_CREDENTIALS.fsu.username && password === DEMO_CREDENTIALS.fsu.password)) {
+                
+                console.log('✅ Demo credentials accepted');
+                
+                // Return successful login response
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve({
+                        success: true,
+                        session_id: 'demo-session-' + Date.now(),
+                        user: {
+                            id: 'demo-' + username,
+                            username: username,
+                            name: 'Demo User',
+                            role: username === 'demo' ? 'rainbo_staff' : 'fsu_officer',
+                            center: 'Demo Center',
+                            district: 'Demo District'
+                        }
+                    })
+                });
+            } else {
+                console.log('❌ Invalid demo credentials');
+                
+                // Return error for wrong credentials
+                return Promise.resolve({
+                    ok: false,
+                    json: () => Promise.resolve({
+                        success: false,
+                        error: 'Invalid credentials. Use demo/demo123 for demo access.'
+                    })
+                });
+            }
+            
+        } catch (e) {
+            console.error('Error parsing login request:', e);
         }
-    };
+    }
     
-    // Override FSU login
-    const originalFSULogin = window.handleFSULogin;
-    window.handleFSULogin = async function(event) {
-        event.preventDefault();
-        console.log('🔓 FSU login bypassed - Demo mode');
-        
-        // Create demo session
-        const demoUser = {
-            id: 'demo-fsu',
-            name: 'Demo FSU Officer',
-            role: 'fsu_officer',
-            district: 'Demo District'
-        };
-        
-        localStorage.setItem('gbv_session_id', 'demo-session-' + Date.now());
-        localStorage.setItem('gbv_user_data', JSON.stringify(demoUser));
-        
-        // Show success message
-        alert('✅ Demo Mode\n\nYou are viewing the Police FSU Portal in demo mode.\nThis is a demonstration version with sample data.');
-        
-        // Load FSU dashboard content in the current section
-        const fsuSection = document.getElementById('police-fsu-section');
-        if (fsuSection && typeof loadFSUDashboard === 'function') {
-            loadFSUDashboard(fsuSection);
+    // For all other requests, use original fetch
+    return originalFetch.apply(this, arguments);
+};
+
+// Add demo credentials hint to login forms
+function addDemoHint() {
+    // Wait a bit for forms to load
+    setTimeout(() => {
+        // Rainbo portal login form
+        const rainboForm = document.querySelector('#rainbo-portal-section form');
+        if (rainboForm && !rainboForm.querySelector('.demo-hint')) {
+            const hint = document.createElement('div');
+            hint.className = 'demo-hint bg-blue-50 border-l-4 border-blue-500 p-3 mb-4 rounded text-sm';
+            hint.innerHTML = `
+                <div class="flex items-start">
+                    <i class="fas fa-info-circle text-blue-600 mt-0.5 mr-2"></i>
+                    <div>
+                        <strong class="text-blue-800">Demo Mode</strong>
+                        <p class="text-blue-700 mt-1">Username: <code class="bg-blue-100 px-2 py-0.5 rounded">demo</code></p>
+                        <p class="text-blue-700">Password: <code class="bg-blue-100 px-2 py-0.5 rounded">demo123</code></p>
+                    </div>
+                </div>
+            `;
+            rainboForm.insertBefore(hint, rainboForm.firstChild);
         }
-    };
-    
+        
+        // FSU portal login form
+        const fsuForm = document.querySelector('#police-fsu-section form');
+        if (fsuForm && !fsuForm.querySelector('.demo-hint')) {
+            const hint = document.createElement('div');
+            hint.className = 'demo-hint bg-blue-50 border-l-4 border-blue-500 p-3 mb-4 rounded text-sm';
+            hint.innerHTML = `
+                <div class="flex items-start">
+                    <i class="fas fa-info-circle text-blue-600 mt-0.5 mr-2"></i>
+                    <div>
+                        <strong class="text-blue-800">Demo Mode</strong>
+                        <p class="text-blue-700 mt-1">Officer ID: <code class="bg-blue-100 px-2 py-0.5 rounded">demo</code></p>
+                        <p class="text-blue-700">Password: <code class="bg-blue-100 px-2 py-0.5 rounded">demo123</code></p>
+                    </div>
+                </div>
+            `;
+            fsuForm.insertBefore(hint, fsuForm.firstChild);
+        }
+    }, 500);
+}
+
+// Run when DOM loads
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', addDemoHint);
+} else {
+    addDemoHint();
+}
+
+// Also run when switching tabs
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.dashboard-tab')) {
+        setTimeout(addDemoHint, 500);
+    }
 });
 
-console.log('✅ PORTAL DEMO MODE Ready - Logins will bypass authentication');
+console.log('✅ PORTAL DEMO MODE Ready');
+console.log('📝 Demo credentials: username=demo, password=demo123');
