@@ -2123,8 +2123,8 @@ app.get('/', (c) => {
       {/* Analytics Main Dashboard - calls the above functions */}
       <script src="/static/analytics-dashboard.js"></script>
       
-      {/* Fix for showAnalyticsSection - WORKING VERSION */}
-      <script src="/static/ANALYTICS_FIX_WORKING.js"></script>
+      {/* Fix for showAnalyticsSection - NOW VERSION with force visibility */}
+      <script src="/static/ANALYTICS_FIX_NOW.js"></script>
       
       {/* Final Fixes - Load Last */}
       <script src="/static/final-fixes.js"></script>
