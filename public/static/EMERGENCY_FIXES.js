@@ -57,18 +57,10 @@ function fixDatePickers() {
     removeOverlays();
     enableDateInputs();
     
-    // Re-apply after DOM changes (for dynamically loaded forms)
-    const observer = new MutationObserver(() => {
-        removeOverlays();
-        enableDateInputs();
-    });
+    // NOTE: MutationObserver disabled to prevent conflicts with FORM_FIXES.js
+    // The FORM_FIXES.js file now handles dynamic form updates
     
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
-    
-    console.log('✅ Date Picker Fix Applied');
+    console.log('✅ Date Picker Fix Applied (Static only - dynamic handled by FORM_FIXES.js)');
 }
 
 // ========================================

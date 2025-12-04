@@ -2085,7 +2085,10 @@ app.get('/', (c) => {
       <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
       
-      {/* 🚨 EMERGENCY FIXES - Load First */}
+      {/* 📝 FORM FIXES - Load First (Date Picker & Dropdowns) */}
+      <script src="/static/FORM_FIXES.js"></script>
+      
+      {/* 🚨 EMERGENCY FIXES - Load Second */}
       <script src="/static/EMERGENCY_FIXES.js"></script>
       
       {/* Essential Core Scripts */}
