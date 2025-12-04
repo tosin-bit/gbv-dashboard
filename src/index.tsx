@@ -1951,8 +1951,8 @@ app.get('/', (c) => {
               <span className="ml-1 px-1.5 py-0.5 text-xs rounded" style="background-color: #ffd700; color: #1e3a8a;">New</span>
             </button>
             <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap relative" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
-              <i className="fas fa-sun mr-2"></i>Spotlight Initiative
-              <span className="ml-1 px-1.5 py-0.5 text-xs rounded animate-pulse" style="background-color: #00ff00; color: #1e3a8a;">Phase 1</span>
+              <i className="fas fa-users mr-2"></i>Partner View
+              <span className="ml-1 px-1.5 py-0.5 text-xs rounded" style="background-color: #ffd700; color: #1e3a8a;">New</span>
             </button>
             <button className="dashboard-tab text-white py-3 px-4 text-sm font-medium whitespace-nowrap relative" style="background-color: transparent;" onmouseover="this.style.backgroundColor='#006400'" onmouseout="this.style.backgroundColor='transparent'">
               <i className="fas fa-heart mr-2"></i>Survivor Portal
@@ -2258,11 +2258,14 @@ app.get('/', (c) => {
       <script src="/static/district-map.js"></script>
       <script src="/static/spotlight-initiative.js"></script>
       
-      {/* Voice Report */}
+      {/* Voice Report - Load early */}
       <script src="/static/voice-recording.js"></script>
       
       {/* Analytics - Load in correct order */}
       <script src="/static/chart-lazy-loader.js"></script>
+      
+      {/* CHART FIX - Force immediate chart rendering */}
+      <script src="/static/CHART_FIX.js"></script>
       
       {/* Analytics Detailed Dashboards - MUST load before analytics-dashboard.js */}
       <script src="/static/spike-prediction.js"></script>
