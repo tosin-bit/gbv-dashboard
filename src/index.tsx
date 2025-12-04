@@ -2115,6 +2115,9 @@ app.get('/', (c) => {
       <script src="/static/district-map.js"></script>
       <script src="/static/spotlight-initiative.js"></script>
       
+      {/* Portal Demo Mode - Bypass login for production */}
+      <script src="/static/PORTAL_DEMO_MODE.js"></script>
+      
       {/* Analytics - Load in correct order */}
       <script src="/static/chart-lazy-loader.js"></script>
       
