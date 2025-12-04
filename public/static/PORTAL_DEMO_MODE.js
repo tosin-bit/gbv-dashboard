@@ -14,6 +14,51 @@ const DEMO_CREDENTIALS = {
     fsu: { username: 'demo', password: 'demo123' }
 };
 
+// Store original location setter
+const originalLocationSetter = Object.getOwnPropertyDescriptor(window.location, 'href').set;
+
+// Override location.href to intercept redirects
+Object.defineProperty(window.location, 'href', {
+    set: function(url) {
+        console.log('🔓 Intercepting redirect to:', url);
+        
+        // Check if it's a dashboard redirect
+        if (url === '/rainbo-dashboard') {
+            console.log('📍 Loading Rainbo dashboard instead of redirecting...');
+            
+            // Load the Rainbo dashboard content
+            const section = document.getElementById('rainbo-portal-section');
+            if (section && typeof loadRainboDashboard === 'function') {
+                loadRainboDashboard(section);
+            } else {
+                console.error('❌ loadRainboDashboard not found');
+                alert('Dashboard loading... Please wait a moment and try again.');
+            }
+            return;
+        }
+        
+        if (url === '/fsu-dashboard') {
+            console.log('📍 Loading FSU dashboard instead of redirecting...');
+            
+            // Load the FSU dashboard content
+            const section = document.getElementById('police-fsu-section');
+            if (section && typeof loadFSUDashboard === 'function') {
+                loadFSUDashboard(section);
+            } else {
+                console.error('❌ loadFSUDashboard not found');
+                alert('Dashboard loading... Please wait a moment and try again.');
+            }
+            return;
+        }
+        
+        // For all other URLs, use original behavior
+        originalLocationSetter.call(this, url);
+    },
+    get: function() {
+        return window.location.toString();
+    }
+});
+
 // Intercept fetch calls to /api/auth/login
 const originalFetch = window.fetch;
 window.fetch = function(url, options) {
