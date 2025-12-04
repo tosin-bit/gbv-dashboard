@@ -2111,18 +2111,17 @@ app.get('/', (c) => {
       <script src="/static/export-system.js"></script>
       <script src="/static/portal-systems.js"></script>
       
-      {/* Analytics - Lazy Loaded */}
+      {/* Analytics - Load in correct order */}
       <script src="/static/chart-lazy-loader.js"></script>
-      <script src="/static/analytics-dashboard.js"></script>
       
-      {/* Original Analytics Dashboards */}
+      {/* Analytics Detailed Dashboards - MUST load before analytics-dashboard.js */}
       <script src="/static/spike-prediction.js"></script>
       <script src="/static/risk-scoring.js"></script>
       <script src="/static/resource-forecast.js"></script>
       <script src="/static/trend-intelligence.js"></script>
       
-      {/* 🔬 Analytics Buttons Fix - Connect to ORIGINAL dashboards */}
-      <script src="/static/ANALYTICS_BUTTONS_RESTORE.js"></script>
+      {/* Analytics Main Dashboard - calls the above functions */}
+      <script src="/static/analytics-dashboard.js"></script>
       
       {/* Final Fixes - Load Last */}
       <script src="/static/final-fixes.js"></script>
