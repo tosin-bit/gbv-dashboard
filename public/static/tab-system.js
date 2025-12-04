@@ -77,12 +77,12 @@ function setupTabClickHandlers() {
             else if (tabText.includes('view cases')) tabKey = 'view-cases';
             else if (tabText.includes('district map')) tabKey = 'district-map';
             else if (tabText.includes('analytics') && !tabText.includes('sdg')) tabKey = 'analytics';
-            else if (tabText.includes('spotlight initiative')) tabKey = 'spotlight-initiative';
+            else if (tabText.includes('partner view') || tabText.includes('spotlight initiative')) tabKey = 'spotlight-initiative';
             else if (tabText.includes('survivor portal')) tabKey = 'survivor-portal';
             else if (tabText.includes('rainbo')) tabKey = 'rainbo-portal';
             else if (tabText.includes('police')) tabKey = 'police-fsu';
             else if (tabText.includes('resources')) tabKey = 'resources';
-            else if (tabText.includes('voice')) tabKey = 'voice-report';
+            else if (tabText.includes('voice report') || tabText.includes('voice')) tabKey = 'voice-report';
             else if (tabText.includes('admin')) tabKey = 'admin';
             else if (tabText.includes('demo')) {
                 // Redirect to demo page
