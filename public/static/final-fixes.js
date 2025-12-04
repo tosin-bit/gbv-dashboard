@@ -147,21 +147,36 @@ function showAllAlerts() {
 function goBackToAnalytics() {
     console.log('🔙 Navigating back to Analytics...');
     
-    // Find the Analytics tab and click it
-    const analyticsTab = document.querySelector('[data-tab="Analytics"], [onclick*="Analytics"]');
+    // Try multiple methods to navigate to analytics tab
+    
+    // Method 1: Use showTab function if available (most reliable)
+    if (typeof showTab === 'function') {
+        console.log('✅ Using showTab function');
+        showTab('analytics');
+        return;
+    }
+    
+    // Method 2: Find analytics tab button and click it
+    const analyticsTab = document.querySelector('[data-tab="analytics"], [onclick*="showTab(\'analytics\')"], button[onclick*="analytics"]');
     if (analyticsTab) {
+        console.log('✅ Found analytics tab button, clicking...');
         analyticsTab.click();
-    } else if (typeof handleTabNavigation === 'function') {
-        handleTabNavigation('Analytics');
-    } else {
-        // Fallback: reload analytics section
-        const section = document.getElementById('dashboard-content');
-        if (section && typeof loadAnalyticsDashboard === 'function') {
-            loadAnalyticsDashboard(section);
-        } else {
-            alert('Please click the Analytics tab to return');
+        return;
+    }
+    
+    // Method 3: Try to find tab by text content
+    const allTabs = document.querySelectorAll('button, a');
+    for (const tab of allTabs) {
+        if (tab.textContent && tab.textContent.toLowerCase().includes('analytics')) {
+            console.log('✅ Found analytics tab by text, clicking...');
+            tab.click();
+            return;
         }
     }
+    
+    // Method 4: Fallback - show alert
+    console.error('❌ Could not navigate to analytics tab');
+    alert('Please click the Analytics tab to return to the dashboard');
 }
 
 // Fix 4: Initialize all charts with lazy loader
