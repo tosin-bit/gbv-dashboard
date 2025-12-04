@@ -2115,8 +2115,14 @@ app.get('/', (c) => {
       <script src="/static/chart-lazy-loader.js"></script>
       <script src="/static/analytics-dashboard.js"></script>
       
-      {/* 🔬 Analytics Buttons Fix - Connect AI features */}
-      <script src="/static/ANALYTICS_BUTTONS_FIX_V2.js"></script>
+      {/* Original Analytics Dashboards */}
+      <script src="/static/spike-prediction.js"></script>
+      <script src="/static/risk-scoring.js"></script>
+      <script src="/static/resource-forecast.js"></script>
+      <script src="/static/trend-intelligence.js"></script>
+      
+      {/* 🔬 Analytics Buttons Fix - Connect to ORIGINAL dashboards */}
+      <script src="/static/ANALYTICS_BUTTONS_RESTORE.js"></script>
       
       {/* Final Fixes - Load Last */}
       <script src="/static/final-fixes.js"></script>
