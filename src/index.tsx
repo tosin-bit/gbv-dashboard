@@ -2111,6 +2111,10 @@ app.get('/', (c) => {
       <script src="/static/export-system.js"></script>
       <script src="/static/portal-systems.js"></script>
       
+      {/* District Map & Spotlight Initiative */}
+      <script src="/static/district-map.js"></script>
+      <script src="/static/spotlight-initiative.js"></script>
+      
       {/* Analytics - Load in correct order */}
       <script src="/static/chart-lazy-loader.js"></script>
       
