@@ -2115,6 +2115,9 @@ app.get('/', (c) => {
       <script src="/static/chart-lazy-loader.js"></script>
       <script src="/static/analytics-dashboard.js"></script>
       
+      {/* 🔬 Analytics Buttons Fix - Connect AI features */}
+      <script src="/static/ANALYTICS_BUTTONS_FIX.js"></script>
+      
       {/* Final Fixes - Load Last */}
       <script src="/static/final-fixes.js"></script>
 
