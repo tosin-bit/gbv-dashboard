@@ -2079,62 +2079,40 @@ app.get('/', (c) => {
         </div>
       </footer>
 
-      {/* Load JavaScript - Optimized Loading */}
-      <script src="/static/performance-optimizer.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      {/* Load JavaScript - OPTIMIZED FOR PERFORMANCE */}
+      {/* Core Libraries (CDN) */}
       <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
-      <script src="/static/chart-lazy-loader.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      
+      {/* 🚨 EMERGENCY FIXES - HIGHEST PRIORITY - Load First */}
+      <script src="/static/EMERGENCY_FIXES.js"></script>
+      
+      {/* Essential Core Scripts */}
       <script src="/static/language-switch.js"></script>
-      <script src="/static/app-simplified.js"></script>
-      <script src="/static/unified-case-system.js"></script>
       <script src="/static/tab-system.js"></script>
+      <script src="/static/app-simplified.js"></script>
+      
+      {/* Case Management */}
+      <script src="/static/unified-case-system.js"></script>
       <script src="/static/report-case-form.js"></script>
-      <script src="/static/district-map.js"></script>
-      <script src="/static/analytics-enhanced.js"></script>
-      <script src="/static/analytics-dashboard.js"></script>
-      <script src="/static/spotlight-initiative.js"></script>
-      <script src="/static/sdg-dashboard.js"></script>
-      <script src="/static/tab-navigation.js"></script>
-      <script src="/static/donor-reports.js"></script>
-      <script src="/static/public-dashboard.js"></script>
-      <script src="/static/survivor-outcomes.js"></script>
-      <script src="/static/case-workflow.js"></script>
-      <script src="/static/alert-system.js"></script>
-      <script src="/static/predictive-analytics.js"></script>
-      <script src="/static/spike-prediction.js"></script>
-      <script src="/static/risk-scoring.js"></script>
-      <script src="/static/resource-forecast.js"></script>
-      <script src="/static/trend-intelligence.js"></script>
-      <script src="/static/survivor-portal.js"></script>
-      <script src="/static/emergency-sos.js"></script>
-      <script src="/static/voice-reporting.js"></script>
-      <script src="/static/chart-integration.js"></script>
-      <script src="/static/final-fixes.js"></script>
-      <script src="/static/anonymous-report.js"></script>
-      <script src="/static/service-finder.js"></script>
-      <script src="/static/safety-planning.js"></script>
-      <script src="/static/know-your-rights.js"></script>
-      <script src="/static/case-status.js"></script>
-      <script src="/static/healing-resources.js"></script>
-      <script src="/static/portal-systems.js"></script>
-
       <script src="/static/view-cases.js"></script>
       <script src="/static/case-notes.js"></script>
-
-      <script src="/static/notifications.js"></script>
-
-      <script src="/static/risk-assessment.js"></script>
-      <script src="/static/advanced-analytics.js"></script>
-      <script src="/static/panic-button.js"></script>
-
-
+      
+      {/* Survivor Portal */}
       <script src="/static/survivor-portal.js"></script>
-
-      <script src="/static/custom-report-builder.js"></script>
-
-
-
+      <script src="/static/emergency-sos.js"></script>
+      
+      {/* System Features */}
+      <script src="/static/notifications.js"></script>
       <script src="/static/export-system.js"></script>
+      <script src="/static/portal-systems.js"></script>
+      
+      {/* Analytics - Lazy Loaded */}
+      <script src="/static/chart-lazy-loader.js"></script>
+      <script src="/static/analytics-dashboard.js"></script>
+      
+      {/* Final Fixes - Load Last */}
+      <script src="/static/final-fixes.js"></script>
 
 
     </div>
