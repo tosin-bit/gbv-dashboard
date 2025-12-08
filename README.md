@@ -1,304 +1,141 @@
-# GBV Dashboard - Sierra Leone Ministry of Gender & Children's Affairs
+# Sierra Leone GBV Dashboard
 
-> **Comprehensive Gender-Based Violence Prevention and Response System**
+**Real-time Gender-Based Violence Incident Tracking System**
 
-A complete, production-ready GBV case management system deployed on Cloudflare's global edge network, serving the Ministry of Gender and Children's Affairs in Sierra Leone.
-
-[![Live](https://img.shields.io/badge/status-live-success)](https://gbv-dashboard.pages.dev)
-[![Cloudflare Pages](https://img.shields.io/badge/deploy-cloudflare-orange)](https://gbv-dashboard.pages.dev)
-[![TypeScript](https://img.shields.io/badge/typescript-5.0-blue)](https://www.typescriptlang.org/)
-[![Hono](https://img.shields.io/badge/hono-4.0-orange)](https://hono.dev/)
+Ministry of Gender and Children's Affairs - Sierra Leone
 
 ---
 
-## 🌐 Live Application
+## 🌟 Overview
 
-- **Production**: https://848616cd.gbv-dashboard.pages.dev ✅ **LIVE**
-- **Visual Demo**: https://848616cd.gbv-dashboard.pages.dev/EMERGENCY_SOS_VISUAL_TEST.html
-- **GitHub**: https://github.com/tosin-bit/gbv-dashboard
-- **API Endpoint**: https://848616cd.gbv-dashboard.pages.dev/api/stats
+The Sierra Leone GBV Dashboard is a comprehensive, real-time gender-based violence incident tracking and management system designed to support survivors, coordinate services, and inform policy decisions across Sierra Leone.
 
-### 🚨 **NEW: Mobile Emergency SOS System**
-The dashboard now includes a **mobile-first emergency SOS system** for survivors:
-- ✅ Red flashing screen with 3-second countdown
-- ✅ Auto-dial 116 after countdown (mobile devices)
-- ✅ Location sharing via GPS + SMS
-- ✅ 83% faster access to help (5s vs. 30s)
-- ✅ Privacy-first (no tracking)
+### Key Features
 
----
-
-## 📋 Table of Contents
-
-- [Quick Start](#-quick-start-for-new-developers)
-- [What This Project Does](#-what-this-project-does)
-- [Technology Stack](#️-technology-stack)
-- [Project Structure](#-project-structure)
-- [Key Features](#-key-features)
-- [For New Developers](#-for-new-developers)
-- [Documentation](#-documentation)
-- [Contributing](#-contributing)
-- [Contact & Support](#-contact--support)
+- **Real-time Case Tracking** - Monitor GBV cases across all 16 districts
+- **Multi-Portal System** - Dedicated portals for Rainbo Initiative, Police FSU, and Survivors
+- **AI-Powered Analytics** - Predictive analytics, risk scoring, and trend intelligence
+- **Voice Reporting** - Anonymous voice recording system for case reporting
+- **Emergency SOS** - 24/7 emergency support with 116 hotline integration
+- **Multi-language Support** - Krio, English, Mende, and Temne
+- **Mobile-Optimized** - Responsive design for all devices
 
 ---
 
-## 🚀 Quick Start for New Developers
+## 🚀 Live Production URLs
 
-**Prerequisites**: Node.js v18+, npm, Git
+**Main Dashboard:** https://gbv-dashboard.pages.dev  
+**GitHub Repository:** https://github.com/tosin-bit/gbv-dashboard
+
+---
+
+## 🔐 Authentication
+
+### Portal Login Credentials
+
+**Rainbo Portal:**
+- Username: `rainbo.freetown`
+- Password: `rainbo2024`
+- Role: Rainbo Staff
+
+**Police FSU Portal:**
+- Username: `fsu.freetown`
+- Password: `police2025`
+- Role: Police FSU Officer
+
+---
+
+## 📊 System Architecture
+
+### Technology Stack
+
+- **Frontend:** Hono Framework + TypeScript + TailwindCSS
+- **Backend:** Cloudflare Workers (Edge Runtime)
+- **Database:** Cloudflare D1 (SQLite)
+- **Deployment:** Cloudflare Pages
+- **Build Tool:** Vite
+- **Process Manager:** PM2 (for local development)
+
+### Project Structure
+
+```
+webapp/
+├── src/
+│   └── index.tsx              # Main Hono application
+├── public/static/             # Static assets and scripts
+│   ├── ministry-logo.png      # Official Ministry logo
+│   ├── tab-system.js          # Tab navigation system
+│   ├── analytics-dashboard.js # Analytics features
+│   ├── voice-recording.js     # Voice reporting system
+│   ├── portal-systems.js      # Rainbo & FSU portals
+│   └── ...
+├── migrations/                # D1 database migrations
+│   ├── 0001_initial_schema.sql
+│   ├── 0002_add_authentication.sql
+│   ├── 0003_case_workflow_system.sql
+│   ├── 0004_evidence_and_audit_system.sql
+│   └── 0006_add_auth_columns.sql
+├── docs/                      # Documentation
+│   ├── setup/
+│   ├── architecture/
+│   └── archive/
+├── seed.sql                   # Sample data for testing
+├── package.json               # Dependencies and scripts
+├── wrangler.jsonc             # Cloudflare configuration
+├── vite.config.ts             # Vite configuration
+├── ecosystem.config.cjs       # PM2 configuration
+└── README.md                  # This file
+```
+
+---
+
+## 🛠️ Development Setup
+
+### Prerequisites
+
+- Node.js 18+ and npm
+- Cloudflare account (for deployment)
+- Git
+
+### Installation
 
 ```bash
-# 1. Clone the repository
+# Clone repository
 git clone https://github.com/tosin-bit/gbv-dashboard.git
 cd gbv-dashboard
 
-# 2. Install dependencies
+# Install dependencies
 npm install
 
-# 3. Setup local database
-npm run db:migrate:local
-npm run db:seed
+# Initialize D1 database locally
+npx wrangler d1 migrations apply gbv-dashboard-production --local
 
-# 4. Build and start
-npm run build
-npm run dev:sandbox
-
-# 5. Open in browser
-open http://localhost:3000
+# Seed database with sample data (optional)
+npx wrangler d1 execute gbv-dashboard-production --local --file=./seed.sql
 ```
 
-**Test Portal Logins**:
-- Rainbo Portal: `rainbo.freetown` / `rainbo2025`
-- Police FSU: `police.freetown` / `police2025`
+### Local Development
 
-**Need more help?** See [docs/setup/GETTING_STARTED.md](docs/setup/GETTING_STARTED.md)
-
----
-
-## 💡 What This Project Does
-
-The GBV Dashboard is a comprehensive system for managing gender-based violence cases across Sierra Leone's 16 districts. It provides:
-
-### For the Public
-- **Report Cases**: Submit GBV incidents anonymously and securely
-- **View Statistics**: Real-time dashboard with charts and trends
-- **Find Help**: Directory of 24/7 support services (Rainbo, Police FSU, 116 Hotline)
-- **District Mapping**: Interactive map showing case distribution and high-risk areas
-
-### For Survivors (NEW ✨)
-- **🚨 Mobile Emergency SOS**: Red flashing screen with 3-second countdown, auto-dials 116 on mobile
-- **📍 GPS Service Finder**: Find nearest Rainbo Centers, Police FSU, Safe Houses by distance (40+ locations)
-- **🛡️ Personal Safety Planning**: Comprehensive 6-part safety guide with print/share options
-  - Warning signs recognition
-  - Safe places identification
-  - Emergency bag preparation
-  - Code word systems
-  - Children safety education
-  - Post-separation safety measures
-- **🔐 Secure Portal Access**: Login with case number and PIN to track progress
-- **📞 One-Tap Emergency**: Direct call, SMS, and Google Maps navigation to help services
-
-### For Medical Staff (Rainbo Initiative)
-- **Case Management**: Track medical examinations and treatment
-- **Documentation**: Record forensic evidence, PEP, STI testing
-- **Follow-ups**: Schedule and track survivor follow-up care
-- **Statistics & Reports**: Comprehensive service analytics with charts
-  - Services breakdown (PEP, STI testing, pregnancy tests, forensic exams)
-  - Monthly trends visualization (last 6 months)
-  - Follow-up appointments calendar
-  - Case filtering by status
-  - Export functionality (PDF, CSV, Print)
-- **Secure Portal**: Role-based access with authentication
-
-### For Law Enforcement (Police FSU)
-- **Investigation Tracking**: Manage criminal investigations
-- **Evidence Management**: Chain of custody documentation
-- **Court Preparation**: Case file management for prosecution
-- **Statistics & Reports**: Comprehensive investigation analytics
-  - Investigation status distribution charts
-  - Suspect status tracking and visualization
-  - Evidence collection metrics
-  - Monthly case trends (last 6 months)
-  - Detailed investigation summary reports
-  - Priority breakdown and urgent case tracking
-- **Secure Portal**: Separate authenticated access
-
-### For Ministry Officials
-- **Real-Time Analytics**: Dashboard with charts, trends, and KPIs
-- **Geographic Intelligence**: District-level analysis and resource allocation
-- **Service Monitoring**: Track provider performance and coverage
-- **Report Generation**: Export data for donor reports and policy decisions
-
----
-
-## 🛠️ Technology Stack
-
-### Backend
-- **[Hono](https://hono.dev/)** - Lightweight, fast web framework
-- **TypeScript** - Type-safe JavaScript
-- **Cloudflare Workers** - Serverless edge runtime
-- **Cloudflare D1** - Globally distributed SQLite database
-
-### Frontend
-- **Vanilla JavaScript** - No framework, pure JS
-- **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first styling (CDN)
-- **[Chart.js](https://www.chartjs.org/)** - Data visualization
-- **[Axios](https://axios-http.com/)** - HTTP client
-
-### Infrastructure
-- **Cloudflare Pages** - Global CDN deployment
-- **Wrangler** - CLI tool for development and deployment
-- **Git** - Version control
-- **npm** - Package management
-
-### Why This Stack?
-- ✅ **Fast**: Sub-100ms response times globally
-- ✅ **Scalable**: Auto-scales to handle traffic spikes
-- ✅ **Reliable**: 99.9% uptime with edge redundancy
-- ✅ **Cost-Effective**: Serverless pay-per-use model
-- ✅ **Simple**: Minimal dependencies, easy to understand
-
----
-
-## 📁 Project Structure
-
-```
-gbv-dashboard/
-│
-├── src/                          # Backend source code
-│   └── index.tsx                # Main Hono application (API + HTML)
-│
-├── public/                       # Frontend assets
-│   └── static/
-│       ├── app-simplified.js    # Dashboard logic & charts
-│       ├── tab-system.js        # Tab navigation system
-│       ├── report-case-form.js  # Case submission form
-│       ├── view-cases.js        # Case browsing & filtering
-│       ├── district-map.js      # Interactive district map
-│       ├── rainbo-dashboard.js  # Medical staff portal
-│       ├── police-dashboard.js  # Police FSU portal
-│       ├── survivor-portal.js   # 🆕 Survivor support portal
-│       ├── emergency-sos.js     # 🆕 Mobile emergency SOS system
-│       ├── service-finder.js    # 🆕 GPS-based service locator
-│       ├── safety-planning.js   # 🆕 Personal safety planning guide
-│       ├── portal-systems.js    # Authentication logic
-│       └── style.css            # Custom styles
-│
-├── migrations/                   # Database migrations
-│   ├── 0001_initial_schema.sql     # Core schema
-│   └── 0002_add_authentication.sql # Auth system
-│
-├── docs/                         # 📚 Documentation
-│   ├── setup/                   # Getting started guides
-│   ├── architecture/            # System design docs
-│   ├── development/             # Development guides
-│   └── deployment/              # Deployment guides
-│
-├── wrangler.jsonc               # Cloudflare configuration
-├── package.json                 # Dependencies and scripts
-├── tsconfig.json                # TypeScript configuration
-├── vite.config.ts               # Build configuration
-├── seed.sql                     # Database seed data
-├── ecosystem.config.cjs         # PM2 configuration
-│
-├── README.md                    # ← You are here
-├── CONTRIBUTING.md              # Contribution guidelines
-├── QUICK_REFERENCE.md           # Quick reference guide
-└── DEPLOYMENT_COMPLETE.md       # Deployment documentation
-```
-
----
-
-## ✨ Key Features
-
-### 📊 Dashboard & Analytics (10 Tabs)
-1. **Overview** - Real-time statistics, charts, alerts
-2. **Report Case** - Case submission form with validation
-3. **View Cases** - Browse, filter, and search all cases
-4. **District Map** - Interactive map with risk levels
-5. **Analytics** - Advanced reporting and data export
-6. **Rainbo Portal** - Medical staff case management with reports & statistics
-   - Cases tab with status filtering
-   - Statistics tab with service breakdown charts & trends
-   - Follow-ups tab with appointment tracking
-7. **Police FSU Portal** - Law enforcement tracking with investigation reports
-   - Cases tab with investigation filtering
-   - Statistics & Reports tab with detailed analytics
-8. **Resources** - Help materials and contacts
-9. **Voice Report** - Audio recording (experimental)
-10. **Admin** - User and system management
-
-### 🗺️ Geographic Coverage
-- **16 Sierra Leone Districts** with population data
-- **7.9 Million** total population covered
-- **4 Regions**: Northern, Southern, Eastern, Western
-
-### 🏥 Service Providers
-- **Rainbo Initiative** - 9 medical centers (24/7)
-- **One-Stop Centers** - 7 hospitals (12-hour operation)
-- **Police FSU** - 16 district offices (24/7)
-- **116 Hotline** - National toll-free emergency line
-- **Community Workers** - Village-level reporting
-
-### 📋 Data Collection
-- **13 Violence Types** tracked (Rape, Domestic Violence, FGM, etc.)
-- **6 Age Groups** for demographic analysis
-- **5 Case Statuses** for lifecycle tracking
-- **Privacy-First Design** - No survivor names or identifying info
-
-### 🔐 Authentication & Security
-- **Session-based authentication** for portals
-- **Role-based access control** (5 user roles)
-- **Data anonymization** for survivor protection
-- **HTTPS encryption** by default
-- **Audit logging** for all actions
-
----
-
-## 👥 For New Developers
-
-### "I want to understand the codebase"
-Start here in this order:
-
-1. **[Getting Started Guide](docs/setup/GETTING_STARTED.md)**
-   - Setup instructions, common commands, troubleshooting
-
-2. **[System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md)**
-   - How all components work together
-   - Request flow diagrams
-   - Design principles
-
-3. **[Database Schema](docs/architecture/DATABASE_SCHEMA.md)**
-   - Complete table structure
-   - Relationships and indexes
-   - Sample queries
-
-4. **[API Documentation](docs/architecture/API_DOCUMENTATION.md)**
-   - All API endpoints
-   - Request/response formats
-   - Authentication flow
-
-5. **[Contributing Guide](CONTRIBUTING.md)**
-   - How to make changes
-   - Coding standards
-   - Git workflow
-
-### "I want to add a feature"
-1. Read [docs/development/FEATURE_DEVELOPMENT.md](docs/development/FEATURE_DEVELOPMENT.md)
-2. Create a branch: `git checkout -b feature/your-feature`
-3. Make changes and test locally
-4. Commit with clear messages
-5. Push and create Pull Request
-
-### "I want to fix a bug"
-1. Check [GitHub Issues](https://github.com/tosin-bit/gbv-dashboard/issues)
-2. Create branch: `git checkout -b fix/bug-description`
-3. Fix the bug and test
-4. Commit: `git commit -m "fix: Description of fix"`
-5. Push and create Pull Request
-
-### "I want to deploy changes"
 ```bash
 # Build the project
+npm run build
+
+# Start development server with PM2
+pm2 start ecosystem.config.cjs
+
+# Check logs
+pm2 logs enhanced-gbv-dashboard --nostream
+
+# Test the server
+curl http://localhost:3000
+```
+
+**Local Development URL:** http://localhost:3000
+
+### Production Deployment
+
+```bash
+# Build for production
 npm run build
 
 # Deploy to Cloudflare Pages
@@ -310,139 +147,218 @@ npx wrangler pages deploy dist --project-name gbv-dashboard
 
 ---
 
-## 📚 Documentation
+## 📋 Available Scripts
 
-Comprehensive documentation is in the `/docs` folder:
+```json
+{
+  "dev": "vite",
+  "dev:sandbox": "wrangler pages dev dist --ip 0.0.0.0 --port 3000",
+  "dev:d1": "wrangler pages dev dist --d1=webapp-production --local --ip 0.0.0.0 --port 3000",
+  "build": "vite build",
+  "preview": "wrangler pages dev dist",
+  "deploy": "npm run build && wrangler pages deploy dist",
+  "deploy:prod": "npm run build && wrangler pages deploy dist --project-name webapp",
+  "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+  "clean-port": "fuser -k 3000/tcp 2>/dev/null || true",
+  "test": "curl http://localhost:3000",
+  "db:migrate:local": "wrangler d1 migrations apply gbv-dashboard-production --local",
+  "db:migrate:prod": "wrangler d1 migrations apply gbv-dashboard-production",
+  "db:seed": "wrangler d1 execute gbv-dashboard-production --local --file=./seed.sql",
+  "db:reset": "rm -rf .wrangler/state/v3/d1 && npm run db:migrate:local && npm run db:seed"
+}
+```
 
-### Setup & Installation
-- [Getting Started](docs/setup/GETTING_STARTED.md) - Initial setup guide
-- [Local Development](docs/setup/LOCAL_DEVELOPMENT.md) - Development workflow
-- [Environment Setup](docs/setup/ENVIRONMENT_SETUP.md) - Configuration
+---
 
-### Architecture & Design
-- [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md) - Overall design
-- [Database Schema](docs/architecture/DATABASE_SCHEMA.md) - Complete data model
-- [API Documentation](docs/architecture/API_DOCUMENTATION.md) - API reference
-- [Frontend Structure](docs/architecture/FRONTEND_STRUCTURE.md) - Frontend organization
+## 🎯 Main Features
 
-### Development Guides
-- [Feature Development](docs/development/FEATURE_DEVELOPMENT.md) - Building features
-- [Coding Standards](docs/development/CODING_STANDARDS.md) - Code style guide
-- [Testing Guide](docs/development/TESTING_GUIDE.md) - Testing practices
+### 1. Dashboard Overview
+- Real-time statistics (Total Cases, This Month, Sexual Assault Cases)
+- Monthly trends charts
+- Age group distribution
+- District case distribution with interactive map
+- Service provider statistics
 
-### Deployment & Operations
-- [Cloudflare Deployment](docs/deployment/CLOUDFLARE_DEPLOYMENT.md) - Deploy to production
-- [Database Migrations](docs/deployment/DATABASE_MIGRATIONS.md) - Schema updates
-- [Production Checklist](docs/deployment/PRODUCTION_CHECKLIST.md) - Pre-deploy checks
+### 2. Case Management
+- **Report Case** - Comprehensive form with validation
+- **View Cases** - Searchable table with filters
+- **Case Details** - Full case information with green eye icon
+- **Case Updates** - Track case progress and status changes
 
-### Quick References
-- [QUICK_REFERENCE.md](QUICK_REFERENCE.md) - URLs, credentials, commands
-- [CONTRIBUTING.md](CONTRIBUTING.md) - How to contribute
-- [DEPLOYMENT_COMPLETE.md](DEPLOYMENT_COMPLETE.md) - Deployment details
+### 3. Analytics
+Four AI-Powered dashboards:
+- **Spike Prediction** - 7-day case forecasting with 85% accuracy
+- **Risk Scoring** - Identify high-risk survivors (1,847 assessed)
+- **Resource Forecast** - Budget and resource planning
+- **Trend Intelligence** - Pattern detection and policy effectiveness
+
+### 4. Partner View (Spotlight Initiative)
+Comprehensive Spotlight Initiative Phase 1 information:
+- 4 Pillars framework
+- District coverage and impact
+- Program metrics and outcomes
+
+### 5. Portals
+
+**Survivor Portal:**
+- Safety planning tools
+- Service finder (medical, legal, psychosocial)
+- Know Your Rights information
+- Emergency SOS button
+
+**Rainbo Portal:**
+- Medical case management
+- Patient tracking
+- Service coordination
+- Reporting and analytics
+
+**Police FSU Portal:**
+- Investigation management
+- Case assignments
+- Evidence tracking
+- Inter-agency coordination
+
+### 6. Voice Reporting
+- Anonymous voice recording
+- Secure audio upload
+- Automatic case creation
+- Privacy protection
+
+### 7. District Map
+- Interactive Sierra Leone map
+- District-level statistics
+- Case distribution visualization
+- Service provider locations
+
+### 8. Resources
+- Legal framework documents
+- Service provider directory
+- Training materials
+- Policy guidelines
+
+---
+
+## 🗄️ Database Schema
+
+### Core Tables
+
+- `gbv_cases` - Main case records
+- `gbv_types` - Types of violence
+- `districts` - Sierra Leone districts
+- `users` - System users with authentication
+- `sessions` - User sessions
+- `service_providers` - Service organizations
+- `case_services` - Service referrals
+- `case_updates` - Case status history
+- `user_roles` - User role definitions
+
+See `docs/architecture/DATABASE_SCHEMA.md` for detailed schema documentation.
+
+---
+
+## 🔒 Security
+
+- **Authentication** - Username/password with session management
+- **Role-Based Access Control** - Portal-specific access restrictions
+- **Data Encryption** - TLS/HTTPS for all traffic
+- **Session Management** - 24-hour session expiration
+- **Input Validation** - Server-side validation for all forms
+- **SQL Injection Protection** - Prepared statements with parameter binding
+
+---
+
+## 🌍 Internationalization
+
+Supported Languages:
+- English (default)
+- Krio
+- Mende
+- Temne
+
+All user-facing text is translatable via the language switcher in the top-right corner.
+
+---
+
+## 📱 Mobile Support
+
+The dashboard is fully responsive and optimized for:
+- Desktop (1920x1080+)
+- Tablet (768x1024)
+- Mobile (375x667+)
+
+Emergency SOS features work on all devices with one-tap access to 116 hotline.
+
+---
+
+## 🚨 Emergency Support
+
+**24/7 National Hotline:** 116 (Toll-Free)
+
+Available in Krio, English, Mende & Temne
+
+Emergency features:
+- One-tap SOS button
+- Automatic location sharing
+- Silent mode for safety
+- Quick exit functionality
+
+---
+
+## 📖 Documentation
+
+- **Setup Guide:** `docs/setup/GETTING_STARTED.md`
+- **System Architecture:** `docs/architecture/SYSTEM_ARCHITECTURE.md`
+- **Database Schema:** `docs/architecture/DATABASE_SCHEMA.md`
+- **Developer Onboarding:** `docs/NEW_DEVELOPER_ONBOARDING.md`
+
+### Strategic Documentation (for stakeholders)
+
+- **GBVIMS+ Comparison:** `GBVIMS_COMPARISON_ANALYSIS.md`
+- **Migration Guide:** `GBVIMS_MIGRATION_GUIDE.md`
+- **Executive Summary:** `GBVIMS_EXECUTIVE_SUMMARY.md`
+- **Strategic Positioning:** `STRATEGIC_POSITIONING.md`
+- **Demo Script:** `DEMO_SCRIPT.md`
+- **Deployment Guide:** `DEPLOYMENT_GUIDE.md`
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! Here's how:
+This system is maintained by **Insyt Solutions** for the Ministry of Gender and Children's Affairs, Sierra Leone.
 
-1. **Read** [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
-2. **Fork** the repository
-3. **Create** a feature branch
-4. **Make** your changes with tests
-5. **Commit** with clear messages
-6. **Push** and create Pull Request
-
-### Contribution Areas
-- 🧪 Add test coverage
-- 📧 Implement email notifications
-- 📱 Improve mobile responsiveness
-- ♿ Enhance accessibility
-- 🌍 Add internationalization (i18n)
-- 🎨 Design improvements
-- 📖 Documentation updates
+For bug reports, feature requests, or contributions:
+1. Create an issue on GitHub
+2. Submit a pull request with detailed description
+3. Follow existing code style and conventions
 
 ---
 
-## 🔐 Security & Privacy
+## 📄 License
 
-### Data Protection
-- **Anonymized data**: No survivor names or identifying information
-- **Privacy levels**: High/Maximum confidentiality options
-- **Consent tracking**: Document data sharing permissions
-- **Encrypted transmission**: HTTPS everywhere
+Copyright © 2025 Insyt Solutions & Ministry of Gender and Children's Affairs, Sierra Leone
 
-### Reporting Security Issues
-**DO NOT** open public issues for security vulnerabilities.
-
-Instead, email: [security contact - to be added]
+All rights reserved.
 
 ---
 
-## 📊 Current Status
+## 👥 Credits
 
-**Version**: 2.0 (Enhanced Ministry Demo)  
-**Status**: ✅ Production - Live and Operational  
-**Deployment**: Cloudflare Pages (Global Edge)  
-**Database**: Cloudflare D1 (Globally Distributed)  
-**Uptime**: 99.9% SLA  
+**Developed by:** Insyt Solutions  
+**Client:** Ministry of Gender and Children's Affairs, Sierra Leone  
+**Supported by:** USAID, WHO, UN Women  
 
-### Statistics
-- **16 Districts** covered
-- **13 Violence Types** tracked
-- **7 Service Providers** integrated
-- **4 Portal Accounts** configured
-- **100+ Features** across 10 modules
+**Version:** 2.0  
+**Last Updated:** December 2025
 
 ---
 
-## 📞 Contact & Support
+## 📞 Support
 
-### For Development Issues
-- **GitHub Issues**: https://github.com/tosin-bit/gbv-dashboard/issues
-- **Documentation**: Check `/docs` folder first
-- **Code Comments**: Read inline documentation
+For technical support or inquiries:
+- **Email:** support@insytsolutions.com
+- **Website:** https://gbv-dashboard.pages.dev
+- **GitHub:** https://github.com/tosin-bit/gbv-dashboard
 
-### For GBV Support (Sierra Leone)
-- **Emergency Hotline**: 116 (Toll-Free, 24/7)
-- **Languages**: English, Krio, Mende, Temne
-- **Rainbo Initiative**: Medical services (24/7)
-- **Police FSU**: Criminal investigations (24/7)
-
----
-
-## 📜 License
-
-Proprietary - Ministry of Gender and Children's Affairs, Sierra Leone
-
----
-
-## 🙏 Acknowledgments
-
-- **Ministry of Gender and Children's Affairs, Sierra Leone**
-- **Rainbo Initiative** - Medical response services
-- **Sierra Leone Police** - Family Support Unit
-- **USAID** - Program support
-- **WHO** - Technical guidance
-- **UN Women** - Global coordination
-
----
-
-## 🚀 Built With Care
-
-**Developed by**: Insyt Solutions  
-**For**: Ministry of Gender and Children's Affairs  
-**Country**: Sierra Leone  
-**Year**: 2025  
-
----
-
-**Ready to contribute?** Start with [CONTRIBUTING.md](CONTRIBUTING.md)
-
-**Need help?** Check [docs/setup/GETTING_STARTED.md](docs/setup/GETTING_STARTED.md)
-
-**Found a bug?** [Open an issue](https://github.com/tosin-bit/gbv-dashboard/issues/new)
-
----
-
-*Together, we're building a safer Sierra Leone.* 💚
+For emergency GBV support in Sierra Leone:
+- **Call:** 116 (Toll-Free, 24/7)
+- **Languages:** Krio, English, Mende, Temne
