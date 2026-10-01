@@ -177,36 +177,73 @@ function loadTabContent(tabKey, section) {
     
     console.log(`📦 Loading content for: ${tabKey}`);
     
+    // Load required scripts first, then load content
     switch(tabKey) {
         case 'report-case':
-            loadReportCaseForm(section);
+            if (window.loadReportCaseScripts) {
+                window.loadReportCaseScripts(() => loadReportCaseForm(section));
+            } else {
+                loadReportCaseForm(section);
+            }
             break;
         case 'view-cases':
-            loadViewCases(section);
+            if (window.loadViewCasesScripts) {
+                window.loadViewCasesScripts(() => loadViewCases(section));
+            } else {
+                loadViewCases(section);
+            }
             break;
         case 'district-map':
-            loadDistrictMap(section);
+            if (window.loadPartnerViewScripts) {
+                window.loadPartnerViewScripts(() => loadDistrictMap(section));
+            } else {
+                loadDistrictMap(section);
+            }
             break;
         case 'analytics':
-            loadAnalyticsDashboard(section);
+            if (window.loadAnalyticsScripts) {
+                window.loadAnalyticsScripts(() => loadAnalyticsDashboard(section));
+            } else {
+                loadAnalyticsDashboard(section);
+            }
             break;
         case 'spotlight-initiative':
-            loadSpotlightInitiative(section);
+            if (window.loadPartnerViewScripts) {
+                window.loadPartnerViewScripts(() => loadSpotlightInitiative(section));
+            } else {
+                loadSpotlightInitiative(section);
+            }
             break;
         case 'survivor-portal':
-            loadSurvivorPortal(section);
+            if (window.loadSurvivorPortalScripts) {
+                window.loadSurvivorPortalScripts(() => loadSurvivorPortal(section));
+            } else {
+                loadSurvivorPortal(section);
+            }
             break;
         case 'rainbo-portal':
-            loadRainboPortal(section);
+            if (window.loadPortalScripts) {
+                window.loadPortalScripts('rainbo', () => loadRainboPortal(section));
+            } else {
+                loadRainboPortal(section);
+            }
             break;
         case 'police-fsu':
-            loadPoliceFSU(section);
+            if (window.loadPortalScripts) {
+                window.loadPortalScripts('fsu', () => loadPoliceFSU(section));
+            } else {
+                loadPoliceFSU(section);
+            }
             break;
         case 'resources':
             loadResources(section);
             break;
         case 'voice-report':
-            loadVoiceReport(section);
+            if (window.loadVoiceReportScripts) {
+                window.loadVoiceReportScripts(() => loadVoiceReport(section));
+            } else {
+                loadVoiceReport(section);
+            }
             break;
         case 'admin':
             loadAdminPanel(section);

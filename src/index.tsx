@@ -2228,65 +2228,50 @@ app.get('/', (c) => {
       <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
       
-      {/* 📝 FORM FIXES - Load First (Date Picker & Dropdowns) */}
+      {/* ⚡ PERFORMANCE OPTIMIZER - Load First! */}
+      <script src="/static/PERFORMANCE_OPTIMIZER.js"></script>
+      
+      {/* 📝 TIER 1: CRITICAL SCRIPTS (Load Immediately) */}
       <script src="/static/FORM_FIXES.js"></script>
-      
-      {/* 🚨 EMERGENCY FIXES - Load Second */}
       <script src="/static/EMERGENCY_FIXES.js"></script>
-      
-      {/* Essential Core Scripts */}
       <script src="/static/language-switch.js"></script>
       
-      {/* Voice Report - MUST load before tab-system.js */}
-      <script src="/static/voice-recording.js"></script>
-      <script src="/static/VOICE_REPORT_FIX.js"></script>
-      <script src="/static/VOICE_REPORT_DEBUG.js"></script>
-      
+      {/* Core Navigation */}
       <script src="/static/tab-system.js"></script>
       <script src="/static/app-simplified.js"></script>
       
-      {/* Case Management */}
-      <script src="/static/unified-case-system.js"></script>
-      <script src="/static/report-case-form.js"></script>
-      <script src="/static/view-cases.js"></script>
-      <script src="/static/case-notes.js"></script>
-      
-      {/* Survivor Portal */}
-      <script src="/static/survivor-portal.js"></script>
-      <script src="/static/emergency-sos.js"></script>
-      
-      {/* System Features */}
+      {/* Essential System Features */}
       <script src="/static/notifications.js"></script>
-      <script src="/static/export-system.js"></script>
-      <script src="/static/portal-systems.js"></script>
-      
-      {/* District Map & Spotlight Initiative */}
-      <script src="/static/district-map.js"></script>
-      <script src="/static/spotlight-initiative.js"></script>
-      
-      {/* Analytics - Load in correct order */}
-      <script src="/static/chart-lazy-loader.js"></script>
-      
-      {/* CHART FIX - Force immediate chart rendering */}
-      <script src="/static/CHART_FIX.js"></script>
-      
-      {/* Analytics Detailed Dashboards - MUST load before analytics-dashboard.js */}
-      <script src="/static/spike-prediction.js"></script>
-      <script src="/static/risk-scoring.js"></script>
-      <script src="/static/resource-forecast.js"></script>
-      <script src="/static/trend-intelligence.js"></script>
-      
-      {/* Analytics Main Dashboard - calls the above functions */}
-      <script src="/static/analytics-dashboard.js"></script>
-      
-      {/* Analytics Navigation Fix - Back button */}
-      <script src="/static/ANALYTICS_NAVIGATION_FIX.js"></script>
-      
-      {/* Fix for showAnalyticsSection - IMMEDIATE no delay */}
-      <script src="/static/ANALYTICS_FIX_IMMEDIATE.js"></script>
-      
-      {/* Final Fixes - Load Last */}
       <script src="/static/final-fixes.js"></script>
+      
+      {/* 📦 TIER 2: ON-DEMAND SCRIPTS (Loaded by PERFORMANCE_OPTIMIZER when tabs open) */}
+      {/* These are now loaded dynamically when needed: */}
+      {/* - Analytics Dashboard + AI tools (when Analytics tab clicked) */}
+      {/* - Report Case Form (when Report Case tab clicked) */}
+      {/* - View Cases (when View Cases tab clicked) */}
+      {/* - District Map & Partner View (when Partner View tab clicked) */}
+      {/* - Voice Report (when Voice Report tab clicked) */}
+      {/* - Portal Systems (when Rainbo/FSU portals accessed) */}
+      {/* - Survivor Portal (when Survivor Portal tab clicked) */}
+      {/* - Export System (when export button clicked) */}
+      
+      {/* ⏰ TIER 3: LAZY LOAD (Loaded after page ready) */}
+      <script dangerouslySetInnerHTML={{
+        __html: `
+        // Load non-critical scripts after page is fully loaded
+        window.addEventListener('load', function() {
+          setTimeout(() => {
+            // Load education hub and resources after 2 seconds
+            if (window.loadScriptOnce) {
+              window.loadScriptOnce('/static/education-hub.js');
+              window.loadScriptOnce('/static/resource-library.js');
+              window.loadScriptOnce('/static/CHART_FIX.js');
+              console.log('✅ Lazy-loaded non-critical scripts');
+            }
+          }, 2000);
+        });
+        `
+      }} />
 
 
     </div>
